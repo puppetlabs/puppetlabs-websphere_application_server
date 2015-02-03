@@ -17,13 +17,16 @@ require 'yaml'
 include REXML
 was_file = '/etc/puppetlabs/facter/facts.d/websphere.yaml'
 
+
 if File.exist?(was_file)
+  Facter.debug "Found #{was_file}"
   was_facts = YAML.load_file(was_file)
 
   ## Get each profile base dir from the facts.d file
   profiles_path = was_facts.select { |k,v| k.to_s.match(/.*_profile_base.*/) }
   instances = was_facts.select { |k,v| k.to_s.match(/.*_name.*/) }
 else
+  Facter.debug "Could not find #{was_file}"
   profiles_path = []
   instances = []
 end
@@ -42,18 +45,21 @@ end
 ## as expected.
 instances.each do |key,instance|
   im_file = '/var/ibm/InstallationManager/installed.xml'
+  target = Facter.value("#{instance}_target")
 
   version = nil
   package = nil
 
   if File.exists?(im_file)
+    Facter.debug "Found #{im_file}"
     imdata = REXML::Document.new(File.read(im_file))
-    path = XPath.first(imdata, '//installInfo/location[@path="/opt/IBM/WebSphere85/AppServer"]/package[starts-with(@name, "IBM WebSphere Application Server")]')
+    path = XPath.first(imdata, "//installInfo/location[@path='#{target}']/package[starts-with(@name, 'IBM WebSphere Application Server')]")
     if path
       version = XPath.first(path, '@version')
       package = XPath.first(path, '@id')
     end
   else
+    Facter.debug "Could not find #{im_file}"
     version = "unknown"
   end
 
