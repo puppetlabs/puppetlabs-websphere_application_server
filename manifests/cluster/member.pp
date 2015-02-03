@@ -44,7 +44,7 @@ define websphere::cluster::member (
 ) {
 
   if !$dmgr_profile or !$cluster {
-    fail("dmgr_profile and cluster is required")
+    fail('dmgr_profile and cluster is required')
   }
 
   validate_string($dmgr_profile)
@@ -60,7 +60,7 @@ define websphere::cluster::member (
   if $gen_unique_ports                 { validate_bool($gen_unique_ports) }
   if $jvm_maximum_heap_size            { validate_string($jvm_maximum_heap_size) }
   if $jvm_verbose_mode_class           { validate_bool($jvm_verbose_mode_class) }
-  if $jvm_verbose_garbage_collection   { validate_bool($jvm_verbose_mode_garbage_collection) }
+  if $jvm_verbose_garbage_collection   { validate_bool($jvm_verbose_garbage_collection) }
   if $jvm_verbose_mode_jni             { validate_bool($jvm_verbose_mode_jni) }
   if $jvm_initial_heap_size            { validate_string($jvm_initial_heap_size) }
   if $jvm_run_hprof                    { validate_bool($jvm_run_hprof) }
@@ -93,7 +93,7 @@ define websphere::cluster::member (
     gen_unique_ports                 => $gen_unique_ports,
     jvm_maximum_heap_size            => $jvm_maximum_heap_size,
     jvm_verbose_mode_class           => $jvm_verbose_mode_class,
-    jvm_verbose_garbage_collection   => $jvm_verbose_mode_garbage_collection,
+    jvm_verbose_garbage_collection   => $jvm_verbose_garbage_collection,
     jvm_verbose_mode_jni             => $jvm_verbose_mode_jni,
     jvm_initial_heap_size            => $jvm_initial_heap_size,
     jvm_run_hprof                    => $jvm_run_hprof,
@@ -110,7 +110,7 @@ define websphere::cluster::member (
     umask                            => $umask,
     wsadmin_user                     => $wsadmin_user,
     wsadmin_pass                     => $wsadmin_pass,
-    weight                           => $member_weight,
+    weight                           => $weight,
   }
 
   if $manage_service {
@@ -124,7 +124,7 @@ define websphere::cluster::member (
       ensure       => $_service_ensure,
       dmgr_profile => $dmgr_profile,
       profile_base => $profile_base,
-      cell         => $dmgr_cell,
+      cell         => $cell,
       node         => $node,
       subscribe    => Websphere_cluster_member[$cluster_member_name],
     }

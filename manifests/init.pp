@@ -28,15 +28,15 @@ class websphere (
   # even when the installation directory is different.  Manage these for good
   # measure.
   $java_prefs = [
-    "/opt/IBM",
+    '/opt/IBM',
     "${base_dir}/.java",
     "${base_dir}/.java/systemPrefs",
     "${base_dir}/.java/userPrefs",
     "${base_dir}/workspace",
-    "/opt/IBM/.java",
-    "/opt/IBM/.java/systemPrefs",
-    "/opt/IBM/.java/userPrefs",
-    "/opt/IBM/workspace",
+    '/opt/IBM/.java',
+    '/opt/IBM/.java/systemPrefs',
+    '/opt/IBM/.java/userPrefs',
+    '/opt/IBM/workspace',
   ]
 
   file { $java_prefs:
