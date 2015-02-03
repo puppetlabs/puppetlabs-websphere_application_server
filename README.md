@@ -11,6 +11,17 @@
     * [Types](#types)
 4. [Usage](#usage)
     * [Examples](#examples)
+        * [0. Installation Manager](#0--installation-manager)
+        * [1. Base class](#1--the-base-class)
+        * [2. An Instance](#2--an-instance)
+        * [3. FixPacks](#3--fixpacks)
+        * [4. Profiles](#4--profiles)
+        * [5. Clusters](#5--clusters)
+        * [6. Conclusion](#6--conclusion)
+        * [7. Variables](#7--variables)
+        * [8. JVM Logs](#8--jvm-logs)
+        * [9. JDBC Providers and Datasources](#9--jdbc-providers-and-datasources)
+        * [10. IHS](#10--ihs)
 5. [Limitations](#limitations)
 6. [Dependencies](#dependencies)
 7. [Authors](#authors)
@@ -23,6 +34,9 @@ Manages the deployment and configuration of IBM WebSphere Cells.
 * DMGR systems and configuration
 * Application Servers and configuration
 * IHS Servers in the context of WebSphere
+
+Most documentation has been split into individual documents in the [docs](docs)
+directory and linked to, in context, throughout this document.
 
 ## TODO
 
@@ -60,6 +74,42 @@ The following facts are provided by this module:
 | *instance*\_package      | The package name a WebSphere instance was installed from.
 | websphere\_profiles      | A comma-separated list of profiles discovered on a system across instances.
 | websphere\_*profile*\_*cell*\_*node*\_soap | The SOAP port for an instance.  This is particuarily relevant on the DMGR so App servers can federate with it.
+
+__Examples:__
+
+Assuming we've installed a WebSphere instance called "WebSphere":
+
+```
+websphere_group => webadmins
+websphere_name => WebSphere
+websphere_package => com.ibm.websphere.NDTRIAL.v85
+websphere_profile_base => /opt/IBM/WebSphere/AppServer/profiles
+websphere_target => /opt/IBM/WebSphere/AppServer
+websphere_user => webadmin
+websphere_version => 8.5.5004.20141119_1746
+websphere_base_dir => /optIBM
+websphere_profile_dmgr_01_cell_01_appnode01_soap => 8878
+websphere_profile_dmgr_01_cell_01_node_dmgr_01_soap => 8879
+websphere_profiles => PROFILE_DMGR_01
+```
+
+Or if we've installed a WebSphere instance called "WebSphere85" to a custom
+location:
+
+```
+websphere85_group => webadmins
+websphere85_name => WebSphere85
+websphere85_package => com.ibm.websphere.NDTRIAL.v85
+websphere85_profile_base => /opt/myorg/IBM/WebSphere85/AppServer/profiles
+websphere85_target => /opt/myorg/IBM/WebSphere85/AppServer
+websphere85_user => webadmin
+websphere85_version => 8.5.5004.20141119_1746
+websphere_base_dir => /opt/myorg/IBM
+websphere_profile_dmgr_01_cell_01_appnode01_soap => 8878
+websphere_profile_dmgr_01_cell_01_node_dmgr_01_soap => 8879
+websphere_profiles => PROFILE_DMGR_01
+```
+
 
 ### Classes
 
@@ -432,7 +482,7 @@ __References:__
 * [websphere_cluster_member](docs/types/websphere_cluster_member.md)
 * [websphere_cluster_member_service](docs/types/websphere_cluster_member_service.md)
 
-#### 8. Conclusion
+#### 6. Conclusion
 
 Following the examples above, WebSphere should be installed with a fixpack and
 Java7, profiles should be created and federated, and a cluster should be
@@ -440,7 +490,7 @@ created with the application server as a member.
 
 At this point, we can tune our installation.
 
-#### 9. Variables
+#### 7. Variables
 
 This module provides a type to manage WebSphere environment variables.
 
@@ -502,7 +552,7 @@ __Reference:__
 
 * [websphere_variable](docs/types/websphere_variable.md)
 
-#### 10. JVM Logs
+#### 8. JVM Logs
 
 This module provides a `websphere_jvm_log` type that can be used to manage
 JVM logging properties, such as log rotation criteria.
@@ -543,6 +593,162 @@ the time-based log rotation to occur at "1300" hours (1PM), and rotate every
 __Reference:__
 
 * [websphere_jvm_log](docs/types/websphere_jvm_log.md)
+
+#### 9. JDBC Providers and Datasources
+
+This module supports creating JDBC providers and data sources.  At this time,
+it does not support the removal of JDBC providers or datasources or changing
+their configuration after they're created.
+
+__JDBC Provider:__
+
+An example of creating a JDBC provider called "Puppet Test", using Oracle, at
+node scope:
+
+```puppet
+websphere_jdbc_provider { 'Puppet Test':
+  ensure         => 'present',
+  dmgr_profile   => 'PROFILE_DMGR_01',
+  profile_base   => '/opt/IBM/WebSphere/AppServer/profiles',
+  user           => 'webadmin',
+  scope          => 'node',
+  cell           => 'CELL_01',
+  node           => 'appNode01',
+  server         => 'AppServer01',
+  dbtype         => 'Oracle',
+  providertype   => 'Oracle JDBC Driver',
+  implementation => 'Connection pool data source',
+  description    => 'Created by Puppet',
+  classpath      => '${ORACLE_JDBC_DRIVER_PATH}/ojdbc6.jar',
+}
+```
+
+__JDBC Datasource:__
+
+An example of creating a datasource, utilizing the JDBC provider we created,
+at node scope:
+
+```puppet
+websphere_jdbc_datasource { 'Puppet Test':
+  ensure                        => 'present',
+  dmgr_profile                  => 'PROFILE_DMGR_01',
+  profile_base                  => '/opt/IBM/WebSphere/AppServer/profiles',
+  user                          => 'webadmin',
+  scope                         => 'node',
+  cell                          => 'CELL_01',
+  node                          => 'appNode01',
+  server                        => 'AppServer01',
+  jdbc_provider                 => 'Puppet Test',
+  jndi_name                     => 'myTest',
+  data_store_helper_class       => 'com.ibm.websphere.rsadapter.Oracle11gDataStoreHelper',
+  container_managed_persistence => true,
+  url                           => 'jdbc:oracle:thin:@//localhost:1521/sample',
+  description                   => 'Created by Puppet',
+}
+```
+
+__JDBC Provider at cell scope:__
+
+```puppet
+websphere_jdbc_provider { 'Puppet Test':
+  ensure         => 'present',
+  dmgr_profile   => 'PROFILE_DMGR_01',
+  profile_base   => '/opt/IBM/WebSphere/AppServer/profiles',
+  user           => 'webadmin',
+  scope          => 'cell',
+  cell           => 'CELL_01',
+  dbtype         => 'Oracle',
+  providertype   => 'Oracle JDBC Driver',
+  implementation => 'Connection pool data source',
+  description    => 'Created by Puppet',
+  classpath      => '${ORACLE_JDBC_DRIVER_PATH}/ojdbc6.jar',
+}
+```
+
+__JDBC Datasource at cell scope:__
+
+```puppet
+websphere_jdbc_datasource { 'Puppet Test':
+  ensure                        => 'present',
+  dmgr_profile                  => 'PROFILE_DMGR_01',
+  profile_base                  => '/opt/IBM/WebSphere/AppServer/profiles',
+  user                          => 'webadmin',
+  scope                         => 'cell',
+  cell                          => 'CELL_01',
+  jdbc_provider                 => 'Puppet Test',
+  jndi_name                     => 'myTest',
+  data_store_helper_class       => 'com.ibm.websphere.rsadapter.Oracle11gDataStoreHelper',
+  container_managed_persistence => true,
+  url                           => 'jdbc:oracle:thin:@//localhost:1521/sample',
+  description                   => 'Created by Puppet',
+}
+```
+
+__References:__
+
+* [websphere_jdbc_provider](docs/types/websphere_jdbc_provider.md)
+* [websphere_jdbc_datasource](docs/types/websphere_jdbc_datasource.md)
+
+#### 10. IHS
+
+This module has basic support for managing IBM HTTP Server (IHS) in the context
+of WebSphere.
+
+In the example below, we install IHS to `/opt/IBM/HTTPServer`, install the
+WebSphere plug-ins for IHS, and create a server instance.  By default, this
+module will automatically _export_ a `websphere_node` and
+`websphere_web_server` resource via the `websphere::ihs::server` defined type.
+These exported resources will, by default, be _collected_ by the DMGR and
+_realized_.  Basically, by default, an IHS server will automatically be
+setup in the DMGR's cell.
+
+```puppet
+websphere::ihs::instance { 'HTTPServer':
+  target           => '/opt/IBM/HTTPServer',
+  package          => 'com.ibm.websphere.IHSILAN.v85',
+  version          => '8.5.5000.20130514_1044',
+  repository       => '/mnt/myorg/ihs/repository.config',
+  install_options  => '-properties user.ihs.httpPort=80',
+  user             => 'webadmin',
+  group            => 'webadmins',
+  manage_user      => false,
+  manage_group     => false,
+  log_dir          => '/opt/log/websphere/httpserver',
+  admin_username   => 'httpadmin',
+  admin_password   => 'password',
+  webroot          => '/opt/web',
+}
+
+websphere::package { 'Plugins':
+  ensure     => 'present',
+  target     => '/opt/IBM/Plugins',
+  repository => '/mnt/myorg/plugins/repository.config',
+  package    => 'com.ibm.websphere.PLGILAN.v85',
+  version    => '8.5.5000.20130514_1044',
+  require    => Websphere::Ihs::Instance['HTTPServer'],
+}
+
+websphere::ihs::server { 'test':
+  target      => '/opt/IBM/HTTPServer',
+  log_dir     => '/opt/log/websphere/httpserver',
+  plugin_dir  => '/opt/IBM/Plugins/config/test',
+  plugin_base => '/opt/IBM/Plugins',
+  cell        => 'CELL_01',
+  config_file => '/opt/IBM/HTTPServer/conf/httpd_test.conf',
+  access_log  => '/opt/log/websphere/httpserver/access_log',
+  error_log   => '/opt/log/websphere/httpserver/error_log',
+  listen_port => '10080',
+  require     => Websphere::Package['Plugins'],
+}
+```
+
+__References:__
+
+* [websphere::ihs::instance](docs/defines/ihs_instance.md)
+* [websphere::package](docs/defines/package.md)
+* [websphere::ihs::server](docs/defines/ihs_server.md)
+* [websphere_node](docs/types/websphere_node.md)
+* [websphere_web_server](docs/types/websphere_web_server.md)
 
 #### Others
 
