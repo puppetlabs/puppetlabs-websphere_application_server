@@ -190,6 +190,11 @@ websphere::instance { 'WebSphere85':
 }
 ```
 
+__References:__
+
+* [websphere::instance](docs/defines/instance.md)
+* [websphere::package](docs/defines/package.md)
+
 #### 3. FixPacks
 
 It's common to install an IBM "FixPack" after the base installation.  Following
@@ -229,6 +234,12 @@ In the above example, we install the Java 7 package to our WebSphere location.
 We also use the `require` metaparameter here to enforce ordering - we want
 the Java7 installation to be managed _after_ WebSphere 8.5.5.4 is.
 
+__References:__
+
+* [websphere::package](docs/defines/package.md)
+* [websphere::ownership](docs/defines/ownership.md)
+* [ibm_pkg](https://github.com/joshbeard/puppet-ibm_installation_manager#type-ibm_pkg) (external)
+
 #### 4. Profiles
 
 Once we have the base software installed, we need to create a profile. A
@@ -263,6 +274,9 @@ resources_ to export a _file_ resource that contains information needed for
 application servers to federate with it.  This includes the SOAP port and the
 host name (fqdn).
 
+The DMGR profile will, by default, collect any exported `websphere_node`,
+`websphere_web_server`, and `websphere_jvm_log` resources.
+
 An application server's profile looks quite similar:
 
 ```puppet
@@ -287,6 +301,16 @@ exported by the DMGR will be _collected_.  The criteria for collecting is
 a DMGR hostname and cell name.  This allows the application server to know
 which SOAP port to use for federation.  This is the default behavior of the
 module.
+
+__References:__
+
+* [websphere::profile::dmgr](docs/defines/profile_dmgr.md)
+* [websphere::profile::appserver](docs/defines/profile_app.md)
+* [websphere::profile::service](docs/defines/profile_service.md)
+* [websphere_sdk](docs/types/websphere_sdk.md)
+* [websphere_node](docs/types/websphere_node.md)
+* [websphere_web_server](docs/types/websphere_web_server.md)
+* [websphere_jvm_log](docs/types/websphere_jvm_log.md)
 
 #### 5. Clusters
 
@@ -375,6 +399,14 @@ websphere::cluster::member { 'AppServer01':
 This is obviously less dynamic.  The user also needs to ensure that the
 _profile_ is ready on the application server.
 
+__References:__
+
+* [websphere::cluster](docs/defines/cluster.md)
+* [websphere::cluster::member](docs/defines/cluster_member.md)
+* [websphere_cluster](docs/types/websphere_cluster.md)
+* [websphere_cluster_member](docs/types/websphere_cluster_member.md)
+* [websphere_cluster_member_service](docs/types/websphere_cluster_member_service.md)
+
 #### 8. Conclusion
 
 Following the examples above, WebSphere should be installed with a fixpack and
@@ -441,6 +473,10 @@ Optionally, these variables can be declared on the DMGR.  This will enable you
 to set _relationships_ between the cluster member and the variable resource.
 However, this sacrifices some of the dynamic nature of the module.
 
+__Reference:__
+
+* [websphere_variable](docs/types/websphere_variable.md)
+
 #### 10. JVM Logs
 
 This module provides a `websphere_jvm_log` type that can be used to manage
@@ -478,6 +514,10 @@ we specify via the `_rollover_size` parameter.  We want to keep a maximum of
 200 historical logs for the SystemOut, and only 3 for the SystemErr.  We want
 the time-based log rotation to occur at "1300" hours (1PM), and rotate every
 24 hours.
+
+__Reference:__
+
+* [websphere_jvm_log](docs/types/websphere_jvm_log.md)
 
 #### Others
 
