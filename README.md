@@ -131,6 +131,31 @@ directory.
 
 ### Examples
 
+#### 0. Installation Manager
+
+Before you do anything with this module, you need IBM Installation Manager
+installed.
+
+A module has been created to manage the IBM Installation Manager, available at
+[https://github.com/joshbeard/puppet-ibm_installation_manager](https://github.com/joshbeard/puppet-ibm_installation_manager)
+
+Once you have the module, you can manage the installation of the Installation
+Manager like this:
+
+```puppet
+class { 'ibm_installation_manager':
+  source_dir => '/mnt/myorg/IM',
+  target     => '/opt/IBM/InstallationManager',
+}
+```
+
+Here, we assume the package downloaded from IBM has been extracted to
+`/mnt/myorg/IM` and we want to install it to `/opt/IBM/InstallationManager`
+
+__References:__
+
+* [https://github.com/joshbeard/puppet-ibm_installation_manager](https://github.com/joshbeard/puppet-ibm_installation_manager)
+
 #### 1. The base class
 
 To get started, declare the base class.  You should declare this on any
