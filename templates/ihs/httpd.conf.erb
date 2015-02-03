@@ -1,0 +1,256 @@
+####################################################################
+# THIS FILE IS MANAGED BY PUPPET.
+#
+<% if @replace_config -%>
+# Modifications to this file will be overwritten. To change this behavior,
+# set 'replace_config' to false.
+<% else -%>
+# You can safely make modifications to this file.  Puppet will only manage
+# this file if it is not already present.
+# If you would like Puppet to *always* manage it, set 'replace_config' to
+# true.
+<% end -%>
+#
+####################################################################
+
+ServerRoot "<%= @target %>"
+
+# change the pid file name & keep the httpdconf name
+PidFile <%= @_log_dir %>/<%= @pid_file %>
+
+Timeout <%= @timeout %>
+KeepAlive <%= @keep_alive %>
+MaxKeepAliveRequests <%= @max_keep_alive_requests %>
+KeepAliveTimeout <%= @keep_alive_timeout %>
+
+<IfModule worker.c>
+ThreadLimit        <%= @thread_limit %>
+ServerLimit        <%= @server_limit %>
+StartServers       <%= @start_servers %>
+MaxClients         <%= @max_clients %>
+MinSpareThreads    <%= @min_spare_threads %>
+MaxSpareThreads    <%= @max_spare_threads %>
+ThreadsPerChild    <%= @threads_per_child %>
+MaxRequestsPerChild <%= @max_requests_per_child %>
+</IfModule>
+
+Listen <%= @listen_address %>:<%= @listen_port %>
+
+# LoadModule foo_module modules/mod_foo.so
+LoadModule authz_host_module modules/mod_authz_host.so
+LoadModule auth_basic_module modules/mod_auth_basic.so
+LoadModule authn_file_module modules/mod_authn_file.so
+LoadModule authz_user_module modules/mod_authz_user.so
+#LoadModule authz_groupfile_module modules/mod_authz_groupfile.so
+LoadModule include_module modules/mod_include.so
+LoadModule log_config_module modules/mod_log_config.so
+LoadModule env_module modules/mod_env.so
+#LoadModule mime_magic_module modules/mod_mime_magic.so
+#LoadModule expires_module modules/mod_expires.so
+#LoadModule headers_module modules/mod_headers.so
+LoadModule unique_id_module modules/mod_unique_id.so
+LoadModule setenvif_module modules/mod_setenvif.so
+#LoadModule proxy_module modules/mod_proxy.so
+#LoadModule proxy_connect_module modules/mod_proxy_connect.so
+#LoadModule proxy_ftp_module modules/mod_proxy_ftp.so
+#LoadModule proxy_http_module modules/mod_proxy_http.so
+LoadModule mime_module modules/mod_mime.so
+#LoadModule dav_module modules/mod_dav.so
+#LoadModule dav_fs_module modules/mod_dav_fs.so
+LoadModule autoindex_module modules/mod_autoindex.so
+#LoadModule asis_module modules/mod_asis.so
+#LoadModule info_module modules/mod_info.so
+LoadModule cgid_module modules/mod_cgid.so
+LoadModule dir_module modules/mod_dir.so
+LoadModule actions_module modules/mod_actions.so
+#LoadModule speling_module modules/mod_speling.so
+#LoadModule userdir_module modules/mod_userdir.so
+LoadModule alias_module modules/mod_alias.so
+LoadModule rewrite_module modules/mod_rewrite.so
+#LoadModule deflate_module modules/mod_deflate.so
+LoadModule mpmstats_module modules/debug/mod_mpmstats.so
+LoadModule status_module modules/mod_status.so
+<IfModule mod_status.c>
+ExtendedStatus On
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK)
+    RewriteRule .* - [F]
+</IfModule>
+
+LimitRequestFieldsize <%= @limit_request_field_size %>
+
+User <%= @user %>
+Group <%= @group %>
+
+ServerAdmin <%= @server_admin_email %>
+
+ServerName <%= @server_name %>:<%= @server_listen_port %>
+
+UseCanonicalName Off
+DocumentRoot "<%= @_docroot %>"
+
+<Directory />
+    Options FollowSymLinks
+    AllowOverride None
+    FileETag All -INode
+</Directory>
+
+<Directory "<%= @_docroot %>">
+
+#
+    Options FollowSymLinks
+
+#
+    AllowOverride None
+
+#
+    Order allow,deny
+    Allow from all
+
+</Directory>
+
+<IfModule mod_userdir.c>
+UserDir public_html
+</IfModule>
+
+DirectoryIndex <%= @directory_index %>
+
+AccessFileName .htaccess
+
+#
+<Files ~ "^\.ht">
+    Order allow,deny
+    Deny from all
+</Files>
+#
+
+TypesConfig conf/mime.types
+
+#
+DefaultType None
+
+#
+<IfModule mod_mime_magic.c>
+    MIMEMagicFile conf/magic
+</IfModule>
+
+HostnameLookups Off
+EnableSendfile off
+
+ErrorLog "|<%= @target %>/bin/rotatelogs <%= @error_log %>.%Y%m%d 86400 -300"
+LogLevel error
+LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+LogFormat "%{X-Forwarded-For}i %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" x-forwarded-for
+SetEnvIf X-Forwarded-For "^.*\..*\..*\..*" forwarded
+LogFormat "%h %l %u %t \"%r\" %>s %b" common
+LogFormat "%{Referer}i -> %U" referer
+LogFormat "%{User-agent}i" agent
+
+CustomLog "|<%= @target %>/bin/rotatelogs <%= @access_log %>.%Y%m%d 86400 -300" combined env=!forwarded
+CustomLog "|<%= @target %>/bin/rotatelogs <%= @error_log %>.%Y%m%d 86400 -300" x-forwarded-for env=forwarded
+
+
+ServerTokens Prod
+ServerSignature On
+#
+Alias /icons/ "<%= @target %>/icons/"
+
+<Directory "<%= @target %>/icons">
+    Options MultiViews
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+</Directory>
+#
+ScriptAlias /cgi-bin/ "<%= @target %>/cgi-bin/"
+
+<IfModule mod_cgid.c>
+
+</IfModule>
+
+
+#
+<Directory "<%= @target %>/cgi-bin">
+    AllowOverride None
+    Options None
+    Order allow,deny
+    Allow from all
+</Directory>
+
+
+IndexOptions FancyIndexing VersionSort
+AddIconByEncoding (CMP,/icons/compressed.gif) x-compress x-gzip
+AddIconByType (TXT,/icons/text.gif) text/*
+AddIconByType (IMG,/icons/image2.gif) image/*
+AddIconByType (SND,/icons/sound2.gif) audio/*
+AddIconByType (VID,/icons/movie.gif) video/*
+AddIcon /icons/binary.gif .bin .exe
+AddIcon /icons/binhex.gif .hqx
+AddIcon /icons/tar.gif .tar
+AddIcon /icons/world2.gif .wrl .wrl.gz .vrml .vrm .iv
+AddIcon /icons/compressed.gif .Z .z .tgz .gz .zip
+AddIcon /icons/a.gif .ps .ai .eps
+AddIcon /icons/layout.gif .html .shtml .htm .pdf
+AddIcon /icons/text.gif .txt
+AddIcon /icons/c.gif .c
+AddIcon /icons/p.gif .pl .py
+AddIcon /icons/f.gif .for
+AddIcon /icons/dvi.gif .dvi
+AddIcon /icons/uuencoded.gif .uu
+AddIcon /icons/script.gif .conf .sh .shar .csh .ksh .tcl
+AddIcon /icons/tex.gif .tex
+AddIcon /icons/bomb.gif core
+AddIcon /icons/back.gif ..
+AddIcon /icons/hand.right.gif README
+AddIcon /icons/folder.gif ^^DIRECTORY^^
+AddIcon /icons/blank.gif ^^BLANKICON^^
+
+DefaultIcon /icons/unknown.gif
+
+ReadmeName README.html
+HeaderName HEADER.html
+
+IndexIgnore .??* *~ *# HEADER* README* RCS CVS *,v *,t
+
+AddEncoding x-compress Z
+AddEncoding x-gzip gz tgz
+AddType application/x-tar .tgz
+AddType image/x-icon .ico
+
+BrowserMatch "Mozilla/2" nokeepalive
+BrowserMatch "MSIE 4\.0b2;" nokeepalive downgrade-1.0 force-response-1.0
+BrowserMatch "RealPlayer 4\.0" force-response-1.0
+BrowserMatch "Java/1\.0" force-response-1.0
+BrowserMatch "JDK/1\.0" force-response-1.0
+BrowserMatch "Microsoft Data Access Internet Publishing Provider" redirect-carefully
+BrowserMatch "^WebDrive" redirect-carefully
+BrowserMatch "^WebDAVFS/1.[012]" redirect-carefully
+BrowserMatch "^gnome-vfs" redirect-carefully
+
+<IfModule mod_status.c>
+<Location /server-status>
+    SetHandler server-status
+    Order deny,allow
+    Deny from all
+</Location>
+</IfModule>
+<IfModule mod_mpmstats.c>
+ReportInterval 600
+TrackModules On
+</IfModule>
+
+EnableExceptionHook On
+
+LoadModule whatkilledus_module modules/debug/mod_whatkilledus.so
+
+<IfModule mod_net_trace.c>
+NetTraceFile /tmp/nettrace
+NetTrace client * dest file event senddata=65535 event recvdata=65535
+</IfModule>
+#LoadModule was_ap22_module <%= @plugin_root %>/bin/64bits/mod_was_ap22_http.so
+#WebSpherePluginConfig <%= @plugin_root %>/config/<%= @host_short_name %>_<%= @app_name %>/plugin-cfg.xml
+
+## EOF
