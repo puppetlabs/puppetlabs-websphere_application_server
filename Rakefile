@@ -1,7 +1,37 @@
 require 'puppetlabs_spec_helper/rake_tasks'
 require 'puppet-lint/tasks/puppet-lint'
-PuppetLint.configuration.send('disable_80chars')
-PuppetLint.configuration.ignore_paths = ["spec/**/*.pp", "pkg/**/*.pp", "examples"]
+
+lint_exclude = [
+  "pkg/**/*",
+  "vendor/**/*",
+  "spec/**/*",
+  "examples/**/*",
+]
+
+Rake::Task[:lint].clear
+PuppetLint::RakeTask.new :lint do |config|
+  # Pattern of files to ignore
+  config.ignore_paths = lint_exclude
+
+  # List of checks to disable
+  config.disable_checks = [ '80chars', 'class_inherits_from_params_class' ]
+
+  # Should the task fail if there were any warnings, defaults to false
+  config.fail_on_warnings = true
+
+  # Print out the context for the problem, defaults to false
+  config.with_context = true
+
+  # Format string for puppet-lint's output (see the puppet-lint help output
+  # for details
+  config.log_format = "%{path}:%{linenumber}:%{check}:%{KIND}:%{message}"
+
+  # Compare module layout relative to the module root
+  # config.relative = true
+end
+
+PuppetSyntax.exclude_paths = lint_exclude
+
 
 desc "Validate manifests, templates, and ruby files"
 task :validate do
