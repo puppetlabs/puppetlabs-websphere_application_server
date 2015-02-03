@@ -131,7 +131,357 @@ directory.
 
 ### Examples
 
-TODO.
+#### 1. The base class
+
+To get started, declare the base class.  You should declare this on any
+server that will use this module - DMGR, App Servers, and IHS.
+
+In this example, we provide a user and a group.  We want the installation to
+be owned and ran by this user/group.
+
+We also specify a `base_dir` (although `/opt/IBM` is the default).  This is
+the directory where our IBM software goes.  This is the IBM default.
+
+```puppet
+class { 'websphere':
+  user     => 'webadmin',
+  group    => 'webadmins',
+  base_dir => '/opt/IBM',
+}
+```
+
+#### 2. An instance
+
+The word "instance" used throughout this module basically refers to a
+complete installation of WebSphere.  Ideally, you'd just have a single
+instance of WebSphere on a given system.  This module, however, does offer
+the flexibility to have multiple installations.  This is useful for cases
+where you want two different major versions available (e.g. WAS 7 and WAS 8).
+
+In this example, we're installing to the IBM-default location of
+`/opt/IBM/WebSphere/AppServer`.  This is actually the module default as well,
+but it's specified here for clarity.  We also provide a package and version.
+
+We're assuming the WebSphere installer has been downloaded and extracted to
+`/mnt/myorg/was` and the corresponding `repository.config` file is located
+there.
+
+The user and group don't need to be specified here, because we specified them
+when we declared the base class.  The `instance` defined type will use those
+as its defaults.
+
+```puppet
+websphere::instance { 'WebSphere85':
+  target       => '/opt/IBM/WebSphere/AppServer',
+  package      => 'com.ibm.websphere.NDTRIAL.v85',
+  version      => '8.5.5000.20130514_1044',
+  profile_base => '/opt/IBM/WebSphere/AppServer/profiles',
+  repository   => '/mnt/myorg/was/repository.config',
+```
+
+Let's assume we have a response file that we want to use.  The response file
+contains the package name, version, repository location, and the target to
+install to.  We can use it like this:
+
+```puppet
+websphere::instance { 'WebSphere85':
+  response     => '/mnt/myorg/was/was85_response.xml',
+  profile_base => '/opt/IBM/WebSphere/AppServer/profiles',
+}
+```
+
+#### 3. FixPacks
+
+It's common to install an IBM "FixPack" after the base installation.  Following
+the examples above, we've installed WebSphere 8.5.5.0.  Let's say we want to
+install the WebSphere 8.5.5.4 fixpack.  We can do so using the
+`websphere::package` defined type:
+
+```puppet
+websphere::package { 'WebSphere_8554':
+  ensure     => 'present',
+  package    => 'com.ibm.websphere.NDTRIAL.v85',
+  version    => '8.5.5004.20141119_1746',
+  repository => '/mnt/myorg/was_8554/repository.config',
+  target     => '/opt/IBM/WebSphere/AppServer',
+  require    => Websphere::Instance['WebSphere85'],
+}
+```
+
+In the above example, we're installing the 8.5.5.4 FixPack right on top of
+the existing 8.5.5.0 installation.  We also use the `require` metaparameter
+to enforce the ordering.
+
+An example of installing Java 7:
+
+```puppet
+websphere::package { 'Java7':
+  ensure     => 'present',
+  package    => 'com.ibm.websphere.IBMJAVA.v71',
+  version    => '7.1.2000.20141116_0823',
+  target     => '/opt/IBM/WebSphere/AppServer',
+  repository => '/mnt/myorg/java7/repository.config',
+  require    => Websphere::Package['WebSphere_8554'],
+}
+```
+
+In the above example, we install the Java 7 package to our WebSphere location.
+We also use the `require` metaparameter here to enforce ordering - we want
+the Java7 installation to be managed _after_ WebSphere 8.5.5.4 is.
+
+#### 4. Profiles
+
+Once we have the base software installed, we need to create a profile. A
+profile is basically the runtime enironment.  A server can potentially have
+multiple profiles.  A DMGR profile is ultimately what defines a given "cell"
+in WebSphere.
+
+In the following example, we create a DMGR profile called `PROFILE_DMGR_01`
+and call the cell that gets created `CELL_01`.  We also call the DMGR node
+`dmgrNode01` in this example.
+
+Finally, we use the `subscribe` metaparameter to set relationships with our
+base installations.  If those change, the resources in
+`websphere::profile::dmgr` will be refreshed if needed.
+
+```puppet
+# Example DMGR profile
+websphere::profile::dmgr { 'PROFILE_DMGR_01':
+  instance_base => '/opt/IBM/WebSphere/AppServer',
+  profile_base  => '/opt/IBM/WebSphere/AppServer/profiles',
+  cell          => 'CELL_01',
+  node_name     => 'dmgrNode01',
+  subscribe     => [
+    Websphere::Package['Websphere_8554'],
+    Websphere::Package['Java7'],
+  ],
+}
+```
+
+When a DMGR profile is created, this module will use Puppet's _exported
+resources_ to export a _file_ resource that contains information needed for
+application servers to federate with it.  This includes the SOAP port and the
+host name (fqdn).
+
+An application server's profile looks quite similar:
+
+```puppet
+# Example Application Server profile
+websphere::profile::appserver { 'PROFILE_APP_001':
+  instance_base  => '/opt/IBM/WebSphere/AppServer',
+  profile_base   => '/opt/IBM/WebSphere/AppServer/profiles',
+  cell           => 'CELL_01',
+  template_path  => '/opt/IBM/WebSphere/AppServer/profileTemplates/managed',
+  dmgr_host      => 'dmgr.example.com',
+  node_name      => 'appNode01',
+  manage_sdk     => true,
+  sdk_name       => '1.7.1_64',
+}
+```
+
+Here, we provide the _cell_ that we want to _federate_ with.  We also want
+to manage the SDK version and ensure it's set to '1.7.1_64'.
+
+When creating an application server profile, the _file_ resource that was
+exported by the DMGR will be _collected_.  The criteria for collecting is
+a DMGR hostname and cell name.  This allows the application server to know
+which SOAP port to use for federation.  This is the default behavior of the
+module.
+
+#### 5. Clusters
+
+Once profiles are created on the DMGR and an application server, we're probably
+interested in creating a cluster and adding application servers to it.
+
+__DMGR__
+
+The DMGR should declare a `websphere::cluster` resource:
+
+```puppet
+# Manage a cluster on the DMGR
+websphere::cluster { 'MyCluster01':
+  profile_base => '/opt/IBM/WebSphere/AppServer/profiles',
+  dmgr_profile => 'PROFILE_DMGR_01',
+  cell         => 'CELL_01',
+  require      => Websphere::Profile::Dmgr['PROFILE_DMGR_01'],
+}
+```
+
+In this example, a cluster called `MyCluster01` will be created.  We need to
+provide a `profile_base` and `dmgr_profile` to know _where_ this cluster
+should be created.  Additionally, we use the `require` metaparameter to set
+a relationship between the profile and the cluster.  We want to ensure that
+the profile has been managed before attempting to manage the cluster.
+
+__Application Server__
+
+There's a couple of ways to add cluster members.  The DMGR can explicitly
+declare each one or the members themselves can _export_ a resource to do so.
+
+In the following example, we define a `websphere::cluster::member` resource
+on an application server and _export_ it.  The two "at" symbols (@@) indicate
+that this is an _exported_ resource.
+
+```puppet
+# Export myself as a cluster member
+@@websphere::cluster::member { 'AppServer01':
+  ensure                           => 'present',
+  cluster                          => 'MyCluster01',
+  node                             => 'appNode01',
+  cell                             => 'CELL_01',
+  jvm_maximum_heap_size            => '512',
+  jvm_verbose_mode_class           => true,
+  jvm_verbose_garbage_collection   => false,
+  total_transaction_timeout        => '120',
+  client_inactivity_timeout        => '20',
+  threadpool_webcontainer_max_size => '75',
+  runas_user                       => 'webadmin',
+  runas_group                      => 'webadmins',
+}
+```
+
+In this example, we're adding a member from the node `appNode01` that we
+created when we managed the profile to the `MyCluster01` cluster in the
+`CELL_01` cell.  We're also specifying a few various JVM parameters, including
+the "runas" user and group.
+
+__How does this work?__
+
+The DMGR declared the `websphere::cluster` defined type, which will
+automatically _collect_ any exported resources that match its _cell_. Every
+time Puppet runs on the DMGR, it will search for exported resources to
+declare on that host.
+
+On the application server, the "@@" prefixed to the resource type _exports_
+that resource, which can be collected by the DMGR the next time Puppet runs.
+
+The examples above illustrate the module's default behavior.  It is possible
+to manage clusters without exported resources.
+
+If you do not want to use exported resources, the DMGR host can explicitly
+declare each member that it should add.  For example:
+
+```puppet
+websphere::cluster::member { 'AppServer01':
+  ensure       => 'present',
+  cluster      => 'MyCluster01',
+  node         => 'appNode01',
+  cell         => 'CELL_01',
+  profile_base => '/opt/IBM/WebSphere/AppServer/profiles',
+  dmgr_profile => 'PROFILE_DMGR_01',
+}
+```
+
+This is obviously less dynamic.  The user also needs to ensure that the
+_profile_ is ready on the application server.
+
+#### 8. Conclusion
+
+Following the examples above, WebSphere should be installed with a fixpack and
+Java7, profiles should be created and federated, and a cluster should be
+created with the application server as a member.
+
+At this point, we can tune our installation.
+
+#### 9. Variables
+
+This module provides a type to manage WebSphere environment variables.
+
+In the example below, we want to ensure a variable called `LOG_ROOT` is set
+for the _node_ `appNode01`.
+
+__Node scoped variable__
+
+```puppet
+# Example of a node scoped variable
+websphere_variable { 'appNode01Logs':
+  ensure       => 'present',
+  variable     => 'LOG_ROOT',
+  value        => '/var/log/websphere/wasmgmtlogs/appNode01',
+  scope        => 'node',
+  node         => 'appNode01',
+  cell         => 'CELL_01',
+  dmgr_profile => 'PROFILE_APP_001',
+  profile_base => '/opt/IBM/WebSphere/AppServer/profiles',
+  user         => 'webadmin',
+  require      => Websphere::Profile::Appserver['PROFILE_APP_001'],
+}
+```
+
+__Server scoped variable__
+
+```puppet
+# Example of a server scoped variable
+# NOTE: This will cause a FAILURE during the first Puppet run because the
+# cluster member has not yet been created on the DMGR.
+websphere_variable { 'AppServer01Logs':
+  ensure       => 'present',
+  variable     => 'LOG_ROOT',
+  value        => '/opt/log/websphere/appserverlogs',
+  scope        => 'server',
+  server       => 'AppServer01',
+  node         => 'appNode01',
+  cell         => 'CELL_01',
+  dmgr_profile => 'PROFILE_APP_001',
+  profile_base => $profile_base,
+  user         => $user,
+  require      => Websphere::Profile::Appserver['PROFILE_APP_001'],
+}
+```
+
+In the example above, we manage a _server_ scoped variable for the
+`AppServer01` server.  The `AppServer01` server was created as part of the
+`websphere::cluster::member` defined type.
+
+A caveat here is that server-scoped variables _cannot_ be managed until/unless
+a corresponding cluster member exists on the DMGR. Some solutions to this are
+being thought about, but that's the current reality.
+
+Optionally, these variables can be declared on the DMGR.  This will enable you
+to set _relationships_ between the cluster member and the variable resource.
+However, this sacrifices some of the dynamic nature of the module.
+
+#### 10. JVM Logs
+
+This module provides a `websphere_jvm_log` type that can be used to manage
+JVM logging properties, such as log rotation criteria.
+
+```puppet
+websphere_jvm_log { "AppNode01":
+  profile             => 'PROFILE_APP_001',
+  profile_base        => '/opt/IBM/WebSphere/AppServer/profiles',
+  cell                => 'CELL_01',
+  scope               => 'node',
+  node                => 'appNode01',
+  server              => 'AppServer01',
+  out_filename        => '/tmp/SystemOut.log',
+  out_rollover_type   => 'BOTH',
+  out_rollover_size   => '7',
+  out_maxnum          => '200',
+  out_start_hour      => '13',
+  out_rollover_period => '24',
+  err_filename        => '/tmp/SystemErr.log',
+  err_rollover_type   => 'BOTH',
+  err_rollover_size   => '7',
+  err_maxnum          => '3',
+  err_start_hour      => '13',
+  err_rollover_period => '24',
+  require             => Websphere::Profile::Appserver['PROFILE_APP_001'],
+}
+```
+
+In the example above, we want to manage the JVM logs for the `appNode01` node.
+
+We want to rotate the "out" log based on time and size.  We specify that via
+the `_rollover_type` parameter for each. We want to rotate every 7MB, which
+we specify via the `_rollover_size` parameter.  We want to keep a maximum of
+200 historical logs for the SystemOut, and only 3 for the SystemErr.  We want
+the time-based log rotation to occur at "1300" hours (1PM), and rotate every
+24 hours.
+
+#### Others
+
+TODO: Add more examples here.
 
 See the [examples](examples/) directory for now.
 
