@@ -2,6 +2,14 @@ require 'pathname'
 
 Puppet::Type.newtype(:websphere_jdbc_datasource) do
 
+  autorequire(:user) do
+    self[:user] unless self[:user].to_s.nil?
+  end
+
+  autorequire(:websphere_jdbc_provider) do
+    self[:jdbc_provider] unless self[:jdbc_provider].to_s.nil?
+  end
+
   ensurable do
     desc "Manage the existence of a datasource"
 

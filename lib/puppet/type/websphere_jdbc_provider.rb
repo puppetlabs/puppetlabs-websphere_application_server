@@ -8,6 +8,10 @@ Puppet::Type.newtype(:websphere_jdbc_provider) do
     The current provider does _not_ manage parameters post-creation.
   EOT
 
+  autorequire(:user) do
+    self[:user] unless self[:user].to_s.nil?
+  end
+
   ensurable do
     desc <<-EOT
       Valid values: `present`, `absent`
