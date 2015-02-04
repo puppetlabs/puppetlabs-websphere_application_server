@@ -1,9 +1,9 @@
 # Manages DMGR profiles in a WebSphere cell
 define websphere::profile::dmgr (
   $instance_base,
-  $profile_base,
   $cell,
   $node_name,
+  $profile_base            = undef,
   $profile_name            = $title,
   $user                    = $::websphere::user,
   $group                   = $::websphere::group,
@@ -35,12 +35,18 @@ define websphere::profile::dmgr (
   }
   validate_absolute_path($_template_path)
 
+  if ! $profile_base {
+    $_profile_base = "${instance_base}/profiles"
+  } else {
+    $_profile_base = $profile_base
+  }
+
   if $manage_sdk and !$sdk_name {
     fail('sdk_name is required when manage_sdk is true. E.g. 1.71_64')
   }
 
   if ! $options {
-    $_options = "-create -profileName ${profile_name} -profilePath ${profile_base}/${profile_name} -templatePath ${_template_path} -nodeName ${node_name} -hostName ${::fqdn} -cellName ${cell}"
+    $_options = "-create -profileName ${profile_name} -profilePath ${_profile_base}/${profile_name} -templatePath ${_template_path} -nodeName ${node_name} -hostName ${::fqdn} -cellName ${cell}"
   } else {
     $_options = $options
   }
@@ -50,8 +56,8 @@ define websphere::profile::dmgr (
   # IBM's crap almost always exits 0, so we test that the profile directory
   # at leasts exists before saying success.
   exec { "was_profile_dmgr_${title}":
-    command => "${instance_base}/bin/manageprofiles.sh ${_options} && test -d ${profile_base}/${profile_name}",
-    creates => "${profile_base}/${profile_name}",
+    command => "${instance_base}/bin/manageprofiles.sh ${_options} && test -d ${_profile_base}/${profile_name}",
+    creates => "${_profile_base}/${profile_name}",
     path    => '/bin:/usr/bin:/sbin:/usr/sbin',
     user    => $user,
     timeout => 900,
@@ -61,7 +67,7 @@ define websphere::profile::dmgr (
   websphere::ownership { $title:
     user    => $user,
     group   => $group,
-    path    => "${profile_base}/${profile_name}",
+    path    => "${_profile_base}/${profile_name}",
     require => Exec["was_profile_dmgr_${title}"],
   }
 
@@ -100,7 +106,7 @@ define websphere::profile::dmgr (
   if $manage_service {
     websphere::profile::service { $title:
       type         => 'dmgr',
-      profile_base => $profile_base,
+      profile_base => $_profile_base,
       user         => $user,
       require      => Exec["was_profile_dmgr_${title}"],
       subscribe    => Websphere::Ownership[$title],
@@ -110,7 +116,7 @@ define websphere::profile::dmgr (
   validate_bool($collect_nodes)
   if $collect_nodes {
     Websphere_node <<| cell == $cell |>> {
-      profile_base => $profile_base,
+      profile_base => $_profile_base,
       dmgr_profile => $title,
       user         => $user,
       #require profile service
@@ -120,7 +126,7 @@ define websphere::profile::dmgr (
   validate_bool($collect_web_servers)
   if $collect_web_servers {
     Websphere_web_server <<| cell == $cell |>> {
-      profile_base => $profile_base,
+      profile_base => $_profile_base,
       dmgr_profile => $title,
       user         => $user,
     }
@@ -129,7 +135,7 @@ define websphere::profile::dmgr (
   validate_bool($collect_jvm_logs)
   if $collect_jvm_logs {
     Websphere_jvm_log <<| cell == $cell |>> {
-      profile_base => $profile_base,
+      profile_base => $_profile_base,
       profile      => $title,
       user         => $user,
     }
