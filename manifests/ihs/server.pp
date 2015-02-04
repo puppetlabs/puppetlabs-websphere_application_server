@@ -75,6 +75,10 @@ define websphere::ihs::server (
     path   => $_docroot,
   }
 
+  file { "${plugin_base}/config/${instance}":
+    ensure => 'directory',
+  }
+
   ## Use exec to create the log_dir.  It might be several levels deep.  In that
   ## case, a regular 'file' resource would be tricky.
   exec { "${title}_log_dir":
