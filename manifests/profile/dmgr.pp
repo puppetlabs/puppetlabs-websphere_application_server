@@ -19,7 +19,6 @@ define websphere::profile::dmgr (
 ) {
 
   validate_absolute_path($instance_base)
-  validate_absolute_path($profile_base)
   validate_string($cell)
   validate_string($node_name)
   validate_string($profile_name)
@@ -40,6 +39,7 @@ define websphere::profile::dmgr (
   } else {
     $_profile_base = $profile_base
   }
+  validate_absolute_path($_profile_base)
 
   if $manage_sdk and !$sdk_name {
     fail('sdk_name is required when manage_sdk is true. E.g. 1.71_64')
