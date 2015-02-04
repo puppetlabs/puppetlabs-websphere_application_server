@@ -107,6 +107,11 @@ Puppet::Type.newtype(:websphere_variable) do
       if value.nil? and self[:dmgr_profile].nil?
         raise ArgumentError, 'profile is required'
       end
+
+      if value.nil? and self[:dmgr_profile]
+        defaultto self[:dmgr_profile]
+      end
+
       unless value =~ /^[-0-9A-Za-z._]+$/
         raise ArgumentError, "Invalid profile #{value}"
       end
