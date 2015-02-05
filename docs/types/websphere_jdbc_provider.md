@@ -1,4 +1,4 @@
-### Type: `websphere_jdbc_datasource`
+### Type: `websphere_jdbc_provider`
 
 Manages the existence of a WebSphere JDBC provider.
 
