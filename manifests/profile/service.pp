@@ -30,7 +30,7 @@ define websphere::profile::service (
     if $type == 'dmgr' {
       $_status = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/serverStatus.sh dmgr -username '${wsadmin_user}' -password '${wsadmin_pass}' -profileName ${profile_name} | grep -q STARTED'"
     } else {
-      $_status = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/serverStatus.sh nodeagent -profileName ${profile_name} | grep -q STARTED'"
+      $_status = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/serverStatus.sh nodeagent -profileName ${profile_name} -username '${wsadmin_user}' -password '${wsadmin_pass}'| grep -q STARTED'"
     }
   } else {
     $_status = $status
@@ -40,7 +40,7 @@ define websphere::profile::service (
     if $type == 'dmgr' {
       $_start = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/startManager.sh -profileName ${profile_name} -username \"${wsadmin_user}\" -password \"${wsadmin_pass}\"'"
     } else {
-      $_start = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/startNode.sh'"
+      $_start = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/startNode.sh -username \"${wsadmin_user}\" -password \"${wsadmin_pass}\"'"
     }
   } else {
     $_start = $start
@@ -50,7 +50,7 @@ define websphere::profile::service (
     if $type == 'dmgr' {
       $_stop = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/stopManager.sh -profileName ${profile_name} -username \"${wsadmin_user}\" -password \"${wsadmin_pass}\"'"
     } else {
-      $_stop = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/stopNode.sh'"
+      $_stop = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/stopNode.sh -username \"${wsadmin_user}\" -password \"${wsadmin_pass}\"'"
     }
   } else {
     $_stop = $stop
