@@ -112,6 +112,8 @@ define websphere::profile::dmgr (
       type         => 'dmgr',
       profile_base => $_profile_base,
       user         => $user,
+      wsadmin_user => $wsadmin_user,
+      wsadmin_pass => $wsadmin_pass,
       require      => Exec["was_profile_dmgr_${title}"],
       subscribe    => Websphere::Ownership[$title],
     }
