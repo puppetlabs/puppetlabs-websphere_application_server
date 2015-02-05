@@ -15,6 +15,8 @@ define websphere::profile::appserver (
   $manage_service    = true,
   $manage_sdk        = false,
   $sdk_name          = undef,
+  $wsadmin_user      = undef,
+  $wsadmin_pass      = undef,
 ) {
 
   validate_absolute_path($instance_base)
@@ -101,6 +103,8 @@ define websphere::profile::appserver (
         command_default     => $sdk_name,
         node                => 'nodeagent',
         user                => $user,
+        wsadmin_user        => $wsadmin_user,
+        wsadmin_pass        => $wsadmin_pass,
         require             => Websphere_federate["${title}_${dmgr_host}_${cell}"],
         notify              => Websphere::Profile::Service[$title],
       }

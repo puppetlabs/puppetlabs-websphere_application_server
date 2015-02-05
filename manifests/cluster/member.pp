@@ -126,6 +126,8 @@ define websphere::cluster::member (
       profile_base => $profile_base,
       cell         => $cell,
       node         => $node,
+      wsadmin_user => $wsadmin_user,
+      wsadmin_pass => $wsadmin_pass,
       subscribe    => Websphere_cluster_member[$cluster_member_name],
     }
   }

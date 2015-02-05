@@ -16,6 +16,8 @@ define websphere::profile::dmgr (
   $collect_nodes           = true,
   $collect_web_servers     = true,
   $collect_jvm_logs        = true,
+  $wsadmin_user            = undef,
+  $wsadmin_pass            = undef,
 ) {
 
   validate_absolute_path($instance_base)
@@ -97,6 +99,8 @@ define websphere::profile::dmgr (
       new_profile_default => $sdk_name,
       command_default     => $sdk_name,
       user                => $user,
+      wsadmin_user        => $wsadmin_user,
+      wsadmin_pass        => $wsadmin_pass,
       require             => Exec["was_profile_dmgr_${title}"],
       subscribe           => Websphere::Ownership[$title],
     }
@@ -119,7 +123,8 @@ define websphere::profile::dmgr (
       profile_base => $_profile_base,
       dmgr_profile => $title,
       user         => $user,
-      #require profile service
+      wsadmin_user => $wsadmin_user,
+      wsadmin_pass => $wsadmin_pass,
     }
   }
 
@@ -129,6 +134,8 @@ define websphere::profile::dmgr (
       profile_base => $_profile_base,
       dmgr_profile => $title,
       user         => $user,
+      wsadmin_user => $wsadmin_user,
+      wsadmin_pass => $wsadmin_pass,
     }
   }
 
@@ -138,6 +145,8 @@ define websphere::profile::dmgr (
       profile_base => $_profile_base,
       profile      => $title,
       user         => $user,
+      wsadmin_user => $wsadmin_user,
+      wsadmin_pass => $wsadmin_pass,
     }
   }
 

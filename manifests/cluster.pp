@@ -4,13 +4,14 @@
 # exported/collected resources.
 #
 define websphere::cluster (
-  $profile_base,
   $dmgr_profile,
   $cell,
   $ensure           = 'present',
   $user             = $::websphere::user,
   $cluster          = $title,
   $collect_members  = true,
+  $wsadmin_user     = undef,
+  $wsadmin_pass     = undef,
 ) {
 
   websphere_cluster { $cluster:
@@ -18,6 +19,8 @@ define websphere::cluster (
     profile_base => $profile_base,
     dmgr_profile => $dmgr_profile,
     user         => $user,
+    wsadmin_user => $wsadmin_user,
+    wsadmin_pass => $wsadmin_pass,
   }
 
   if $collect_members {
@@ -27,6 +30,8 @@ define websphere::cluster (
       profile_base => $profile_base,
       dmgr_profile => $dmgr_profile,
       user         => $user,
+      wsadmin_user => $wsadmin_user,
+      wsadmin_pass => $wsadmin_pass,
       require      => Websphere_cluster[$name],
     }
 
@@ -35,6 +40,8 @@ define websphere::cluster (
       profile_base => $profile_base,
       dmgr_profile => $dmgr_profile,
       user         => $user,
+      wsadmin_user => $wsadmin_user,
+      wsadmin_pass => $wsadmin_pass,
       require      => Websphere_cluster[$name],
     }
 
@@ -42,6 +49,8 @@ define websphere::cluster (
       profile_base => $profile_base,
       dmgr_profile => $dmgr_profile,
       user         => $user,
+      wsadmin_user => $wsadmin_user,
+      wsadmin_pass => $wsadmin_pass,
     }
   }
 }
