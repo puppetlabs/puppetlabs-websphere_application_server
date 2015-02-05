@@ -5,6 +5,7 @@
 #
 define websphere::cluster (
   $dmgr_profile,
+  $profile_base,
   $cell,
   $ensure           = 'present',
   $user             = $::websphere::user,
