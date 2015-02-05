@@ -89,6 +89,8 @@ define websphere::profile::appserver (
       profile      => $profile_name,
       dmgr_host    => $dmgr_host,
       user         => $user,
+      username     => $wsadmin_user,
+      password     => $wsadmin_pass,
       before       => Websphere::Profile::Service[$title],
     }
 
