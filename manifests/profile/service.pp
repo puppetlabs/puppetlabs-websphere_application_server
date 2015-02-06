@@ -63,11 +63,12 @@ define websphere::profile::service (
   }
 
   service { "was_profile_${title}":
-    ensure  => $ensure,
-    start   => $_start,
-    stop    => $_stop,
-    status  => $_status,
-    restart => $_restart,
+    ensure   => $ensure,
+    start    => $_start,
+    stop     => $_stop,
+    status   => $_status,
+    restart  => $_restart,
+    provider => 'base',
   }
 
 }

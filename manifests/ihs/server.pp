@@ -100,6 +100,7 @@ define websphere::ihs::server (
     restart   => "su - ${user} -c \"${target}/bin/apachectl -k restart -f '${_httpd_config}'\"",
     hasstatus => false,
     pattern   => "${target}/bin/httpd -f ${_httpd_config}",
+    provider  => 'base',
     subscribe => File["${title}_httpd_config"],
   }
 
