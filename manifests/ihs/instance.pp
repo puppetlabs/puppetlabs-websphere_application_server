@@ -136,18 +136,21 @@ define websphere::ihs::instance (
     }
   }
 
-  ## IHS Admin service
-  ## Fucking thing requires 'lynx' to check the status and hardcodes a port.
-  ## For now, let's look at the process table for a matching process.
+  # IHS Admin service
+  # Requires 'lynx' to check the status and hardcodes a port.
+  # For now, let's look at the process table for a matching process.
+  # The 'src' service provider for AIX yields unexpected results when providing
+  # custom commands for start/stop/restart/status.  For now, we'll just use
+  # 'base' as the provider until an upstream answer is retrieved.
   service { "ihs_admin_${title}":
     ensure    => 'running',
     start     => "su - ${user} -c '${_target}/bin/adminctl start'",
     stop      => "su - ${user} -c '${_target}/bin/adminctl stop'",
     restart   => "su - ${user} -c '${_target}/bin/adminctl restart'",
     #status   => "su - ${user} -c '${_target}/bin/adminctl status'",
-    status    => "su - ${user} -c 'ps -f | grep \"${target}/bin/httpd -f ${target}/conf/admin.conf\"'",
     pattern   => "${target}/bin/httpd -f ${target}/conf/admin.conf",
     hasstatus => false,
+    provider  => 'base',
     subscribe => File["ihs_adminconf_${title}"],
   }
 
