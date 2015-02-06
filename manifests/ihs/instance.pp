@@ -145,6 +145,7 @@ define websphere::ihs::instance (
     stop      => "su - ${user} -c '${_target}/bin/adminctl stop'",
     restart   => "su - ${user} -c '${_target}/bin/adminctl restart'",
     #status   => "su - ${user} -c '${_target}/bin/adminctl status'",
+    status    => "su - ${user} -c 'ps -f | grep \"${target}/bin/httpd -f ${target}/conf/admin.conf\"'",
     pattern   => "${target}/bin/httpd -f ${target}/conf/admin.conf",
     hasstatus => false,
     subscribe => File["ihs_adminconf_${title}"],
