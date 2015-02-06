@@ -99,7 +99,7 @@ define websphere::ihs::server (
     stop      => "su - ${user} -c \"${target}/bin/apachectl -k stop -f '${_httpd_config}'\"",
     restart   => "su - ${user} -c \"${target}/bin/apachectl -k restart -f '${_httpd_config}'\"",
     hasstatus => false,
-    pattern   => "${target}/bin/httpd -f ${_httpd_config}",
+    pattern   => "${target}/bin/httpd.*-f ${_httpd_config}",
     provider  => 'base',
     subscribe => File["${title}_httpd_config"],
   }
