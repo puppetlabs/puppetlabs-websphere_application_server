@@ -34,7 +34,7 @@ define websphere::ownership (
 
   exec { "Ownership_${title}":
     command => "chown -R ${user}:${group} ${path}",
-    unless  => "find ${path} \\( ! -user ${user} \\) -o \\( ! -group ${group} \\) | wc -l | grep -qE '^0'",
+    unless  => "find ${path} ! -type l \\( ! -user ${user} -type f \\) -o \\( ! -group ${group} \\) -a \( -type f \)| wc -l | grep -qE '^0'",
     path    => [ '/bin', '/usr/bin' ],
   }
 }
