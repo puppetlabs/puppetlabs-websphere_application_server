@@ -80,7 +80,7 @@ EOT
     result = wsadmin(:command => cmd, :user => resource[:user])
     self.debug "Result: #{result}"
 
-    if result =~ /^"#{resource[:name]}\(#{scope('path')}\|/
+    if result =~ /^"?#{resource[:name]}\(#{scope('path')}\|/
       self.debug "Found match for #{resource[:name]}"
       return true
     end
