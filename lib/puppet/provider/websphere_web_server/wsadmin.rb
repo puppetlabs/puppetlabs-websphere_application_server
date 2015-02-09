@@ -31,7 +31,7 @@ Puppet::Type.type(:websphere_web_server).provide(:wsadmin, :parent => Puppet::Pr
     result = wsadmin(:command => cmd, :user => resource[:user])
     self.debug result
 
-    unless result =~ /^#{resource[:name]}\(.*\|server\.xml\)$/
+    unless result =~ /^'?#{resource[:name]}\(.*\|server\.xml\)$/
       self.debug "#{resource[:name]} doesn't seem to exist."
       return false
     end
