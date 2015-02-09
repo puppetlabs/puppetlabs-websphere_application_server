@@ -80,7 +80,9 @@ define websphere::profile::appserver (
   $_cell = downcase($cell)
 
   ## Collect the federation resource
-  File <<| title == "dmgr_${_dmgr_host}_${_cell}" |>>
+  File <<| title == "dmgr_${_dmgr_host}_${_cell}"|>> {
+    path => "${profile_base}/${profile_name}/dmgr_${_dmgr_host}_${_cell}",
+  }
 
   if $manage_federation {
     websphere_federate { "${title}_${dmgr_host}_${cell}":
