@@ -82,7 +82,7 @@ define websphere::profile::dmgr (
   $soap_port  = getvar("websphere_${_profile}_${_cell}_${_node}_soap")
 
   if $soap_port {
-    @@file { "dmgr_${_dmgr_host}_${_cell}":
+    @@file { "/etc/dmgr_${_dmgr_host}_${_cell}":
       ensure  => 'file',
       content => template("${module_name}/dmgr_federation.yaml.erb"),
     }
