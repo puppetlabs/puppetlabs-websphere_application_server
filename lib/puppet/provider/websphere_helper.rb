@@ -106,7 +106,8 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
       raise Puppet::Error, "Websphere_cluster_member[#{resource[:name]}]: "\
         + "Unable to open server.xml at #{server_xml}. Make sure the profile "\
         + "exists, the node has been federated, a corresponding app instance "\
-        + "exists, and the names are correct."
+        + "exists, and the names are correct. Hint:  The DMGR may need to "\
+        + "Puppet."
       return false
     end
     xml_data = File.open(server_xml)
