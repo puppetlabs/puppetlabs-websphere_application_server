@@ -99,12 +99,6 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
     desc <<-EOT
     The name of the JDBC Provider to use.
     EOT
-    validate do |value|
-      # Underscores appear to be a no-go
-      unless value =~ /^[-0-9A-Za-z]+$/
-        fail("Invalid jdbc_provider: #{value}")
-      end
-    end
   end
 
   newparam(:jndi_name) do
