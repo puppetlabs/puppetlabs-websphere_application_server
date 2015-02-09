@@ -3,7 +3,7 @@
 # This is not the most robust of things - but it's hard to predict what
 # messages or exit code (if any) the IBM tools will provide.
 #
-# This will search for a 'data' file in Puppet's $vardir that contains
+# This will search for a 'data' file in the profile dir that contains
 # information for federating a node (port, hostname).  It's assumed that this
 # file will be exported by the dmgr host and collected on the server
 # that's declaring this resource.
@@ -23,7 +23,7 @@ Puppet::Type.type(:websphere_federate).provide(:wsadmin) do
 
   def create
 
-    data_file = Puppet[:vardir] + '/dmgr_' + resource[:dmgr_host].downcase + '_' + resource[:cell].downcase + '.yaml'
+    data_file = "#{resource[:profile_base]}/#{resource[:profile]}"  + '/dmgr_' + resource[:dmgr_host].downcase + '_' + resource[:cell].downcase + '.yaml'
 
     if File.exists?(data_file)
       yaml = YAML.load_file(data_file)
