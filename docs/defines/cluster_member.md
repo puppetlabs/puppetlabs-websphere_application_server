@@ -29,6 +29,7 @@ This wraps the `websphere_cluster_member` and
   threadpool_webcontainer_max_size => '75',
   runas_user                       => 'webadmin',
   runas_group                      => 'webadmins',
+  dmgr_host                        => 'dmgr01.example.com',
 }
 ```
 
@@ -169,6 +170,13 @@ be found.  The IBM default is `/opt/IBM/WebSphere/AppServer/profiles`
 ##### `user`
 
 Optional. The user to run the `wsadmin` command as. Defaults to "root"
+
+##### `dmgr_host`
+
+The DMGR host to add this cluster member to.
+
+This is required if you're exporting the cluster member for a DMGR to
+collect.  Otherwise, it's optional.
 
 ##### `wsadmin_user`
 

@@ -13,6 +13,7 @@ define websphere::cluster (
   $collect_members  = true,
   $wsadmin_user     = undef,
   $wsadmin_pass     = undef,
+  $dmgr_host        = $::fqdn,
 ) {
 
   websphere_cluster { $cluster:
@@ -27,7 +28,7 @@ define websphere::cluster (
   if $collect_members {
 
     ## Collect any or our exported defined types
-    Websphere::Cluster::Member <<| cell == $cell |>> {
+    Websphere::Cluster::Member <<| cell == $cell and dmgr_host == $dmgr_host |>> {
       profile_base => $profile_base,
       dmgr_profile => $dmgr_profile,
       user         => $user,
@@ -37,7 +38,7 @@ define websphere::cluster (
     }
 
     ## Collect any of the individual resources
-    Websphere_cluster_member <<| cell == $cell |>> {
+    Websphere_cluster_member <<| cell == $cell and dmgr_host == $dmgr_host |>> {
       profile_base => $profile_base,
       dmgr_profile => $dmgr_profile,
       user         => $user,
@@ -46,7 +47,7 @@ define websphere::cluster (
       require      => Websphere_cluster[$name],
     }
 
-    Websphere_cluster_member_service <<| cell == $cell |>> {
+    Websphere_cluster_member_service <<| cell == $cell and dmgr_host == $dmgr_host |>> {
       profile_base => $profile_base,
       dmgr_profile => $dmgr_profile,
       user         => $user,

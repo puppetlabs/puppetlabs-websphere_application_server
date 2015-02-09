@@ -150,6 +150,13 @@ Examples: `PROFILE_DMGR_01` or `dmgrProfile01`
 Required. The full path to the profiles directory where the `dmgr_profile` can
 be found.  The IBM default is `/opt/IBM/WebSphere/AppServer/profiles`
 
+##### `dmgr_host`
+
+The DMGR host to add this cluster member to.
+
+This is required if you're exporting the cluster member for a DMGR to
+collect.  Otherwise, it's optional.
+
 ##### `user`
 
 Optional. The user to run the `wsadmin` command as. Defaults to "root"

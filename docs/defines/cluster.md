@@ -73,6 +73,11 @@ The use case for this is so application servers, for instance, can export
 themselves as a cluster member in a certain cell.  When this defined type is
 evaluated by a DMGR, those can automatically be collected.
 
+##### `dmgr_host`
+
+The resolvable hostname for the DMGR that this cluster exists on.  This is
+needed for collecting cluster members.  Defaults to `$::fqdn`
+
 ##### `user`
 
 The user that should run the `wsadmin` commands.  Defaults to

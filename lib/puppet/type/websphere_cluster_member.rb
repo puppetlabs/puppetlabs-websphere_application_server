@@ -211,6 +211,15 @@ Puppet::Type.newtype(:websphere_cluster_member) do
     end
   end
 
+  newparam(:dmgr_host) do
+    desc <<-EOT
+      The DMGR host to add this cluster member to.
+
+      This is required if you're exporting the cluster member for a DMGR to
+      collect.  Otherwise, it's optional.
+    EOT
+  end
+
   newparam(:wsadmin_user) do
     desc "Specifies the username for using 'wsadmin'"
   end

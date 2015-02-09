@@ -110,6 +110,15 @@ Puppet::Type.newtype(:websphere_cluster_member_service) do
     end
   end
 
+  newparam(:dmgr_host) do
+    desc <<-EOT
+      The DMGR host to add this cluster member service to.
+
+      This is required if you're exporting the cluster member for a DMGR to
+      collect.  Otherwise, it's optional.
+    EOT
+  end
+
   newparam(:user) do
     defaultto 'root'
     desc "Specifies the user to execute wsadmin as"

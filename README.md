@@ -762,9 +762,14 @@ Once it's up, you should be able to reach the DMGR console at something like:
 
 ## Limitations
 
-Tested with IBM WebSphere 8.5 on CentOS 6 x86_64.
+Tested and developed with __IBM WebSphere Application Server Network
+Deployment.__
 
-Tested and developed with IBM WebSphere Application Server Network Deployment.
+Tested and developed with IBM WebSphere __8.5.0.x__ and __8.5.5.x__ on:
+
+* CentOS 6 x86_64
+* RHEL 6 x86_64
+* AIX 6.1, 7.1
 
 ## Dependencies
 

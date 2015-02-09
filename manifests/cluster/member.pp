@@ -41,6 +41,7 @@ define websphere::cluster::member (
   $wsadmin_pass                     = undef,
   $weight                           = undef,
   $manage_service                   = true,
+  $dmgr_host                        = undef,
 ) {
 
   if !$dmgr_profile or !$cluster {
@@ -111,6 +112,7 @@ define websphere::cluster::member (
     wsadmin_user                     => $wsadmin_user,
     wsadmin_pass                     => $wsadmin_pass,
     weight                           => $weight,
+    dmgr_host                        => $dmgr_host,
   }
 
   if $manage_service {
@@ -128,6 +130,7 @@ define websphere::cluster::member (
       node         => $node,
       wsadmin_user => $wsadmin_user,
       wsadmin_pass => $wsadmin_pass,
+      dmgr_host    => $dmgr_host,
       subscribe    => Websphere_cluster_member[$cluster_member_name],
     }
   }
