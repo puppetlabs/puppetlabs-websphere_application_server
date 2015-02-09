@@ -47,6 +47,12 @@ Puppet::Type.newtype(:websphere_jdbc_provider) do
 
   newparam(:name) do
     isnamevar
+    # Underscores appear to be a no-go
+    validate do | value|
+      unless value =~ /^[-0-9A-Za-z]+$/
+        fail("Invalid name: #{value}")
+      end
+    end
     desc <<-EOT
       The name of the provider. Defaults to the resource title.
     EOT

@@ -99,6 +99,14 @@ Puppet::Type.newtype(:websphere_federate) do
     desc "User to run the federation commands with"
   end
 
+  newparam(:wsadmin_user) do
+    desc "Specifies the username for using 'wsadmin'"
+  end
+
+  newparam(:wsadmin_pass) do
+    desc "Specifies the password for using 'wsadmin'"
+  end
+
   autorequire(:file) do
     "dmgr_" + self[:dmgr_host].to_s.downcase + "_" + self[:cell].to_s.downcase
   end
