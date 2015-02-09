@@ -146,6 +146,15 @@ Puppet::Type.newtype(:websphere_node) do
     end
   end
 
+  newparam(:dmgr_host) do
+    desc <<-EOT
+      The DMGR host to add this node to.
+
+      This is required if you're exporting the node for a DMGR to
+      collect.  Otherwise, it's optional.
+    EOT
+  end
+
   newparam(:wsadmin_user) do
     desc "The username for wsadmin authentication"
   end

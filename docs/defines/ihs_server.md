@@ -314,3 +314,10 @@ DMGR to this server once the web server instance is created on the DMGR.
 Defaults to `true`
 
 This is only relevant if `export_server` is `true`
+
+##### `dmgr_host`
+
+The DMGR host to add this server to.
+
+This is required if you're exporting the server for a DMGR to
+collect.  Otherwise, it's optional.

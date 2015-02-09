@@ -41,6 +41,7 @@ define websphere::ihs::server (
   $admin_password          = 'password',
   $plugin_base             = '/opt/IBM/Plugins',
   $propagate_keyring       = true,
+  $dmgr_host               = undef,
 ) {
 
   Exec {
@@ -115,18 +116,19 @@ define websphere::ihs::server (
 
     validate_re($_node_os, '(aix|linux)', "Invalid node_os: #{_node_os}. Must be 'aix' or 'linux'")
 
-    if !$cell or !$node {
-      fail('cell and node is required when export_node is true')
+    if !$cell or !$node or !$dmgr_host {
+      fail('cell, node, and dmgr_host is required when export_node is true')
     }
 
     validate_bool($propagate_keyring)
 
 
     @@websphere_node { $title:
-      node     => $node,
-      os       => $_node_os,
-      hostname => $node_hostname,
-      cell     => $cell,
+      node      => $node,
+      os        => $_node_os,
+      hostname  => $node_hostname,
+      cell      => $cell,
+      dmgr_host => $dmgr_host,
     }
 
     if $export_server {
@@ -142,6 +144,7 @@ define websphere::ihs::server (
         error_log         => $error_log,
         web_port          => $listen_port,
         propagate_keyring => $propagate_keyring,
+        dmgr_host         => $dmgr_host,
         require           => Websphere_node[$title],
       }
     }

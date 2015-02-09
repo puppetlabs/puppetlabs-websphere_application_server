@@ -26,10 +26,11 @@ An IHS server can export a resource:
 
 ```puppet
 @@websphere_node { $::fqdn:
-  node     => $::fqdn,
-  os       => 'linux',
-  hostname => $::fqdn,
-  cell     => 'CELL_01',
+  node      => $::fqdn,
+  os        => 'linux',
+  hostname  => $::fqdn,
+  cell      => 'CELL_01',
+  dmgr_host => 'dmgr01.example.com',
 ```
 
 A DMGR can collect it and append its profile information to it:
@@ -91,6 +92,13 @@ Examples: `PROFILE_DMGR_01` or `dmgrProfile01`
 
 Required. The full path to the profiles directory where the `dmgr_profile` can
 be found.  The IBM default is `/opt/IBM/WebSphere/AppServer/profiles`
+
+##### `dmgr_host`
+
+The DMGR host to add this node to.
+
+This is required if you're exporting the node for a DMGR to
+collect.  Otherwise, it's optional.
 
 ##### `user`
 

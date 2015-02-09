@@ -164,6 +164,15 @@ Puppet::Type.newtype(:websphere_web_server) do
     end
   end
 
+  newparam(:dmgr_host) do
+    desc <<-EOT
+      The DMGR host to add this web server to.
+
+      This is required if you're exporting the web server for a DMGR to
+      collect.  Otherwise, it's optional.
+    EOT
+  end
+
   newparam(:wsadmin_user) do
     desc "The username for wsadmin authentication"
   end

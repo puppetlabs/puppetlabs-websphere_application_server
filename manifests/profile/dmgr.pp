@@ -121,7 +121,7 @@ define websphere::profile::dmgr (
 
   validate_bool($collect_nodes)
   if $collect_nodes {
-    Websphere_node <<| cell == $cell |>> {
+    Websphere_node <<| cell == $cell and dmgr_host == $dmgr_host |>> {
       profile_base => $_profile_base,
       dmgr_profile => $title,
       user         => $user,
@@ -132,7 +132,7 @@ define websphere::profile::dmgr (
 
   validate_bool($collect_web_servers)
   if $collect_web_servers {
-    Websphere_web_server <<| cell == $cell |>> {
+    Websphere_web_server <<| cell == $cell and dmgr_host == $dmgr_host |>> {
       profile_base => $_profile_base,
       dmgr_profile => $title,
       user         => $user,
@@ -143,7 +143,7 @@ define websphere::profile::dmgr (
 
   validate_bool($collect_jvm_logs)
   if $collect_jvm_logs {
-    Websphere_jvm_log <<| cell == $cell |>> {
+    Websphere_jvm_log <<| cell == $cell and dmgr_host == $dmgr_host |>> {
       profile_base => $_profile_base,
       profile      => $title,
       user         => $user,
