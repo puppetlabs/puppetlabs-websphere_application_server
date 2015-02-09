@@ -40,11 +40,6 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
 
   newparam(:name) do
     isnamevar
-    validate do | value|
-      unless value =~ /^[-0-9A-Za-z]+$/
-        fail("Invalid name: #{value}")
-      end
-    end
     desc "The name of the datasource"
   end
 
