@@ -167,7 +167,7 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
 
   def restart_server
     if resource[:server]
-cmd <<-EOT
+cmd = <<-EOT
 ns = AdminControl.queryNames('WebSphere:*,type=Server,name=#{resource[:server]}').splitlines()
 server = ns[0]
 AdminControl.invoke(server, 'restart')
