@@ -82,7 +82,8 @@ define websphere::profile::appserver (
   notify { "Collecting dmgr_${_dmgr_host}_${_cell} to ${profile_base}/${profile_name}/": }
   ## Collect the federation resource
   File <<| title == "/etc/dmgr_${_dmgr_host}_${_cell}" |>> {
-    path => "${profile_base}/${profile_name}/dmgr_${_dmgr_host}_${_cell}.yaml",
+    path   => "${profile_base}/${profile_name}/dmgr_${_dmgr_host}_${_cell}.yaml",
+    before => Websphere_federate["${title}_${dmgr_host}_${cell}"],
   }
 
   if $manage_federation {
