@@ -123,7 +123,7 @@ define websphere::ihs::server (
     validate_bool($propagate_keyring)
 
 
-    @@websphere_node { $title:
+    @@websphere_node { "ihs_${title}_${node_hostname}":
       node      => $node,
       os        => $_node_os,
       hostname  => $node_hostname,
@@ -132,7 +132,8 @@ define websphere::ihs::server (
     }
 
     if $export_server {
-      @@websphere_web_server { $title:
+      @@websphere_web_server { "web_${title}_${node_hostname}":
+        name              => $title,
         node              => $node,
         cell              => $cell,
         admin_user        => $admin_username,
@@ -145,7 +146,7 @@ define websphere::ihs::server (
         web_port          => $listen_port,
         propagate_keyring => $propagate_keyring,
         dmgr_host         => $dmgr_host,
-        require           => Websphere_node[$title],
+        require           => Websphere_node["ihs_${title}_${node_hostname}"],
       }
     }
 
