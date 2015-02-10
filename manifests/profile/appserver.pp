@@ -109,8 +109,8 @@ define websphere::profile::appserver (
         command_default     => $sdk_name,
         node                => 'nodeagent',
         user                => $user,
-        wsadmin_user        => $wsadmin_user,
-        wsadmin_pass        => $wsadmin_pass,
+        username            => $wsadmin_user,
+        password            => $wsadmin_pass,
         require             => Websphere_federate["${title}_${dmgr_host}_${cell}"],
         notify              => Websphere::Profile::Service[$title],
       }
