@@ -79,7 +79,6 @@ define websphere::profile::appserver (
   $_dmgr_host = downcase($dmgr_host)
   $_cell = downcase($cell)
 
-  notify { "Collecting dmgr_${_dmgr_host}_${_cell} to ${profile_base}/${profile_name}/": }
   ## Collect the federation resource
   File <<| title == "/etc/dmgr_${_dmgr_host}_${_cell}" |>> {
     path   => "${profile_base}/${profile_name}/dmgr_${_dmgr_host}_${_cell}.yaml",
