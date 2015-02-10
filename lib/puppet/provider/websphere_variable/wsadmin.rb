@@ -189,14 +189,7 @@ END
   def flush
     self.debug 'Initiating node synchronization'
     sync_node
-    case resource[:scope]
-    when 'server'
-      self.debug 'Initiating server restart'
-      restart_server
-    when 'node'
-      self.debug 'Initiating node restart'
-      restart_node
-    end
+    restart_server
   end
 
 end

@@ -199,11 +199,7 @@ END
 
   def flush
     sync_node
-    if resource[:scope] == 'node'
-      restart_node
-    elsif resource[:scope] == 'server'
-      restart_server
-    end
+    restart_server
   end
 
 end

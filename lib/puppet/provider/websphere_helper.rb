@@ -167,17 +167,16 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
 
   def restart_server
     if resource[:server]
-      cmd = "\"AdminControl.invoke(AdminControl.queryNames('WebSphere:*,"
-      cmd += "type=Server,node=%s,process=%s' % ('#{resource[:node]}', "
-      cmd += "'#{resource[:server]}')), 'restart')\""
-
+cmd <<-EOT
+ns = AdminControl.queryNames('WebSphere:*,type=Server,name=#{resource[:server]}').splitlines()
+server = ns[0]
+AdminControl.invoke(server, 'restart')
+EOT
       self.debug "Restarting #{resource[:node]} #{resource[:server]} with #{cmd}"
-      result = wsadmin(:command => cmd, :user => resource[:user], :failonfail => false)
+      result = wsadmin(:file => cmd, :user => resource[:user], :failonfail => false)
       self.debug "Result: #{result}"
     end
-  end
 
-  def restart_node
     if resource[:node]
       cmd = "\"na = AdminControl.queryNames('type=NodeAgent,node=#{resource[:node]},*');"
       cmd += "AdminControl.invoke(na,'restart','true true')\""
