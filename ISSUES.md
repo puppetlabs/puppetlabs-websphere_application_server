@@ -84,3 +84,17 @@ to complete this task assuming the App server has successfully started.  What
 we need:  can we just not export the cluster_member stuff from the app server
 until it’s federated?  We’d likely need a fact that determines if the node has
 been federated.  This would add another Puppet run.
+
+## FixPack installation
+
+IBM doesn't really have traditional package management.  They have their own
+tool and ship their own package formats that have a `repository.config` file
+included with various metadata.
+
+When installing a FixPack, we have to look through the process table and kill
+any processes that are running out of our target directory.  This is due to
+Installation Manager - it doesn't take care of that for you and will refuse to
+install if a service is running out of its target directory.
+
+Since we kill the processes, they don't get restarted automatically.  We should
+come up with a solution for that.
