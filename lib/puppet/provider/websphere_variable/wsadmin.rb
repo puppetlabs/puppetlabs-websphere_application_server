@@ -189,7 +189,8 @@ END
   def flush
     self.debug 'Initiating node synchronization'
     sync_node
-    restart_server
+    ## TODO: Need to handle this somehow.
+    #restart_server
   end
 
 end
