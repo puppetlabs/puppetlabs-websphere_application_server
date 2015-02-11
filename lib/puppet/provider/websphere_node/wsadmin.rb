@@ -19,7 +19,7 @@ Puppet::Type.type(:websphere_node).provide(:wsadmin, :parent => Puppet::Provider
     result = wsadmin(:command => cmd, :user => resource[:user])
     self.debug result
 
-    unless result =~ /^#{resource[:node]}$/
+    unless result =~ /^('|")?#{resource[:node]}$/
       return false
     end
     return true
