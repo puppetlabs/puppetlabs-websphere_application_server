@@ -27,6 +27,8 @@
 7. [Authors](#authors)
 8. [Contributors](#contributors)
 
+[![Test Status](https://img.shields.io/travis/joshbeard/puppet-websphere/master.svg?style=flat-square&label=validation%2Flint)](https://travis-ci.org/joshbeard/puppet-websphere)
+
 ## Overview
 
 Manages the deployment and configuration of IBM WebSphere Cells.
