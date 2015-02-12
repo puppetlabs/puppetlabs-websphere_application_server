@@ -1,6 +1,6 @@
 {
   "name": "joshbeard-websphere",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "joshbeard",
   "summary": "Manages IBM WebSphere Application Server",
   "license": "Apache-2.0",
