@@ -4,9 +4,9 @@
   "author": "joshbeard",
   "summary": "Manages IBM WebSphere Application Server",
   "license": "Apache-2.0",
-  "source": "https://github.com/joshbeard/puppetlabs-websphere",
-  "project_page": "https://github.com/joshbeard/puppetlabs-websphere",
-  "issues_url": "https://github.com/joshbeard/puppetlabs-websphere/issues",
+  "source": "https://github.com/joshbeard/puppet-websphere",
+  "project_page": "https://github.com/joshbeard/puppet-websphere",
+  "issues_url": "https://github.com/joshbeard/puppet-websphere/issues",
   "operatingsystem_support": [
     {
       "operatingsystem": "RedHat",
