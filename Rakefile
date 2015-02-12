@@ -25,11 +25,9 @@ PuppetLint::RakeTask.new :lint do |config|
   # Format string for puppet-lint's output (see the puppet-lint help output
   # for details
   config.log_format = "%{path}:%{linenumber}:%{check}:%{KIND}:%{message}"
-
-  # Compare module layout relative to the module root
-  # config.relative = true
 end
 
+PuppetLint.configuration.relative = true
 PuppetSyntax.exclude_paths = lint_exclude
 
 
