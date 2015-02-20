@@ -1,5 +1,9 @@
 # IBM WebSphere
 
+__GitHub:__ [https://github.com/joshbeard/puppet-websphere](https://github.com/joshbeard/puppet-websphere)
+
+__Puppet Forge:__ [https://forge.puppetlabs.com/joshbeard/websphere](https://forge.puppetlabs.com/joshbeard/websphere)
+
 #### Table of Contents
 
 1. [Overview](#overview)
