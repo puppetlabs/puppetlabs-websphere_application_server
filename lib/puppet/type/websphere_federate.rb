@@ -25,27 +25,7 @@ Puppet::Type.newtype(:websphere_federate) do
   the federation.
   EOT
 
-  ensurable do
-    desc <<-EOT
-      Valid values: `present`, `absent`
-
-      Defaults to `present`.  Specifies whether this application server profile
-      should be federated or not.  Executes `addNode.sh` and `removeNode.sh`
-      under the hood.
-    EOT
-
-    defaultto(:present)
-
-    newvalue(:present) do
-      provider.create
-    end
-
-    newvalue(:absent) do
-      provider.destroy
-    end
-
-    aliasvalue(:federated, :present)
-  end
+  ensurable
 
   newparam(:cell) do
     desc "Required. The name of the DMGR cell to federate with"

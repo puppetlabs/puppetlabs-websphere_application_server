@@ -80,28 +80,28 @@ define websphere::ihs::instance (
     }
   }
 
-  websphere::package { "IHS ${title}":
-    ensure     => 'present',
-    package    => $package,
-    version    => $version,
-    target     => $_target,
-    response   => $response_file,
-    options    => $install_options,
-    repository => $repository,
-    chown      => true,
-    imcl_path  => $imcl_path,
-    user       => $user,
-    group      => $group,
+  ibm_pkg { "IHS ${title}":
+    ensure           => 'present',
+    package          => $package,
+    version          => $version,
+    target           => $_target,
+    response         => $response_file,
+    options          => $install_options,
+    repository       => $repository,
+    manage_ownership => true,
+    imcl_path        => $imcl_path,
+    package_owner    => $user,
+    package_group    => $group,
   }
 
   file { $_webroot:
     ensure  => 'directory',
-    require => Websphere::Package["IHS ${title}"],
+    require => Ibm_pkg["IHS ${title}"],
   }
 
   file { $_log_dir:
     ensure  => 'directory',
-    require => Websphere::Package["IHS ${title}"],
+    require => Ibm_pkg["IHS ${title}"],
   }
 
   ## Config file for the admin HTTP instance.
@@ -111,7 +111,7 @@ define websphere::ihs::instance (
     content => template($_adminconf_template),
     mode    => '0775',
     replace => $replace_config,
-    require => Websphere::Package["IHS ${title}"],
+    require => Ibm_pkg["IHS ${title}"],
   }
 
   # Total hack here. We want to configure an admin password during the run
@@ -132,7 +132,7 @@ define websphere::ihs::instance (
       unless  => "/bin/sh -c '${htpasswd_verify}'",
       path    => '/bin:/usr/bin:/sbin:/usr/sbin',
       user    => $user,
-      require => Websphere::Package["IHS ${title}"],
+      require => Ibm_pkg["IHS ${title}"],
     }
   }
 

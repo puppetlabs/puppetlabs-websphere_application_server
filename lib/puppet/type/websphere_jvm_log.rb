@@ -5,7 +5,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
   @doc = "This manages a WebSphere JVM Logging Properties"
 
   autorequire(:user) do
-    self[:user] unless self[:user].to_s.nil?
+    self[:user]
   end
 
   newparam(:scope) do
@@ -70,7 +70,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
         raise ArgumentError, "Invalid out_maxnum: #{value}. Must be digit 1-200."
       end
 
-      unless value.to_i < 201 or value.to_i > 0
+      unless value.to_i < 201 and value.to_i > 0
         raise ArgumentError, "out_maxnum must be 1-200"
       end
     end
@@ -83,7 +83,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
         raise ArgumentError, "Invalid err_maxnum: #{value}. Must be digit 1-200."
       end
 
-      unless value.to_i < 201 or value.to_i > 0
+      unless value.to_i < 201 and value.to_i > 0
         raise ArgumentError, "err_maxnum must be 1-200"
       end
     end
@@ -96,7 +96,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
         raise ArgumentError, "Invalid out_start_hour: #{value}. Must be digit 1-24."
       end
 
-      unless value.to_i < 25 or value.to_i > 0
+      unless value.to_i < 25 and value.to_i > 0
         raise ArgumentError, "out_start_hour must be 1-24"
       end
     end
@@ -109,7 +109,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
         raise ArgumentError, "Invalid err_start_hour: #{value}. Must be digit 1-24."
       end
 
-      unless value.to_i < 25 or value.to_i > 0
+      unless value.to_i < 25 and value.to_i > 0
         raise ArgumentError, "err_start_hour must be 1-24"
       end
     end
@@ -122,7 +122,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
         raise ArgumentError, "Invalid out_rollover_period: #{value}. Must be digit 1-24."
       end
 
-      unless value.to_i < 25 or value.to_i > 0
+      unless value.to_i < 25 and value.to_i > 0
         raise ArgumentError, "out_rollover_period must be 1-24"
       end
     end
@@ -135,7 +135,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
         raise ArgumentError, "Invalid err_rollover_period: #{value}. Must be digit 1-24."
       end
 
-      unless value.to_i < 25 or value.to_i > 0
+      unless value.to_i < 25 and value.to_i > 0
         raise ArgumentError, "err_rollover_period must be 1-24"
       end
     end

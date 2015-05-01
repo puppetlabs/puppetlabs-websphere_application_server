@@ -6,7 +6,7 @@
 # exactly the same way.  You might break up your profiles for specific
 # deployed "stacks" of a WebSphere cell.
 #
-class profile::websphere::appserver {
+class profile::websphere::appserver { # lint:ignore:autoloader_layout
   $base_dir         = '/opt/IBM'
   $instance_name    = 'WebSphere85'
   $instance_base    = "${base_dir}/${instance_name}/AppServer"
@@ -146,7 +146,7 @@ class profile::websphere::appserver {
       Websphere::Profile::Appserver['PROFILE_APP_001'],
     ],
   }
-  websphere_jvm_log { "AppNode01":
+  websphere_jvm_log { 'AppNode01':
     profile             => 'PROFILE_APP_001',
     profile_base        => $profile_base,
     cell                => 'CELL_01',
@@ -168,7 +168,7 @@ class profile::websphere::appserver {
     require             => Websphere::Profile::Appserver['PROFILE_APP_001'],
   }
 
-  websphere_jvm_log { "AppServer01":
+  websphere_jvm_log { 'AppServer01':
     profile             => 'PROFILE_APP_001',
     profile_base        => $profile_base,
     cell                => 'CELL_01',

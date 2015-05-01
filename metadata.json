@@ -1,12 +1,12 @@
 {
-  "name": "joshbeard-websphere",
+  "name": "puppetlabs-websphere",
   "version": "0.1.1",
-  "author": "joshbeard",
+  "author": "puppetlabs",
   "summary": "Manages IBM WebSphere Application Server",
   "license": "Apache-2.0",
-  "source": "https://github.com/joshbeard/puppet-websphere",
-  "project_page": "https://github.com/joshbeard/puppet-websphere",
-  "issues_url": "https://github.com/joshbeard/puppet-websphere/issues",
+  "source": "https://github.com/puppetlabs/puppetlabs-websphere",
+  "project_page": "https://github.com/puppetlabs/puppetlabs-websphere",
+  "issues_url": "https://github.com/puppetlabs/puppetlabs-websphere/issues",
   "operatingsystem_support": [
     {
       "operatingsystem": "RedHat",
@@ -43,10 +43,10 @@
   "dependencies": [
     {
       "name": "puppetlabs/concat",
-      "version_requirement": ">= 1.0.0 <2.0.0"
+      "version_requirement": ">= 1.1.0 <2.0.0"
     },
     { "name": "puppetlabs/stdlib",
-      "version_requirement":">= 3.2.0 <5.0.0"
+      "version_requirement":">= 4.6.0 <5.0.0"
     },
     { "name": "joshbeard/ibm_installation_manager",
       "version_requirement": ">= 0.1.0"

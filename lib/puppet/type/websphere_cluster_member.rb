@@ -4,6 +4,7 @@
 #   - Sane defaults for parameters
 #   - Other things?
 #   - Better documentation for params?
+#   - Maybe make this take a hash instead of a million parameters?
 #
 Puppet::Type.newtype(:websphere_cluster_member) do
 
@@ -14,27 +15,14 @@ Puppet::Type.newtype(:websphere_cluster_member) do
   end
 
   autorequire(:user) do
-    self[:runas_user] if self[:runas_user]
+    self[:runas_user]
   end
 
   autorequire(:group) do
-    self[:runas_group] if self[:runas_group]
+    self[:runas_group]
   end
 
-  ensurable do
-    desc "Manage the presence a cluster member"
-
-    defaultto(:present)
-
-    newvalue(:present) do
-      provider.create
-    end
-
-    newvalue(:absent) do
-      provider.destroy
-    end
-
-  end
+  ensurable
 
   newparam(:cell) do
     desc "The name of the cell the cluster member belongs to"

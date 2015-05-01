@@ -4,26 +4,7 @@ Puppet::Type.newtype(:websphere_app_server) do
 
   @doc = "Manage the existence of WebSphere Application Servers"
 
-  ensurable do
-
-    desc <<-EOT
-      Valid values: `present`, `absent`
-
-      Defaults to `true`.  Specifies whether this application server should
-      exist or not.
-    EOT
-
-    defaultto(:present)
-
-    newvalue(:present) do
-      provider.create
-    end
-
-    newvalue(:absent) do
-      provider.destroy
-    end
-
-  end
+  ensurable
 
   newparam(:dmgr_profile) do
     desc <<-EOT
@@ -43,10 +24,7 @@ Puppet::Type.newtype(:websphere_app_server) do
   newparam(:name) do
     isnamevar
 
-    desc <<-EOT
-      The name of the application server to create or manage.  Defaults to the
-      resource title.
-    EOT
+    desc 'The name of the application server to create or manage.'
 
     validate do |value|
       unless value =~ /^[-0-9A-Za-z._]+$/

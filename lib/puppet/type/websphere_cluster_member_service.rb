@@ -79,10 +79,7 @@ Puppet::Type.newtype(:websphere_cluster_member_service) do
   end
 
   newparam(:name) do
-    desc <<-EOT
-      The name of the cluster member that this service belongs to.  Defaults to
-      the resource title.
-    EOT
+    desc 'The name of the cluster member that this service belongs to.'
     isnamevar
     validate do |value|
       unless value =~ /^[-0-9A-Za-z._]+$/

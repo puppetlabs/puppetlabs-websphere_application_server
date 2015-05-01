@@ -24,7 +24,7 @@ Puppet::Type.newtype(:websphere_cluster) do
   newparam(:name) do
     isnamevar
 
-    desc "The name of the cluster to manage. Defaults to the resource title."
+    desc "The name of the cluster to manage."
 
     validate do |value|
       unless value =~ /^[-0-9A-Za-z._]+$/
