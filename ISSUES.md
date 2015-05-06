@@ -103,3 +103,7 @@ restarted on the next Puppet runs, however.
 
 We should come up with a solution for that.
 
+## Compatibility
+
+This does not work with ruby 1.8. Not sure at this point what the scope of that
+fix would be.

@@ -4,24 +4,7 @@ Puppet::Type.newtype(:websphere_variable) do
 
   @doc = "This manages a WebSphere environment variable"
 
-  ensurable do
-    desc <<-EOT
-    Valid values: `present`, `absent`
-
-    Defaults to `true`.  Specifies whether this variable should exist or not.
-    EOT
-
-    defaultto(:present)
-
-    newvalue(:present) do
-      provider.create
-    end
-
-    newvalue(:absent) do
-      provider.destroy
-    end
-
-  end
+  ensurable
 
   newparam(:variable) do
     desc <<-EOT

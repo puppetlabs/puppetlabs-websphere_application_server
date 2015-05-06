@@ -21,12 +21,7 @@ define websphere::profile::dmgr (
 ) {
 
   validate_absolute_path($instance_base)
-  validate_string($cell)
-  validate_string($node_name)
-  validate_string($profile_name)
-  validate_string($user)
-  validate_string($group)
-  validate_string($dmgr_host)
+  validate_string($cell, $node_name, $profile_name, $user, $group, $dmgr_host)
 
   ## Template path. Figure out a sane default if not explicitly specified.
   if ! $template_path {

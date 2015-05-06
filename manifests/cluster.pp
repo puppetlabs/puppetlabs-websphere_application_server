@@ -1,7 +1,3 @@
-# Defined type for managing WebSphere clusters in a cell.
-# This is really just a wrapper around our native types, but it makes it a
-# little easier and abstracted to the end user, especially considering the
-# exported/collected resources.
 #
 define websphere::cluster (
   $dmgr_profile,

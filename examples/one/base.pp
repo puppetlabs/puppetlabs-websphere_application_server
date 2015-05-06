@@ -2,7 +2,7 @@
 # The "base" websphere profile.  The basic, common stuff for all WebSphere
 # related nodes should go here.
 #
-class profile::websphere::base {
+class profile::websphere::base { # lint:ignore:autoloader_layout
 
   # Declare the IBM Installation Manager class. Make sure IM is installed.
   # We want to install it to /opt/IBM/InstallationManager

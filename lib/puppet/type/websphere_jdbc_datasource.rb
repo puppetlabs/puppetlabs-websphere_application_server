@@ -3,27 +3,14 @@ require 'pathname'
 Puppet::Type.newtype(:websphere_jdbc_datasource) do
 
   autorequire(:user) do
-    self[:user] unless self[:user].to_s.nil?
+    self[:user]
   end
 
   autorequire(:websphere_jdbc_provider) do
-    self[:jdbc_provider] unless self[:jdbc_provider].to_s.nil?
+    self[:jdbc_provider]
   end
 
-  ensurable do
-    desc "Manage the existence of a datasource"
-
-    defaultto(:present)
-
-    newvalue(:present) do
-      provider.create
-    end
-
-    newvalue(:absent) do
-      provider.destroy
-    end
-
-  end
+  ensurable
 
   newparam(:dmgr_profile) do
     desc <<-EOT
@@ -92,7 +79,11 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
     The scope to manage the JDBC Datasource at.
     Valid values are: node, server, cell, or cluster
     EOT
-    # node, server, cell, cluster
+    validate do |value|
+      unless value =~ /^(node|server|cell|cluster)$/
+        raise ArgumentError 'scope must be one of "node", "server", "cell", or "cluster"'
+      end
+    end
   end
 
   newparam(:jdbc_provider) do
@@ -123,6 +114,8 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
 
     Boolean: true or false
     EOT
+    newvalue :true
+    newvalue :false
     defaultto true
   end
 

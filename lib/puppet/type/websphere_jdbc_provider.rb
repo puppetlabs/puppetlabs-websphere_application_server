@@ -9,28 +9,10 @@ Puppet::Type.newtype(:websphere_jdbc_provider) do
   EOT
 
   autorequire(:user) do
-    self[:user] unless self[:user].to_s.nil?
+    self[:user]
   end
 
-  ensurable do
-    desc <<-EOT
-      Valid values: `present`, `absent`
-
-      Defaults to `present`.  Specifies whether this provider should exist or
-      not.
-    EOT
-
-    defaultto(:present)
-
-    newvalue(:present) do
-      provider.create
-    end
-
-    newvalue(:absent) do
-      provider.destroy
-    end
-
-  end
+  ensurable
 
   newparam(:dmgr_profile) do
     desc <<-EOT
@@ -47,9 +29,7 @@ Puppet::Type.newtype(:websphere_jdbc_provider) do
 
   newparam(:name) do
     isnamevar
-    desc <<-EOT
-      The name of the provider. Defaults to the resource title.
-    EOT
+    desc 'The name of the provider.'
   end
 
   newparam(:profile_base) do
@@ -109,7 +89,11 @@ Puppet::Type.newtype(:websphere_jdbc_provider) do
     The scope to manage the JDBC Provider at.
     Valid values are: node, server, cell, or cluster
     EOT
-    # node, server, cell, cluster
+    validate do |value|
+      unless value =~ /^(node|server|cell|cluster)$/
+        raise ArgumentError 'scope must be one of "node", "server", "cell", or "cluster"'
+      end
+    end
   end
 
   newparam(:dbtype) do

@@ -1,4 +1,4 @@
-class profile::websphere::ihs {
+class profile::websphere::ihs { # lint:ignore:autoloader_layout
   ## Simply install the 'base' websphere
   $ibm_base_dir     = '/opt/IBM'
   $instance_name    = 'HTTPServer85'
@@ -22,20 +22,19 @@ class profile::websphere::ihs {
 
   ## WAS IHS instance
   websphere::ihs::instance { 'HTTPServer85':
-    target           => $instance_base,
-    package          => $package_name,
-    version          => $package_version,
-    repository       => "${ihs_installer}/repository.config",
-    #    plugin_root => "${ibm_base_dir}/Plugins85",
-    install_options  => '-properties user.ihs.httpPort=80',
-    user             => 'webadmins',
-    group            => 'webadmins',
-    manage_user      => false,
-    manage_group     => false,
-    log_dir          => '/opt/log/websphere/httpserver',
-    admin_username   => 'httpadmin',
-    admin_password   => 'password',
-    webroot          => '/opt/web',
+    target          => $instance_base,
+    package         => $package_name,
+    version         => $package_version,
+    repository      => "${ihs_installer}/repository.config",
+    install_options => '-properties user.ihs.httpPort=80',
+    user            => 'webadmins',
+    group           => 'webadmins',
+    manage_user     => false,
+    manage_group    => false,
+    log_dir         => '/opt/log/websphere/httpserver',
+    admin_username  => 'httpadmin',
+    admin_password  => 'password',
+    webroot         => '/opt/web',
   }
 
   websphere::package { 'Plugins':
@@ -49,7 +48,7 @@ class profile::websphere::ihs {
 
   websphere::ihs::server { 'test':
     target      => "${ibm_base_dir}/HTTPServer85",
-    log_dir     => "/opt/log/websphere/httpserver",
+    log_dir     => '/opt/log/websphere/httpserver',
     plugin_dir  => "${ibm_base_dir}/Plugins85/config/test",
     plugin_base => "${ibm_base_dir}/Plugins85",
     cell        => $dmgr_cell,

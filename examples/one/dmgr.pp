@@ -4,7 +4,7 @@
 #
 # Create a profile for the DMGR and a cluster.
 #
-class profile::websphere::dmgr {
+class profile::websphere::dmgr { # lint:ignore:autoloader_layout
   $base_dir         = '/opt/IBM'
   $instance_name    = 'WebSphere85'
   $instance_base    = "${base_dir}/${instance_name}/AppServer"

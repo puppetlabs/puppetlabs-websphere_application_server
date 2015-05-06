@@ -6,25 +6,7 @@ Puppet::Type.newtype(:websphere_web_server) do
     Manages WebSphere web servers in a cell.
   EOT
 
-  ensurable do
-    desc <<-EOT
-      Valid values: `present`, `absent`
-
-      Defaults to `true`.  Specifies whether this web server should exist or
-      not.
-    EOT
-
-    defaultto(:present)
-
-    newvalue(:present) do
-      provider.create
-    end
-
-    newvalue(:absent) do
-      provider.destroy
-    end
-
-  end
+  ensurable
 
   newparam(:dmgr_profile) do
     desc <<-EOT

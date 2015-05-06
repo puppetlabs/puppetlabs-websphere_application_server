@@ -40,22 +40,7 @@ Puppet::Type.newtype(:websphere_node) do
     }
   EOT
 
-  ensurable do
-    desc <<-EOT
-      Defaults to `true`.  Specifies whether this node should exist or not.
-    EOT
-
-    defaultto(:present)
-
-    newvalue(:present) do
-      provider.create
-    end
-
-    newvalue(:absent) do
-      provider.destroy
-    end
-
-  end
+  ensurable
 
   newparam(:dmgr_profile) do
     desc "The dmgr profile that this node should be managed under
