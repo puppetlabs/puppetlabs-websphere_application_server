@@ -26,11 +26,17 @@ define websphere::profile::service (
   if $status  { validate_string($status) }
   if $restart { validate_string($restart) }
 
+  if $wsadmin_user and $wsadmin_pass {
+    $_auth_string = "-username \"${wsadmin_user}\" -password \"${wsadmin_pass}\" "
+  } else {
+    $_auth_string = undef
+  }
+
   if ! $status {
     if $type == 'dmgr' {
-      $_status = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/serverStatus.sh dmgr -username '${wsadmin_user}' -password '${wsadmin_pass}' -profileName ${profile_name} | grep -q STARTED'"
+      $_status = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/serverStatus.sh dmgr ${_auth_string} -profileName ${profile_name} | grep -q STARTED'"
     } else {
-      $_status = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/serverStatus.sh nodeagent -profileName ${profile_name} -username '${wsadmin_user}' -password '${wsadmin_pass}'| grep -q STARTED'"
+      $_status = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/serverStatus.sh nodeagent -profileName ${profile_name} ${_auth_string}| grep -q STARTED'"
     }
   } else {
     $_status = $status
@@ -38,9 +44,9 @@ define websphere::profile::service (
 
   if ! $start {
     if $type == 'dmgr' {
-      $_start = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/startManager.sh -profileName ${profile_name} -username \"${wsadmin_user}\" -password \"${wsadmin_pass}\"'"
+      $_start = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/startManager.sh -profileName ${profile_name} ${_auth_string}'"
     } else {
-      $_start = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/startNode.sh -username \"${wsadmin_user}\" -password \"${wsadmin_pass}\"'"
+      $_start = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/startNode.sh ${_auth_string}'"
     }
   } else {
     $_start = $start
@@ -48,9 +54,9 @@ define websphere::profile::service (
 
   if ! $stop {
     if $type == 'dmgr' {
-      $_stop = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/stopManager.sh -profileName ${profile_name} -username \"${wsadmin_user}\" -password \"${wsadmin_pass}\"'"
+      $_stop = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/stopManager.sh -profileName ${profile_name} ${_auth_string}'"
     } else {
-      $_stop = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/stopNode.sh -username \"${wsadmin_user}\" -password \"${wsadmin_pass}\"'"
+      $_stop = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/stopNode.sh ${_auth_string}'"
     }
   } else {
     $_stop = $stop
