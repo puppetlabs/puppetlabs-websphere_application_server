@@ -76,11 +76,11 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
       end
 
       result
-    rescue
+    rescue Exception => e
       if failonfail == true
-        raise Puppet::Error, "Command failed for #{resource[:name]}: #{result}"
+        raise Puppet::Error, "Command failed for #{resource[:name]}: #{e}"
       else
-        result
+        Puppet.warning("Command failed for #{resource[:name]}: #{e}")
       end
     ensure
       if args[:file]
