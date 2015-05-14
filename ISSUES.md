@@ -107,3 +107,16 @@ We should come up with a solution for that.
 
 This does not work with ruby 1.8. Not sure at this point what the scope of that
 fix would be.
+
+## Miscellany
+
+The fact on the DMGR (at least) seems to be added and removed on every run:
+
+```
+Notice: /File[/var/opt/lib/pe-puppet/facts.d/websphere.yaml]/ensure: removed
+Info: Retrieving plugin
+Info: Loading facts
+Info: Caching catalog for dmgr-centos
+Info: Applying configuration version '1431535942'
+Notice: /Stage[main]/Websphere/Concat[/var/opt/lib/pe-puppet/facts.d/websphere.yaml]/File[/var/opt/lib/pe-puppet/facts.d/websphere.yaml]/ensure: defined content as '{md5}ac194d927a3def8d9ecbd43fefed5d9a'
+```

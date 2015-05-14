@@ -87,6 +87,8 @@ define websphere::profile::appserver (
 
   if $manage_federation {
     websphere_federate { "${title}_${dmgr_host}_${cell}":
+      ensure       => present,
+      node         => $node_name,
       cell         => $cell,
       profile_base => $profile_base,
       profile      => $profile_name,
