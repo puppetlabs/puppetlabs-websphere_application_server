@@ -9,7 +9,7 @@ Puppet::Type.type(:websphere_variable).provide(:wsadmin, :parent => Puppet::Prov
 
   def scope(what)
     # (cells/CELL_01/nodes/appNode01/servers/AppServer01
-    file = resource[:profile_base] + '/' + resource[:profile]
+    file = resource[:profile_base] + '/' + resource[:dmgr_profile]
     case resource[:scope]
     when 'cell'
       query = '/Cell:' + "#{resource[:cell]}"
