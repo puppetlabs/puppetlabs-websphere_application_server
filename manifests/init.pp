@@ -1,5 +1,5 @@
 #
-class websphere (
+class websphere_application_server (
   $base_dir     = '/opt/IBM',
   $user         = 'websphere',
   $group        = 'websphere',

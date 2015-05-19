@@ -6,8 +6,8 @@
 ## for server status and uses lynx.  We'll probably end up checking the
 ## damn PID file ourselves.
 ##
-define websphere::ihs::instance (
-  $base_dir                  = $::websphere::base_dir,
+define websphere_application_server::ihs::instance (
+  $base_dir                  = $::websphere_application_server::base_dir,
   $target                    = undef,
   $package                   = undef,
   $version                   = undef,
@@ -17,9 +17,9 @@ define websphere::ihs::instance (
   $imcl_path                 = undef,
   $manage_user               = true,
   $manage_group              = true,
-  $user                      = $::websphere::user,
-  $group                     = $::websphere::group,
-  $user_home                 = $::websphere::user_home,
+  $user                      = $::websphere_application_server::user,
+  $group                     = $::websphere_application_server::group,
+  $user_home                 = $::websphere_application_server::user_home,
   $log_dir                   = undef,
   $webroot                   = undef,
   $admin_listen_port         = '8008',

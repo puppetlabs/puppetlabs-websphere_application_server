@@ -1,10 +1,10 @@
 #
-define websphere::cluster (
+define websphere_application_server::cluster (
   $dmgr_profile,
   $profile_base,
   $cell,
   $ensure           = 'present',
-  $user             = $::websphere::user,
+  $user             = $::websphere_application_server::user,
   $cluster          = $title,
   $collect_members  = true,
   $wsadmin_user     = undef,
@@ -24,7 +24,7 @@ define websphere::cluster (
   if $collect_members {
 
     ## Collect any or our exported defined types
-    Websphere::Cluster::Member <<| cell == $cell and dmgr_host == $dmgr_host |>> {
+    Websphere_application_server::Cluster::Member <<| cell == $cell and dmgr_host == $dmgr_host |>> {
       profile_base => $profile_base,
       dmgr_profile => $dmgr_profile,
       user         => $user,
