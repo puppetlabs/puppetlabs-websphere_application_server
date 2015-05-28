@@ -12,7 +12,9 @@ Puppet::Type.newtype(:websphere_jdbc_provider) do
     self[:user]
   end
 
-  ensurable
+  ensurable do
+    defaultto :present
+  end
 
   newparam(:dmgr_profile) do
     desc <<-EOT

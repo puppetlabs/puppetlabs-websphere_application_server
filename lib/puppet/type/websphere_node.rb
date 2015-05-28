@@ -40,7 +40,9 @@ Puppet::Type.newtype(:websphere_node) do
     }
   EOT
 
-  ensurable
+  ensurable do
+    defaultto :present
+  end
 
   newparam(:dmgr_profile) do
     desc "The dmgr profile that this node should be managed under

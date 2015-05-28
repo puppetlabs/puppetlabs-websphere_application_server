@@ -25,7 +25,9 @@ Puppet::Type.newtype(:websphere_federate) do
   the federation.
   EOT
 
-  ensurable
+  ensurable do
+    defaultto :present
+  end
 
   newparam(:cell) do
     desc "Required. The name of the DMGR cell to federate with"

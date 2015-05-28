@@ -4,7 +4,9 @@ Puppet::Type.newtype(:websphere_cluster) do
 
   @doc = "Manages the creation or removal of WebSphere server clusters."
 
-  ensurable
+  ensurable do
+    defaultto :present
+  end
 
   newparam(:dmgr_profile) do
     desc <<-EOT
