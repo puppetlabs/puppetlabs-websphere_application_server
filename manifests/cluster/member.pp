@@ -7,7 +7,7 @@
 # This is intended to be exported by an application server and collected by
 # a DMGR.  However, you *could* just declare it on a DMGR.
 #
-define websphere::cluster::member (
+define websphere_application_server::cluster::member (
   $profile_base,
   $cluster,
   $node,
@@ -15,9 +15,9 @@ define websphere::cluster::member (
   $dmgr_profile,
   $cluster_member_name              = $title,
   $ensure                           = 'present',
-  $user                             = $::websphere::user,
-  $runas_user                       = $::websphere::user,
-  $runas_group                      = $::websphere::group,
+  $user                             = $::websphere_application_server::user,
+  $runas_user                       = $::websphere_application_server::user,
+  $runas_group                      = $::websphere_application_server::group,
   $client_inactivity_timeout        = undef,
   $gen_unique_ports                 = undef,
   $jvm_maximum_heap_size            = undef,

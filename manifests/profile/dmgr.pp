@@ -1,12 +1,12 @@
 # Manages DMGR profiles in a WebSphere cell
-define websphere::profile::dmgr (
+define websphere_application_server::profile::dmgr (
   $instance_base,
   $cell,
   $node_name,
   $profile_base            = undef,
   $profile_name            = $title,
-  $user                    = $::websphere::user,
-  $group                   = $::websphere::group,
+  $user                    = $::websphere_application_server::user,
+  $group                   = $::websphere_application_server::group,
   $dmgr_host               = $::fqdn,
   $template_path           = undef,
   $options                 = undef,
@@ -61,7 +61,7 @@ define websphere::profile::dmgr (
   }
 
   # Ensure ownership of profile directory is correct
-  websphere::ownership { $title:
+  websphere_application_server::ownership { $title:
     user    => $user,
     group   => $group,
     path    => "${_profile_base}/${profile_name}",
@@ -96,20 +96,20 @@ define websphere::profile::dmgr (
       wsadmin_user        => $wsadmin_user,
       wsadmin_pass        => $wsadmin_pass,
       require             => Exec["was_profile_dmgr_${title}"],
-      subscribe           => Websphere::Ownership[$title],
+      subscribe           => Websphere_application_server::Ownership[$title],
     }
   }
 
   validate_bool($manage_service)
   if $manage_service {
-    websphere::profile::service { $title:
+    websphere_application_server::profile::service { $title:
       type         => 'dmgr',
       profile_base => $_profile_base,
       user         => $user,
       wsadmin_user => $wsadmin_user,
       wsadmin_pass => $wsadmin_pass,
       require      => Exec["was_profile_dmgr_${title}"],
-      subscribe    => Websphere::Ownership[$title],
+      subscribe    => Websphere_application_server::Ownership[$title],
     }
   }
 

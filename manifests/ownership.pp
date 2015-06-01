@@ -22,7 +22,7 @@
 #   - http://publib.boulder.ibm.com/infocenter/wsdoc400/v6r0/index.jsp?topic=/com.ibm.websphere.iseries.doc/info/ae/ae/tsec_isprfchg.html
 #   - ftp://ftp.software.ibm.com/software/iea/content/com.ibm.iea.infosphere_is/infosphere_is/8.5/configuration/ConfigWebSphere.pdf
 #
-define websphere::ownership (
+define websphere_application_server::ownership (
   $user,
   $group,
   $path = $title,

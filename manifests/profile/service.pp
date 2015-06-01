@@ -1,5 +1,5 @@
 # Manages the node service for WAS profiles
-define websphere::profile::service (
+define websphere_application_server::profile::service (
   $type,
   $profile_base,
   $profile_name = $title,

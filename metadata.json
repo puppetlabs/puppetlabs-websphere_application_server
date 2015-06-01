@@ -1,12 +1,12 @@
 {
-  "name": "puppetlabs-websphere",
+  "name": "puppetlabs-websphere_application_server",
   "version": "0.1.1",
   "author": "puppetlabs",
   "summary": "Manages IBM WebSphere Application Server",
-  "license": "Apache-2.0",
-  "source": "https://github.com/puppetlabs/puppetlabs-websphere",
-  "project_page": "https://github.com/puppetlabs/puppetlabs-websphere",
-  "issues_url": "https://github.com/puppetlabs/puppetlabs-websphere/issues",
+  "license": "TBD",
+  "source": "TBD",
+  "project_page": "TBD",
+  "issues_url": "https://tickets.puppetlabs.com/browse/MODULES",
   "operatingsystem_support": [
     {
       "operatingsystem": "RedHat",

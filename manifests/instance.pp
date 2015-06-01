@@ -1,5 +1,5 @@
 #
-define websphere::instance (
+define websphere_application_server::instance (
   $base_dir                  = undef,
   $target                    = undef,
   $package                   = undef,
@@ -11,8 +11,8 @@ define websphere::instance (
   $profile_base              = undef,
   $manage_user               = false,
   $manage_group              = false,
-  $user                      = $::websphere::user,
-  $group                     = $::websphere::group,
+  $user                      = $::websphere_application_server::user,
+  $group                     = $::websphere_application_server::group,
   $user_home                 = undef,
 ) {
 
@@ -31,7 +31,7 @@ define websphere::instance (
     if $base_dir {
       $_base_dir = $base_dir
     } else {
-      $_base_dir = $::websphere::base_dir
+      $_base_dir = $::websphere_application_server::base_dir
     }
     $_target = "${_base_dir}/${title}/AppServer"
   }
@@ -79,7 +79,7 @@ define websphere::instance (
   $instance_name = regsubst($title,'[^0-9a-zA-Z_]+','', 'G')
 
   # Optionally manage a user for this specific instance.  By default, we'll
-  # just let the base class (::websphere) handle this.  There may be some
+  # just let the base class (::websphere_application_server) handle this.  There may be some
   # cases where instances should have their own independent users/groups, and
   # this allows for that.
   if $manage_user {

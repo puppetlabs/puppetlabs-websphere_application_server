@@ -1,12 +1,12 @@
 # Manages WAS application servers
-define websphere::profile::appserver (
+define websphere_application_server::profile::appserver (
   $instance_base,
   $profile_base,
   $cell,
   $node_name,
   $profile_name      = $title,
-  $user              = $::websphere::user,
-  $group             = $::websphere::group,
+  $user              = $::websphere_application_server::user,
+  $group             = $::websphere_application_server::group,
   $dmgr_host         = undef,
   $dmgr_port         = undef,
   $template_path     = undef,
@@ -69,7 +69,7 @@ define websphere::profile::appserver (
   }
 
   # Ensure ownership of profile directory is correct
-  websphere::ownership { $title:
+  websphere_application_server::ownership { $title:
     user    => $user,
     group   => $group,
     path    => "${profile_base}/${profile_name}",
@@ -96,7 +96,7 @@ define websphere::profile::appserver (
       user         => $user,
       username     => $wsadmin_user,
       password     => $wsadmin_pass,
-      before       => Websphere::Profile::Service[$title],
+      before       => Websphere_application_server::Profile::Service[$title],
     }
 
     ## Modifying SDK requires federation
@@ -113,20 +113,20 @@ define websphere::profile::appserver (
         username            => $wsadmin_user,
         password            => $wsadmin_pass,
         require             => Websphere_federate["${title}_${dmgr_host}_${cell}"],
-        notify              => Websphere::Profile::Service[$title],
+        notify              => Websphere_application_server::Profile::Service[$title],
       }
     }
   }
 
   if $manage_service {
-    websphere::profile::service { $title:
+    websphere_application_server::profile::service { $title:
       type         => 'app',
       profile_base => $profile_base,
       user         => $user,
       wsadmin_user => $wsadmin_user,
       wsadmin_pass => $wsadmin_pass,
       require      => Exec["was_profile_app_${title}"],
-      subscribe    => Websphere::Ownership[$title],
+      subscribe    => Websphere_application_server::Ownership[$title],
     }
   }
 
