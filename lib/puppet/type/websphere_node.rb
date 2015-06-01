@@ -55,16 +55,6 @@ Puppet::Type.newtype(:websphere_node) do
     end
   end
 
-  newparam(:name) do
-    isnamevar
-    desc "The name of the resource."
-    validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid name #{value}")
-      end
-    end
-  end
-
   ## We could make this a property later, but we'll need to ask for more
   ## parameters to do so.
   newparam(:hostname) do
@@ -77,11 +67,11 @@ Puppet::Type.newtype(:websphere_node) do
   end
 
   newparam(:node) do
+    isnamevar
     desc <<-EOT
       The name of the node to manage.  Defaults to the `name` parameter value.
     EOT
 
-    defaultto { @resource[:name] }
     validate do |value|
       unless value =~ /^[-0-9A-Za-z._]+$/
         fail("Invalid node name: #{value}")

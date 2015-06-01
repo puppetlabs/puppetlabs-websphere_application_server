@@ -120,3 +120,10 @@ Info: Caching catalog for dmgr-centos
 Info: Applying configuration version '1431535942'
 Notice: /Stage[main]/Websphere/Concat[/var/opt/lib/pe-puppet/facts.d/websphere.yaml]/File[/var/opt/lib/pe-puppet/facts.d/websphere.yaml]/ensure: defined content as '{md5}ac194d927a3def8d9ecbd43fefed5d9a'
 ```
+
+## Types and providers
+
+Providers that don't use the namevar/probably need a rewriting
+* websphere_jvm_log
+* websphere_sdk
+* websphere_variable
