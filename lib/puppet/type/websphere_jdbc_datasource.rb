@@ -10,7 +10,9 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
     self[:jdbc_provider]
   end
 
-  ensurable
+  ensurable do
+    defaultto :present
+  end
 
   newparam(:dmgr_profile) do
     desc <<-EOT
