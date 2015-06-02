@@ -99,11 +99,11 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
       server_xml = resource[:profile_base] + '/' \
         + resource[:dmgr_profile] + '/config/cells/' \
         + resource[:cell] + '/nodes/' + resource[:node] \
-        + '/servers/' + resource[:name] + '/server.xml'
+        + '/servers/' + resource[:server] + '/server.xml'
     end
 
     unless File.exists?(server_xml)
-      raise Puppet::Error, "Websphere_cluster_member[#{resource[:name]}]: "\
+      raise Puppet::Error, "#{resource[:name]}: "\
         + "Unable to open server.xml at #{server_xml}. Make sure the profile "\
         + "exists, the node has been federated, a corresponding app instance "\
         + "exists, and the names are correct. Hint:  The DMGR may need to "\
