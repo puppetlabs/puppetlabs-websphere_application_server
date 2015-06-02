@@ -54,11 +54,9 @@ Puppet::Type.type(:websphere_cluster).provide(
     # Need some error handling here, I suppose. Unfortunately, wsadmin always
     # exits 0
     # We also might need to handle stopping the cluster first.
-    cmd = "\"AdminTask.deleteCluster('[-clusterName "
-    cmd += resource[:name]
-    cmd += "]')\""
+    cmd = "\"AdminTask.deleteCluster('[-clusterName #{resource[:name]}]')\""
 
-    self.debug "Deleting cluster via #{wascmd}#{cmd}"
+    self.debug "Deleting cluster via #{command(:wascmd)}#{cmd}"
 
     result = wsadmin(:command => cmd, :user => resource[:user])
 

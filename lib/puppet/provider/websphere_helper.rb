@@ -5,28 +5,7 @@ require 'rexml/document'
 require 'tempfile'
 
 class Puppet::Provider::Websphere_Helper < Puppet::Provider
-  ## Build the base 'wsadmin' command that we'll use to make changes.  This
-  ## command is derived from whatever the 'profile_base' is (since wsadmin is
-  ## profile-specific), the name of the profile, and credentials, if provided.
-  ## Can we use the 'commands' method for this?
-  def wascmd(file=nil)
-
-    wsadmin_cmd = resource[:profile_base] + '/' + resource[:dmgr_profile]
-    wsadmin_cmd += '/bin/wsadmin.sh -lang jython'
-
-    if resource[:wsadmin_user] && resource[:wsadmin_pass]
-      wsadmin_cmd += " -username '" + resource[:wsadmin_user] + "'"
-      wsadmin_cmd += " -password '" + resource[:wsadmin_pass] + "'"
-    end
-
-    if file
-      wsadmin_cmd += " -f #{file} "
-    else
-      wsadmin_cmd += " -c "
-    end
-
-    wsadmin_cmd
-  end
+  commands :wascmd => "#{resource[:profile_base]}/#{resource[:dmgr_profile]}/bin/wsadmin.sh"
 
   ## Method to make changes to the WAS configuration. Pass:
   ## :command => 'some jython stuff'
@@ -37,17 +16,28 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
   ##   using the '-f' argument.  This is for more complicated jython that
   ##   doesn't take kindly to being fed in on the command-line.
   def wsadmin(args={})
+    options = ['-lang jython']
+    if resource[:wsadmin_user] and resource[:wsadmin_pass]
+      options << "-username '#{resource[:wsadmin_user]}'"
+      options << "-password '#{resource[:wsadmin_pass]}'"
+    end
 
-    if args[:failonfail] == false
-      failonfail = false
+    if args[:file]
+      options << "-f #{args[:file]}"
     else
-      failonfail = true
+      options << "-c #{args[:command]}"
     end
 
     if args[:user]
       user = args[:user]
     else
       user = 'root'
+    end
+
+    if args[:failonfail]
+      failonfail = args[:failonfail]
+    else
+      failonfail = true
     end
 
     if args[:file]
@@ -57,27 +47,17 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
       cmdfile.chmod(0644)
       cmdfile.write(args[:file])
       cmdfile.rewind
-      modify = wascmd(cmdfile.path)
-    else
-      modify = wascmd + args[:command]
     end
 
-    result = nil
-
     begin
-      self.debug "Executing as user #{user}: #{modify}"
+      self.debug "Executing as user #{user}: #{command(:wascmd)} #{options.join(' ')}"
       Dir.chdir('/tmp') do
-        result = Puppet::Util::Execution.execute(
-          modify,
-          :failonfail => failonfail,
-          :uid => user,
-          :combine => true
-        )
+        result = execute([command(:wascmd), options], :failonfail => failonfail, :uid => user, :combine => true)
       end
 
       result
     rescue Exception => e
-      if failonfail == true
+      if failonfail
         raise Puppet::Error, "Command failed for #{resource[:name]}: #{e}"
       else
         Puppet.warning("Command failed for #{resource[:name]}: #{e}")
