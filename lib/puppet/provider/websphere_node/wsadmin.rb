@@ -5,7 +5,7 @@ Puppet::Type.type(:websphere_node).provide(:wsadmin, :parent => Puppet::Provider
   def create
     cmd = "\"AdminTask.createUnmanagedNode('[-nodeName #{resource[:node]} "
     cmd += "-hostName #{resource[:hostname]} -nodeOperatingSystem "
-    cmd += "#{resource[:os].downcase}]')\""
+    cmd += "#{resource[:os]}]')\""
 
     self.debug "Running #{cmd}"
     result = wsadmin(:command => cmd, :user => resource[:user])
