@@ -39,7 +39,7 @@ Puppet::Type.type(:websphere_web_server).provide(:wsadmin, :parent => Puppet::Pr
   end
 
   def destroy
-    self.debug "Removal of server instances not implemented."
+    Puppet.warning("Removal of server instances not implemented.")
   end
 
   ## Isn't this beautiful?  This takes care of propagating the plugin keystore
