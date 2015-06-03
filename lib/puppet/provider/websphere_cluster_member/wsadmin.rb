@@ -1,7 +1,7 @@
 # Provider for managing websphere cluster members.
 # This parses the cluster member's "server.xml" to read current status, but
 # uses the 'wsadmin' tool to make changes.  We cannot modify the xml data, as
-# it's basically read-only.  wsadmin is painfully slow.
+# it's basically read-only.
 #
 require 'puppet/provider/websphere_helper'
 

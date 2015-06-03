@@ -137,12 +137,12 @@ Puppet::Type.newtype(:websphere_cluster_member) do
     end
   end
 
-  newparam(:name) do
+  newparam(:server) do
     desc "The server to add to the cluster"
     isnamevar
     validate do |value|
       unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid name #{value}")
+        fail("Invalid server #{value}")
       end
     end
   end

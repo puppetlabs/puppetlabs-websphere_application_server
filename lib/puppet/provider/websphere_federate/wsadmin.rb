@@ -16,7 +16,7 @@ Puppet::Type.type(:websphere_federate).provide(:wsadmin) do
   def exists?
     path = "#{resource[:profile_base]}/#{resource[:profile]}/config/cells/#{resource[:cell]}/nodes/#{resource[:node]}/servers"
     if File.exists?(path)
-      self.debug "Already federated? " + path + " exists"
+      self.debug "Already federated: " + path + " exists"
       return true
     end
     false

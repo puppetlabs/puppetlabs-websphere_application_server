@@ -90,6 +90,9 @@ Puppet::Type.newtype(:websphere_node) do
         fail("OS #{value} not supported. Must be 'linux' or 'aix'")
       end
     end
+    munge do |value|
+      value.downcase
+    end
   end
 
   newparam(:cell) do

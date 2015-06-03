@@ -74,7 +74,7 @@ EOT
 
   def destroy
     # AdminTask.deleteJDBCProvider('(cells/CELL_01|resources.xml#JDBCProvider_1422560538842)')
-    self.debug "Removal of JDBC Providers is not yet implemented"
+    Puppet.warning("Removal of JDBC Providers is not yet implemented")
   end
 
   def flush
