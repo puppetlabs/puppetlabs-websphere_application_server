@@ -118,7 +118,7 @@ define websphere_application_server::instance (
 
   # Create some facts based on the parameter values
   concat::fragment { "${instance_name}_facts":
-    target  => "${::settings::vardir}/facts.d/websphere.yaml",
+    target  => '/etc/puppetlabs/facter/facts.d/websphere.yaml',
     content => template("${module_name}/facts/was_instance.yaml.erb"),
     require => Ibm_pkg[$title],
   }
