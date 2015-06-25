@@ -16,7 +16,7 @@ require 'rexml/document'
 require 'yaml'
 include REXML
 # TODO: see if this can be configurable based on settings::vardir
-was_file = '/var/opt/lib/pe-puppet/facts.d/websphere.yaml'
+was_file = '/etc/puppetlabs/facter/facts.d/websphere.yaml'
 
 
 if File.exist?(was_file)
