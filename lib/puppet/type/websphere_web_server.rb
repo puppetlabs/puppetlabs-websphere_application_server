@@ -6,9 +6,7 @@ Puppet::Type.newtype(:websphere_web_server) do
     Manages WebSphere web servers in a cell.
   EOT
 
-  ensurable do
-    defaultto :present
-  end
+  ensurable
 
   newparam(:dmgr_profile) do
     desc <<-EOT

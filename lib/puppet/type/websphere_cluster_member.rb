@@ -22,9 +22,7 @@ Puppet::Type.newtype(:websphere_cluster_member) do
     self[:runas_group]
   end
 
-  ensurable do
-    defaultto :present
-  end
+  ensurable
 
   newparam(:cell) do
     desc "The name of the cell the cluster member belongs to"

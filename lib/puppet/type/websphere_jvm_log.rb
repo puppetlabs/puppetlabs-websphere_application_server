@@ -8,15 +8,44 @@ Puppet::Type.newtype(:websphere_jvm_log) do
     self[:user]
   end
 
-  newparam(:scope) do
-    desc "The scope for the variable.
-    Valid values: node or server
-    "
-    validate do |value|
-      unless value =~ /^(node|server)$/
-        raise ArgumentError, "Invalid scope #{value}: Must be node or server"
-      end
+  validate do
+    raise ArgumentError, 'scope is required' if self[:scope].nil?
+    raise ArgumentError, 'server is required' if self[:server].nil? and self[:scope].to_s =~ /^server$/i
+    raise ArgumentError, 'cell is required' if self[:cell].nil?
+    raise ArgumentError, 'node is required' if self[:node].nil?
+    raise ArgumentError, 'profile is required' if self[:profile].nil?
+  end
+
+    def self.title_patterns
+      identity = lambda {|x| x}
+      [
+        [
+        /^(.*):(.*):(.*)$/,
+          [
+            [:cell, identity ],
+            [:node, identity ],
+            [:server, identity ]
+          ]
+        ],
+        [
+        /^(.*):(.*)$/,
+          [
+            [:cell, identity ],
+            [:node, identity ]
+          ]
+        ],
+        [
+        /^(.*)$/,
+          [
+            [:cell, identity ]
+          ]
+        ]
+      ]
     end
+
+  newparam(:scope) do
+    desc "The scope for the variable. Valid values: node or server"
+    newvalues(:node, :NODE, :server, :SERVER)
   end
 
   newproperty(:out_filename) do
@@ -28,28 +57,26 @@ Puppet::Type.newtype(:websphere_jvm_log) do
   end
 
   newproperty(:out_rollover_type) do
-    desc "Type of log rotation to enable. SIZE TIME or BOTH"
-    validate do |value|
-      unless value =~ /^(SIZE|TIME|BOTH)$/
-        raise ArgumentError, "Invalid out_rollover_type: #{value}. Must be SIZE, TIME, or BOTH"
-      end
+    desc "Type of log rotation to enable. Must be size, time, or both"
+    newvalues(:size, :SIZE, :time, :TIME, :both, :BOTH)
+    munge do |value|
+      value.upcase
     end
   end
 
   newproperty(:err_rollover_type) do
-    desc "Type of log rotation to enable. SIZE TIME or BOTH"
-    validate do |value|
-      unless value =~ /^(SIZE|TIME|BOTH)$/
-        raise ArgumentError, "Invalid err_rollover_type: #{value}. Must be SIZE, TIME, or BOTH"
-      end
+    desc "Type of log rotation to enable. Must be size, time, or both"
+    newvalues(:size, :SIZE, :time, :TIME, :both, :BOTH)
+    munge do |value|
+      value.upcase
     end
   end
 
   newproperty(:out_rollover_size) do
     desc "Filesize in MB for log rotation"
     validate do |value|
-      unless value =~ /^\d+/
-        raise ArgumentError, "Invalid out_rollover_size: #{value}. Must be digit."
+      unless value.to_s =~ /^\d+/
+        raise ArgumentError, "Invalid out_rollover_size: #{value}. Must be integer."
       end
     end
   end
@@ -57,8 +84,8 @@ Puppet::Type.newtype(:websphere_jvm_log) do
   newproperty(:err_rollover_size) do
     desc "Filesize in MB for log rotation"
     validate do |value|
-      unless value =~ /^\d+/
-        raise ArgumentError, "Invalid err_rollover_size: #{value}. Must be digit."
+      unless value.to_s =~ /^\d+/
+        raise ArgumentError, "Invalid err_rollover_size: #{value}. Must be integer."
       end
     end
   end
@@ -66,12 +93,8 @@ Puppet::Type.newtype(:websphere_jvm_log) do
   newproperty(:out_maxnum) do
     desc "Maximum number of historical log files. 1-200"
     validate do |value|
-      unless value =~ /^\d+/
-        raise ArgumentError, "Invalid out_maxnum: #{value}. Must be digit 1-200."
-      end
-
-      unless value.to_i < 201 and value.to_i > 0
-        raise ArgumentError, "out_maxnum must be 1-200"
+      unless value.to_s =~ /^\d+/ and value.to_i.between?(1, 200)
+        raise ArgumentError, "Invalid out_maxnum: #{value}. Must be an integer between 1-200."
       end
     end
   end
@@ -79,12 +102,8 @@ Puppet::Type.newtype(:websphere_jvm_log) do
   newproperty(:err_maxnum) do
     desc "Maximum number of historical log files. 1-200"
     validate do |value|
-      unless value =~ /^\d+/
-        raise ArgumentError, "Invalid err_maxnum: #{value}. Must be digit 1-200."
-      end
-
-      unless value.to_i < 201 and value.to_i > 0
-        raise ArgumentError, "err_maxnum must be 1-200"
+      unless value.to_s =~ /^\d+/ and value.to_i.between?(1, 200)
+        raise ArgumentError, "Invalid err_maxnum: #{value}. Must be an integer between 1-200."
       end
     end
   end
@@ -92,12 +111,8 @@ Puppet::Type.newtype(:websphere_jvm_log) do
   newproperty(:out_start_hour) do
     desc "Start time for time-based log rotation. 1-24"
     validate do |value|
-      unless value =~ /^\d+/
-        raise ArgumentError, "Invalid out_start_hour: #{value}. Must be digit 1-24."
-      end
-
-      unless value.to_i < 25 and value.to_i > 0
-        raise ArgumentError, "out_start_hour must be 1-24"
+      unless value.to_s =~ /^\d+/ and value.to_i.between?(1, 24)
+        raise ArgumentError, "Invalid out_start_hour: #{value}. Must be an integer between 1-24."
       end
     end
   end
@@ -105,12 +120,8 @@ Puppet::Type.newtype(:websphere_jvm_log) do
   newproperty(:err_start_hour) do
     desc "Start time for time-based log rotation. 1-24"
     validate do |value|
-      unless value =~ /^\d+/
-        raise ArgumentError, "Invalid err_start_hour: #{value}. Must be digit 1-24."
-      end
-
-      unless value.to_i < 25 and value.to_i > 0
-        raise ArgumentError, "err_start_hour must be 1-24"
+      unless value.to_s =~ /^\d+/ and value.to_i.between?(1, 24)
+        raise ArgumentError, "Invalid err_start_hour: #{value}. Must be an integer between 1-24."
       end
     end
   end
@@ -118,12 +129,8 @@ Puppet::Type.newtype(:websphere_jvm_log) do
   newproperty(:out_rollover_period) do
     desc "Time period (log repeat time) for time-based log rotation. 1-24"
     validate do |value|
-      unless value =~ /^\d+/
-        raise ArgumentError, "Invalid out_rollover_period: #{value}. Must be digit 1-24."
-      end
-
-      unless value.to_i < 25 and value.to_i > 0
-        raise ArgumentError, "out_rollover_period must be 1-24"
+      unless value.to_s =~ /^\d+/ and value.to_i.between?(1, 24)
+        raise ArgumentError, "Invalid out_rollover_period: #{value}. Must be an integer between 1-24."
       end
     end
   end
@@ -131,22 +138,17 @@ Puppet::Type.newtype(:websphere_jvm_log) do
   newproperty(:err_rollover_period) do
     desc "Time period (log repeat time) for time-based log rotation. 1-24"
     validate do |value|
-      unless value =~ /^\d+/
-        raise ArgumentError, "Invalid err_rollover_period: #{value}. Must be digit 1-24."
-      end
-
-      unless value.to_i < 25 and value.to_i > 0
-        raise ArgumentError, "err_rollover_period must be 1-24"
+      unless value.to_s =~ /^\d+/ and value.to_i.between?(1, 24)
+        raise ArgumentError, "Invalid err_rollover_period: #{value}. Must be an integer between 1-24."
       end
     end
   end
 
   newparam(:server) do
+    isnamevar
+
     desc "The server in the scope for this variable"
     validate do |value|
-      if value.nil? and self[:scope] == 'server'
-        raise ArgumentError, 'server is required when scope is server'
-      end
       unless value =~ /^[-0-9A-Za-z._]+$/
         raise ArgumentError, "Invalid server #{value}"
       end
@@ -154,10 +156,9 @@ Puppet::Type.newtype(:websphere_jvm_log) do
   end
 
   newparam(:cell) do
+    isnamevar
+
     validate do |value|
-      if value.nil? and self[:scope] =~ /(server|cell|node|cluster)/
-        raise ArgumentError, 'cell is required when scope is cell or server'
-      end
       unless value =~ /^[-0-9A-Za-z._]+$/
         raise ArgumentError, "Invalid cell: #{value}"
       end
@@ -165,10 +166,9 @@ Puppet::Type.newtype(:websphere_jvm_log) do
   end
 
   newparam(:node) do
+    isnamevar
+
     validate do |value|
-      if value.nil? and self[:scope] =~ /(server|cell|node)/
-        raise ArgumentError, 'node is required when scope is server, cell, or node'
-      end
       unless value =~ /^[-0-9A-Za-z._]+$/
         raise ArgumentError, "Invalid node: #{value}"
       end
@@ -183,9 +183,6 @@ Puppet::Type.newtype(:websphere_jvm_log) do
     Examples: dmgrProfile01, PROFILE_APP_001
     EOT
     validate do |value|
-      if value.nil?
-        raise ArgumentError, 'profile is required'
-      end
       unless value =~ /^[-0-9A-Za-z._]+$/
         raise ArgumentError, "Invalid profile #{value}"
       end
@@ -193,27 +190,20 @@ Puppet::Type.newtype(:websphere_jvm_log) do
   end
 
   newparam(:dmgr_profile) do
-    defaultto { @resource[:profile] }
     desc <<-EOT
     The profile to run 'wsadmin' under. This can be an appserver profile or
     a DMGR profile as long as it can run 'wsadmin'.
 
     Examples: dmgrProfile01, PROFILE_APP_001
     EOT
+    defaultto { @resource[:profile] }
     validate do |value|
-      if value.nil?
-        raise ArgumentError, 'profile is required'
-      end
       unless value =~ /^[-0-9A-Za-z._]+$/
-        raise ArgumentError, "Invalid profile #{value}"
+        raise ArgumentError, "Invalid dmgr_profile #{value}"
       end
     end
   end
 
-  newparam(:name) do
-    isnamevar
-    desc "The name of the resource"
-  end
 
   newparam(:profile_base) do
     desc "The base directory that profiles are stored.

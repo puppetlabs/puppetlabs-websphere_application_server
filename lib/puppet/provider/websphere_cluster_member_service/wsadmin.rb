@@ -78,18 +78,21 @@ Puppet::Type.type(:websphere_cluster_member_service).provide(:wsadmin, :parent =
   end
 
   def running?
-    cmd = "\"AdminControl.getAttribute(AdminControl.queryNames('WebSphere:*"
+    cmd = wascmd
+    cmd += "\"AdminControl.getAttribute(AdminControl.queryNames('WebSphere:*"
     cmd += ",type=Server,node=%s,process=%s' % ('"
     cmd += resource[:node] + "', '"
     cmd += resource[:name] + "')), 'state')\""
 
     ## This actually returns a scripting error if the thing isn't running and
     ## exits non-zero.
-    result = wsadmin(:command => cmd, :user => resource[:user])
-    self.debug "This will contain a ScriptingException error if it's Not running. #{result}"
-    if result.include?('STARTED')
-      return true
-    end
-    false
+    ## TODO: use wsadmin
+    result = %x{#{cmd}}
+      self.debug "This will contain a ScriptingException error if it's "\
+                   + "Not running. #{result}"
+      if result.include?('STARTED')
+        return true
+      end
+      false
   end
 end

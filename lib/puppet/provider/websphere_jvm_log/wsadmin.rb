@@ -8,17 +8,17 @@ require 'puppet/provider/websphere_helper'
 Puppet::Type.type(:websphere_jvm_log).provide(:wsadmin, :parent => Puppet::Provider::Websphere_Helper) do
 
   def scope(what)
-    file = resource[:profile_base] + '/' + resource[:profile]
+    file = "#{resource[:profile_base]}/#{resource[:profile]}"
 
     case resource[:scope]
-    when 'node'
-      query = '/Cell:' + "#{resource[:cell]}" + '/Node:' + "#{resource[:node]}/Server:nodeagent"
-      mod   = 'cells/' + "#{resource[:cell]}" + '/nodes/' + "#{resource[:node]}"
-      file  += '/config/cells/' + resource[:cell] + '/nodes/'  + resource[:node] + '/servers/nodeagent/server.xml'
-    when 'server'
-      query = '/Cell:' + "#{resource[:cell]}" + '/Node:' + "#{resource[:node]}" + '/Server:' + "#{resource[:server]}"
-      mod   = 'cells/' + "#{resource[:cell]}" + '/nodes/' + "#{resource[:node]}" + '/servers/' + "#{resource[:server]}"
-      file  += '/config/cells/' + resource[:cell] + '/nodes/'  + resource[:node] + '/servers/' + resource[:server] + '/server.xml'
+    when :node
+      query = "/Cell:#{resource[:cell]}/Node:#{resource[:node]}/Server:nodeagent"
+      mod = "cells/#{resource[:cell]}/nodes/#{resource[:node]}"
+      file << "/config/cells/#{resource[:cell]}/nodes/#{resource[:node]}/servers/nodeagent/server.xml"
+    when :server
+      query = "/Cell:#{resource[:cell]}/Node:#{resource[:node]}/Server:#{resource[:server]}"
+      mod = "cells/#{resource[:cell]}/nodes/#{resource[:node]}/servers/#{resource[:server]}"
+      file << "/config/cells/#{resource[:cell]}/nodes/#{resource[:node]}/servers/#{resource[:server]}/server.xml"
     else
       raise Puppet::Error, "Unknown scope: #{resource[:scope]}"
     end
