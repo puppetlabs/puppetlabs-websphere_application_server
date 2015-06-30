@@ -2,7 +2,7 @@
 ## Define to manage the installation of IBM HTTPServer (IHS) instances
 ## 2015-01-13/jbeard: Does what it's supposed to.
 ## TODO: The service resource isn't idempotent because IBM writes shitty
-## software.  Their 'adminctl' script fucking hardcodes a port number in it
+## software.  Their 'adminctl' script hardcodes a port number in it
 ## for server status and uses lynx.  We'll probably end up checking the
 ## damn PID file ourselves.
 ##
