@@ -10,7 +10,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
 
   validate do
     raise ArgumentError, 'scope is required' if self[:scope].nil?
-    raise ArgumentError, 'server is required' if self[:server].nil? and self[:scope] == :server
+    raise ArgumentError, 'server is required' if self[:server].nil? and self[:scope].to_s =~ /^server$/i
     raise ArgumentError, 'cell is required' if self[:cell].nil?
     raise ArgumentError, 'node is required' if self[:node].nil?
     raise ArgumentError, 'profile is required' if self[:profile].nil?
@@ -45,7 +45,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
 
   newparam(:scope) do
     desc "The scope for the variable. Valid values: node or server"
-    newvalues(:node, :server)
+    newvalues(:node, :NODE, :server, :SERVER)
   end
 
   newproperty(:out_filename) do
@@ -58,7 +58,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
 
   newproperty(:out_rollover_type) do
     desc "Type of log rotation to enable. Must be size, time, or both"
-    newvalues(:size, :time, :both)
+    newvalues(:size, :SIZE, :time, :TIME, :both, :BOTH)
     munge do |value|
       value.upcase
     end
@@ -66,7 +66,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
 
   newproperty(:err_rollover_type) do
     desc "Type of log rotation to enable. Must be size, time, or both"
-    newvalues(:size, :time, :both)
+    newvalues(:size, :SIZE, :time, :TIME, :both, :BOTH)
     munge do |value|
       value.upcase
     end
