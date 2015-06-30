@@ -4,9 +4,7 @@ Puppet::Type.newtype(:websphere_app_server) do
 
   @doc = "Manage the existence of WebSphere Application Servers"
 
-  ensurable do
-    defaultto :present
-  end
+  ensurable
 
   newparam(:dmgr_profile) do
     desc <<-EOT

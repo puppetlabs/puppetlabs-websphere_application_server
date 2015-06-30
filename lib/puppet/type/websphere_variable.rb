@@ -4,9 +4,7 @@ Puppet::Type.newtype(:websphere_variable) do
 
   @doc = "This manages a WebSphere environment variable"
 
-  ensurable do
-    defaultto :present
-  end
+  ensurable
 
   newparam(:variable) do
     desc <<-EOT
