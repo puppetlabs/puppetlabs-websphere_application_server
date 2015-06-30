@@ -30,8 +30,14 @@ Puppet::Type.newtype(:websphere_jvm_log) do
         [
         /^(.*):(.*)$/,
           [
-            [:cell, lambda{|x| x} ],
-            [:node, lambda{|x| x} ]
+            [:cell, identity ],
+            [:node, identity ]
+          ]
+        ],
+        [
+        /^(.*)$/,
+          [
+            [:cell, identity ]
           ]
         ]
       ]
