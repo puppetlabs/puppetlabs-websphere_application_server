@@ -10,19 +10,17 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
   ## profile-specific), the name of the profile, and credentials, if provided.
   ## Can we use the 'commands' method for this?
   def wascmd(file=nil)
-
-    wsadmin_cmd = resource[:profile_base] + '/' + resource[:dmgr_profile]
-    wsadmin_cmd += '/bin/wsadmin.sh -lang jython'
+    wsadmin_cmd = "#{resource[:profile_base]}/#{resource[:dmgr_profile]}/bin/wsadmin.sh -lang jython"
 
     if resource[:wsadmin_user] && resource[:wsadmin_pass]
-      wsadmin_cmd += " -username '" + resource[:wsadmin_user] + "'"
-      wsadmin_cmd += " -password '" + resource[:wsadmin_pass] + "'"
+      wsadmin_cmd << " -username '#{resource[:wsadmin_user]}'"
+      wsadmin_cmd << " -password '#{resource[:wsadmin_pass]}'"
     end
 
     if file
-      wsadmin_cmd += " -f #{file} "
+      wsadmin_cmd << " -f #{file} "
     else
-      wsadmin_cmd += " -c "
+      wsadmin_cmd << " -c "
     end
 
     wsadmin_cmd
@@ -37,19 +35,6 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
   ##   using the '-f' argument.  This is for more complicated jython that
   ##   doesn't take kindly to being fed in on the command-line.
   def wsadmin(args={})
-
-    if args[:failonfail] == false
-      failonfail = false
-    else
-      failonfail = true
-    end
-
-    if args[:user]
-      user = args[:user]
-    else
-      user = 'root'
-    end
-
     if args[:file]
       cmdfile = Tempfile.new('wascmd_')
 
@@ -65,19 +50,19 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
     result = nil
 
     begin
-      self.debug "Executing as user #{user}: #{modify}"
+      self.debug "Executing as user #{args[:user]}: #{modify}"
       Dir.chdir('/tmp') do
         result = Puppet::Util::Execution.execute(
           modify,
-          :failonfail => failonfail,
-          :uid => user,
+          :failonfail => !(args[:failonfail] == false),
+          :uid => args[:user] || 'root',
           :combine => true
         )
       end
 
       result
     rescue Exception => e
-      if failonfail == true
+      if args[:failonfail] != false
         raise Puppet::Error, "Command failed for #{resource[:name]}: #{e}"
       else
         Puppet.warning("Command failed for #{resource[:name]}: #{e}")
@@ -94,7 +79,6 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
   ## value.  Ideally, we could have this query any arbitrary xml value with
   ## any depth.  It's rigid and stuck at three levels deep for now.
   def get_xml_val(section,element,attribute,server_xml=nil)
-
     unless server_xml
       server_xml = resource[:profile_base] + '/' \
         + resource[:dmgr_profile] + '/config/cells/' \
@@ -110,13 +94,12 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
         + "Puppet."
       return false
     end
+
     xml_data = File.open(server_xml)
-
     doc = REXML::Document.new(xml_data)
-
     value = doc.root.elements[section].elements[element].attributes[attribute]
 
-    self.debug "#{server_xml}/" + "#{element}:#{attribute}: #{value}"
+    self.debug "#{server_xml}/#{element}:#{attribute}: #{value}"
 
     unless value
       false
@@ -128,15 +111,15 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
   def sync_node
 
     sync_status = "\"the_id = AdminControl.completeObjectName('type=NodeSync,"
-    sync_status += "node=" + resource[:node] + ",*');"
-    sync_status += "AdminControl.invoke(the_id, 'isNodeSynchronized')\""
+    sync_status << "node=#{resource[:node]},*');"
+    sync_status << "AdminControl.invoke(the_id, 'isNodeSynchronized')\""
 
     status = wsadmin(
-      :command => sync_status,
-      :user => resource[:user],
+      :command    => sync_status,
+      :user       => resource[:user],
       :failonfail => false
     )
-    self.debug "Sync status " + resource[:node] + ": #{status}"
+    self.debug "Sync status #{resource[:node]}: #{status}"
 
     unless status.include?("'true'")
       if status =~ /Error found in String ""; cannot create ObjectName/
@@ -151,15 +134,15 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
         self.debug msg
       else
         sync = "\"the_id = AdminControl.completeObjectName('type=NodeSync,"
-        sync += "node=" + resource[:node] + ",*');"
-        sync += "AdminControl.invoke(the_id, 'sync')\""
+        sync << "node=#{resource[:node]},*');"
+        sync << "AdminControl.invoke(the_id, 'sync')\""
 
         result = wsadmin(
-          :command => sync,
-          :user => resource[:user],
+          :command    => sync,
+          :user       => resource[:user],
           :failonfail => false
         )
-        self.debug "Sync node " + resource[:node] + ": #{result}"
+        self.debug "Sync node #{resource[:node]}: #{result}"
         result
       end
     end
@@ -179,7 +162,7 @@ EOT
 
     if resource[:node]
       cmd = "\"na = AdminControl.queryNames('type=NodeAgent,node=#{resource[:node]},*');"
-      cmd += "AdminControl.invoke(na,'restart','true true')\""
+      cmd << "AdminControl.invoke(na,'restart','true true')\""
 
       self.debug "Restarting node: #{resource[:node]} with #{cmd}"
       result = wsadmin(:command => cmd, :user => resource[:user], :failonfail => false)
