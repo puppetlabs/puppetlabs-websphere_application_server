@@ -8,7 +8,7 @@ class websphere_profile::ihs { # lint:ignore:autoloader_layout
   $package_name     = 'com.ibm.websphere.IHSILAN.v85'
   $package_version  = '8.5.5000.20130514_1044'
 
-  $user             = 'webadmins'
+  $user             = 'webadmin'
   $group            = 'webadmins'
 
   $dmgr_profile     = 'PROFILE_DMGR_01'
@@ -27,8 +27,8 @@ class websphere_profile::ihs { # lint:ignore:autoloader_layout
     version         => $package_version,
     repository      => "${ihs_installer}/repository.config",
     install_options => '-properties user.ihs.httpPort=80',
-    user            => 'webadmins',
-    group           => 'webadmins',
+    user            => $user,
+    group           => $group,
     manage_user     => false,
     manage_group    => false,
     log_dir         => '/opt/log/websphere/httpserver',
@@ -37,7 +37,7 @@ class websphere_profile::ihs { # lint:ignore:autoloader_layout
     webroot         => '/opt/web',
   }
 
-  websphere_application_server::package { 'Plugins':
+  ibm_pkg { 'Plugins':
     ensure     => 'present',
     target     => "${ibm_base_dir}/Plugins85",
     repository => '/vagrant/ibm/plg/repository.config',
@@ -47,16 +47,16 @@ class websphere_profile::ihs { # lint:ignore:autoloader_layout
   }
 
   websphere_application_server::ihs::server { 'test':
-    target      => "${ibm_base_dir}/HTTPServer85",
-    log_dir     => '/opt/log/websphere/httpserver',
-    plugin_dir  => "${ibm_base_dir}/Plugins85/config/test",
-    plugin_base => "${ibm_base_dir}/Plugins85",
-    cell        => $dmgr_cell,
-    config_file => '/opt/IBM/HTTPServer85/conf/httpd_test.conf',
-    access_log  => '/opt/log/websphere/httpserver/access_log',
-    error_log   => '/opt/log/websphere/httpserver/error_log',
-    listen_port => '10080',
-    require     => Websphere_application_server::Package['Plugins'],
+    target       => "${ibm_base_dir}/HTTPServer85",
+    log_dir      => '/opt/log/websphere/httpserver',
+    plugin_base  => "${ibm_base_dir}/Plugins85",
+    cell         => $dmgr_cell,
+    node         => $dmgr_node,
+    httpd_config => '/opt/IBM/HTTPServer85/conf/httpd_test.conf',
+    access_log   => '/opt/log/websphere/httpserver/access_log',
+    error_log    => '/opt/log/websphere/httpserver/error_log',
+    listen_port  => '10080',
+    require      => Ibm_pkg['Plugins'],
   }
 
 }
