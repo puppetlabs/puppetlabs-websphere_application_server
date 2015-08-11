@@ -18,7 +18,7 @@ class websphere_profile::appserver { # lint:ignore:autoloader_layout
   $user             = 'webadmin'
   $group            = 'webadmins'
 
-  $dmgr_host        = 'dmgr-centos.delivery.puppetlabs.net'
+  $dmgr_host        = 'dmgr-centos'
   $dmgr_profile     = 'PROFILE_DMGR_01'
   $dmgr_cell        = 'CELL_01'
   $dmgr_node        = 'NODE_DMGR_01'
