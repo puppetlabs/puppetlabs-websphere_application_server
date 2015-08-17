@@ -101,14 +101,13 @@ define websphere_application_server::profile::appserver (
 
     ## Modifying SDK requires federation
     if $manage_sdk {
-      websphere_sdk { "${title} SDK Version ${sdk_name}":
+      websphere_sdk { "${title}_${sdk_name}":
         profile             => $profile_name,
         server              => 'all',
         sdkname             => $sdk_name,
         instance_base       => $instance_base,
         new_profile_default => $sdk_name,
         command_default     => $sdk_name,
-        node                => 'nodeagent',
         user                => $user,
         username            => $wsadmin_user,
         password            => $wsadmin_pass,
