@@ -2,17 +2,8 @@ require 'puppet/provider/websphere_helper'
 
 Puppet::Type.type(:websphere_sdk).provide(:managesdk, :parent => Puppet::Provider::Websphere_Helper) do
 
-  def managesdk(args={})
-    command = resource[:instance_base]
-    command += '/bin/managesdk.sh '
-
-    if resource[:username] and resource[:password]
-      command += '-user "' + resource[:username] + '" -password "' + resource[:password] + '" '
-    end
-
-    if args[:command]
-      command += args[:command]
-    end
+  def managesdk(opts={})
+    command = build_command(opts)
 
     self.debug "Running as #{resource[:user]}: #{command}"
 
@@ -31,42 +22,55 @@ Puppet::Type.type(:websphere_sdk).provide(:managesdk, :parent => Puppet::Provide
   end
 
   def new_profile_default
-    command = '-getNewProfileDefault'
+    opts = {
+      'getNewProfileDefault' => '',
+    }
 
-    result = managesdk(:command => command)[/.*: New profile creation SDK name: (.*).*$/,1]
+    result = managesdk(opts)[/.*: New profile creation SDK name: (.*).*$/,1]
 
     self.debug "Current new_profile_default: #{result}"
     result.to_s.strip
   end
 
   def new_profile_default=(value)
-    command = '-setNewProfileDefault -sdkname ' + resource[:sdkname].to_s
-    managesdk(:command => command)
+    opts = {
+      'setNewProfileDefault' => '',
+      'sdkname'              => resource[:sdkname],
+    }
+    managesdk(opts)
   end
 
   def command_default
-    command = '-getCommandDefault'
+    opts = {
+      'getCommandDefault' => '',
+    }
 
-    result = managesdk(:command => command)[/.*: COMMAND_DEFAULT_SDK = (.*).*$/,1]
+    result = managesdk(opts)[/.*: COMMAND_DEFAULT_SDK = (.*).*$/,1]
 
     self.debug "Current command_default: #{result}"
     result.to_s.strip
   end
 
   def command_default=(value)
-    command = '-setCommandDefault -sdkname ' + resource[:sdkname].to_s
-    managesdk(:command => command)
+    opts = {
+      'setCommandDefault' => '',
+      'sdkname'           => resource[:sdkname],
+    }
+    managesdk(opts)
   end
 
   def sdkname
-
+    opts = {}
     if resource[:profile] == 'all'.downcase
-      command = '-listEnabledProfileAll'
+      opts['listEnabledProfileAll'] = ''
     else
-      command = '-listEnabledProfile -profileName ' + resource[:profile]
+      opts.merge!({
+        'listEnabledProfile' => '',
+        'profileName'        => resource[:profile],
+      })
     end
 
-    result = managesdk(:command => command)
+    result = managesdk(opts)
 
     result.each_line do |line|
       if resource[:server] and resource[:server] == 'all'.downcase
@@ -96,22 +100,38 @@ Puppet::Type.type(:websphere_sdk).provide(:managesdk, :parent => Puppet::Provide
   end
 
   def sdkname=(value)
-
+    opts = {
+      'sdkName' => resource[:sdkname],
+    }
     if resource[:profile] == 'all'.downcase
-      modifycmd = '-enableProfileAll'
+      opts['enableProfileAll'] = ''
     else
-      modifycmd = '-enableProfile -profileName ' + resource[:profile]
+      opts.merge!({
+        'enableProfile' => '',
+        'profileName'   => resource[:profile],
+      })
     end
 
-    modifycmd += ' -sdkName ' + resource[:sdkname].to_s
     if resource[:server] and resource[:server] == 'all'.downcase
-      modifycmd += ' -enableServers'
+      opts['enableServers'] = ''
     end
-    managesdk(:command => modifycmd)
 
+    managesdk(opts)
   end
 
-  def flush
-  end
+  private
 
+  def build_command(options={})
+    command = "#{resource[:instance_base]}/bin/managesdk.sh "
+
+    if resource[:username] and resource[:password]
+      command << "-user '#{resource[:username]}' -password '#{resource[:password]}' "
+    end
+
+    options.each do |key, value|
+      command << "-#{key} #{value} "
+    end
+
+    command.strip
+  end
 end

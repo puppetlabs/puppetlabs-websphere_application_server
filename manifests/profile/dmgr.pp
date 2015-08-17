@@ -85,7 +85,7 @@ define websphere_application_server::profile::dmgr (
 
   validate_bool($manage_sdk)
   if $manage_sdk {
-    websphere_sdk { "${title} SDK Version ${sdk_name}":
+    websphere_sdk { "${title}_${sdk_name}":
       profile             => $profile_name,
       server              => 'all',
       sdkname             => $sdk_name,
@@ -93,8 +93,8 @@ define websphere_application_server::profile::dmgr (
       new_profile_default => $sdk_name,
       command_default     => $sdk_name,
       user                => $user,
-      wsadmin_user        => $wsadmin_user,
-      wsadmin_pass        => $wsadmin_pass,
+      username            => $wsadmin_user,
+      password            => $wsadmin_pass,
       require             => Exec["was_profile_dmgr_${title}"],
       subscribe           => Websphere_application_server::Ownership[$title],
     }
