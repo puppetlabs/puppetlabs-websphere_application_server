@@ -9,24 +9,24 @@ Puppet::Type.type(:websphere_variable).provide(:wsadmin, :parent => Puppet::Prov
 
   def scope(what)
     # (cells/CELL_01/nodes/appNode01/servers/AppServer01
-    file = resource[:profile_base] + '/' + resource[:dmgr_profile]
+    file = "#{resource[:profile_base]}/#{resource[:dmgr_profile]}"
     case resource[:scope]
     when 'cell'
-      query = '/Cell:' + "#{resource[:cell]}"
-      mod   = 'cells/' + "#{resource[:cell]}"
-      file  += '/config/cells/' + resource[:cell] + '/variables.xml'
+      query = "/Cell:#{resource[:cell]}"
+      mod   = "cells/#{resource[:cell]}"
+      file  << "/config/cells/#{resource[:cell]}/variables.xml"
     when 'cluster'
-      query = '/Cell:' + "#{resource[:cell]}" + '/ServerCluster:' + "#{resource[:cluster]}"
-      mod   = 'cells/' + "#{resource[:cell]}" + '/clusters/' + "#{resource[:cluster]}"
-      file  += '/config/cells/' + resource[:cell] + '/clusters/'  + resource[:cluster] + '/variables.xml'
+      query = "/Cell:#{resource[:cell]}/ServerCluster:#{resource[:cluster]}"
+      mod   = "cells/#{resource[:cell]}/clusters/#{resource[:cluster]}"
+      file  += "/config/cells/#{resource[:cell]}/clusters/#{resource[:cluster]}/variables.xml"
     when 'node'
-      query = '/Cell:' + "#{resource[:cell]}" + '/Node:' + "#{resource[:node]}"
-      mod   = 'cells/' + "#{resource[:cell]}" + '/nodes/' + "#{resource[:node]}"
-      file  += '/config/cells/' + resource[:cell] + '/nodes/'  + resource[:node] + '/variables.xml'
+      query = "/Cell:#{resource[:cell]}/Node:#{resource[:node]}"
+      mod   = "cells/#{resource[:cell]}/nodes/#{resource[:node]}"
+      file  << "/config/cells/#{resource[:cell]}/nodes/#{resource[:node]}/variables.xml"
     when 'server'
-      query = '/Cell:' + "#{resource[:cell]}" + '/Node:' + "#{resource[:node]}" + '/Server:' + "#{resource[:server]}"
-      mod   = 'cells/' + "#{resource[:cell]}" + '/nodes/' + "#{resource[:node]}" + '/servers/' + "#{resource[:server]}"
-      file  += '/config/cells/' + resource[:cell] + '/nodes/'  + resource[:node] + '/servers/' + resource[:server] + '/variables.xml'
+      query = "/Cell:#{resource[:cell]}/Node:#{resource[:node]}/Server:#{resource[:server]}"
+      mod   = "cells/#{resource[:cell]}/nodes/#{resource[:node]}/servers/#{resource[:server]}"
+      file  << "/config/cells/#{resource[:cell]}/nodes/#{resource[:node]}/servers/#{resource[:server]}/variables.xml"
     else
       raise Puppet::Error, "Unknown scope: #{resource[:scope]}"
     end
@@ -95,13 +95,8 @@ END
     value = XPath.first(path, "@symbolicName") if path
 
     self.debug "Exists? #{resource[:variable]} is: #{value}"
-    unless value
-      self.debug "#{resource[:variable]} does not exist for scope #{resource[:scope]}"
-      return false
-    end
 
-    true
-
+    !value.nil?
   end
 
   def value

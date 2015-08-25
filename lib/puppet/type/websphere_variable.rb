@@ -6,16 +6,59 @@ Puppet::Type.newtype(:websphere_variable) do
 
   ensurable
 
+  def self.title_patterns
+    identity = lambda {|x| x}
+    [
+      [
+      /^(.*):(.*):(.*)$/,
+          [
+            [:profile, identity ],
+            [:cell, identity ],
+            [:variable, identity ]
+          ]
+      ],
+      [
+      /^(.*):(.*)$/,
+        [
+          [:profile, identity ],
+          [:variable, identity ],
+        ]
+      ],
+      [
+      /^(.*)$/,
+        [
+          [:variable, identity ]
+        ]
+      ]
+    ]
+  end
+
+  validate do
+    raise ArgumentError, "Invalid scope #{self[:scope]}: Must be cell, cluster, node, or server" unless self[:scope] =~ /^(cell|cluster|node|server)$/
+    raise ArgumentError, 'server is required when scope is server' if self[:server].nil? and self[:scope] == 'server'
+    raise ArgumentError, 'cell is required' if self[:cell].nil?
+    raise ArgumentError, 'node is required when scope is server, cell, or node' if self[:node].nil? and self[:scope] =~ /(server|cell|node)/
+    raise ArgumentError, 'cluster is required when scope is cluster' if self[:cluster].nil? and self[:scope] =~ /^cluster$/
+    raise ArgumentError, "Invalid profile_base #{self[:profile_base]}" unless Pathname.new(self[:profile_base]).absolute?
+
+    if self[:profile].nil?
+      if self[:dmgr_profile]
+        self[:profile] = self[:dmgr_profile]
+      else
+        raise ArgumentError, 'profile is required'
+      end
+    end
+
+    [:variable, :server, :cell, :node, :cluster, :profile, :user].each do |value|
+      raise ArgumentError, "Invalid #{value.to_s} #{self[:value]}" unless value =~ /^[-0-9A-Za-z._]+$/
+    end
+  end
+
   newparam(:variable) do
     desc <<-EOT
     Required. The name of the variable to create/modify/remove.  For example,
     `LOG_ROOT`
     EOT
-    validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        raise ArgumentError, "Invalid variable #{value}"
-      end
-    end
   end
 
   newparam(:scope) do
@@ -23,11 +66,6 @@ Puppet::Type.newtype(:websphere_variable) do
     The scope for the variable.
     Valid values: cell, cluster, node, or server
     EOT
-    validate do |value|
-      unless value =~ /^(cell|cluster|node|server)$/
-        raise ArgumentError, "Invalid scope #{value}: Must be cell, cluster, node, or server"
-      end
-    end
   end
 
   newproperty(:value) do
@@ -41,64 +79,22 @@ Puppet::Type.newtype(:websphere_variable) do
 
   newparam(:server) do
     desc "The server in the scope for this variable"
-    validate do |value|
-      if value.nil? and self[:scope] == 'server'
-        raise ArgumentError, 'server is required when scope is server'
-      end
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        raise ArgumentError, "Invalid server #{value}"
-      end
-    end
   end
 
   newparam(:cell) do
-    validate do |value|
-      if value.nil?
-        raise ArgumentError, 'cell is required'
-      end
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        raise ArgumentError, "Invalid cell: #{value}"
-      end
-    end
+    desc "The cell that this variable should be set in"
   end
 
   newparam(:node) do
-    validate do |value|
-      if value.nil? and self[:scope] =~ /(server|cell|node)/
-        raise ArgumentError, 'node is required when scope is server, cell, or node'
-      end
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        raise ArgumentError, "Invalid node: #{value}"
-      end
-    end
+    desc "The node that this variable should be set under"
   end
 
   newparam(:cluster) do
-    validate do |value|
-      if value.nil? and self[:scope] =~ /^cluster$/
-        raise ArgumentError, 'cluster is required when scope is cluster'
-      end
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        raise ArgumentError, "Invalid cluster: #{value}"
-      end
-    end
+    desc "The cluster that a variable should be set in"
   end
 
   newparam(:profile) do
     desc "The profile to run 'wsadmin' under"
-    validate do |value|
-      if value.nil? and self[:dmgr_profile].nil?
-        raise ArgumentError, 'profile is required'
-      end
-
-      if value.nil? and self[:dmgr_profile]
-        defaultto self[:dmgr_profile]
-      end
-
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        raise ArgumentError, "Invalid profile #{value}"
-      end
-    end
   end
 
   newparam(:dmgr_profile) do
@@ -113,30 +109,14 @@ Puppet::Type.newtype(:websphere_variable) do
     EOT
   end
 
-  newparam(:name) do
-    isnamevar
-    desc "The name of the resource"
-  end
-
   newparam(:profile_base) do
     desc "The base directory that profiles are stored.
       Example: /opt/IBM/WebSphere/AppServer/profiles"
-
-    validate do |value|
-      unless Pathname.new(value).absolute?
-        raise ArgumentError, "Invalid profile_base #{value}"
-      end
-    end
   end
 
   newparam(:user) do
     defaultto 'root'
     desc "The user to run 'wsadmin' with"
-    validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        raise ArgumentError, "Invalid user #{value}"
-      end
-    end
   end
 
   newparam(:wsadmin_user) do
