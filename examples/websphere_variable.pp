@@ -1,4 +1,4 @@
-websphere_variable { 'appNode01Logs':
+websphere_variable { 'PROFILE_APP_001:CELL_01:LOG_ROOT_TEST':
   ensure       => 'present',
   variable     => 'LOG_ROOT_TEST',
   value        => '/opt/log/websphere/wasmgmtlogs/appNode01',

@@ -6,7 +6,7 @@
 # exactly the same way.  You might break up your profiles for specific
 # deployed "stacks" of a WebSphere cell.
 #
-class profile::websphere::appserver { # lint:ignore:autoloader_layout
+class profile::websphere_application_server::appserver { # lint:ignore:autoloader_layout
   $base_dir         = '/opt/IBM'
   $instance_name    = 'WebSphere85'
   $instance_base    = "${base_dir}/${instance_name}/AppServer"
@@ -28,7 +28,7 @@ class profile::websphere::appserver { # lint:ignore:autoloader_layout
   $java7_version    = '7.1.2000.20141116_0823'
 
   ## Manage an instance of WebSphere 8.5
-  websphere::instance { 'WebSphere85':
+  websphere_application_server::instance { 'WebSphere85':
     target       => $instance_base,
     package      => $package_name,
     version      => $package_version,
@@ -38,7 +38,7 @@ class profile::websphere::appserver { # lint:ignore:autoloader_layout
     group        => $group,
   }
 
-  websphere::package { 'WebSphere_8554_fixpack':
+  ibm_pkg { 'WebSphere_8554_fixpack':
     ensure     => 'present',
     package    => $package_name,
     version    => '8.5.5004.20141119_1746',
@@ -46,11 +46,11 @@ class profile::websphere::appserver { # lint:ignore:autoloader_layout
     target     => $instance_base,
     user       => $user,
     group      => $group,
-    require    => Websphere::Instance['WebSphere85'],
-    notify     => Websphere::Profile::Appserver['PROFILE_APP_001'],
+    require    => Websphere_application_server::Instance['WebSphere85'],
+    notify     => Websphere_application_server::Profile::Appserver['PROFILE_APP_001'],
   }
 
-  websphere::package { 'Websphere85_Java7':
+  ibm_pkg { 'Websphere85_Java7':
     ensure     => 'present',
     package    => $java7_package,
     version    => $java7_version,
@@ -58,12 +58,12 @@ class profile::websphere::appserver { # lint:ignore:autoloader_layout
     target     => $instance_base,
     user       => $user,
     group      => $group,
-    require    => Websphere::Package['WebSphere_8554_fixpack'],
-    notify     => Websphere::Profile::Appserver['PROFILE_APP_001'],
+    require    => Ibm_pkg['WebSphere_8554_fixpack'],
+    notify     => Websphere_application_server::Profile::Appserver['PROFILE_APP_001'],
   }
 
   ## Manage an App profile
-  websphere::profile::appserver { 'PROFILE_APP_001':
+  websphere_application_server::profile::appserver { 'PROFILE_APP_001':
     instance_base  => $instance_base,
     profile_base   => $profile_base,
     template_path  => "${instance_base}/profileTemplates/managed",
@@ -77,7 +77,7 @@ class profile::websphere::appserver { # lint:ignore:autoloader_layout
   }
 
   ## Export myself as a cluster member
-  @@websphere::cluster::member { 'AppServer01':
+  @@websphere_application_server::cluster::member { 'AppServer01':
     ensure                           => 'present',
     cluster                          => 'PuppetCluster01',
     node                             => 'appNode01',
@@ -105,7 +105,7 @@ class profile::websphere::appserver { # lint:ignore:autoloader_layout
     group  => $group,
   }
 
-  websphere_variable { 'appNode01Logs':
+  websphere_variable { 'PROFILE_APP_001:CELL_01:LOG_ROOT':
     ensure       => 'present',
     variable     => 'LOG_ROOT',
     value        => '/opt/log/websphere/wasmgmtlogs/appNode01',
@@ -117,7 +117,7 @@ class profile::websphere::appserver { # lint:ignore:autoloader_layout
     user         => $user,
     require      => [
       File['/opt/log/websphere/wasmgmtlogs/appNode01'],
-      Websphere::Profile::Appserver['PROFILE_APP_001'],
+      Websphere_application_server::Profile::Appserver['PROFILE_APP_001'],
     ],
   }
 
@@ -130,7 +130,7 @@ class profile::websphere::appserver { # lint:ignore:autoloader_layout
   ##     the 'websphere_cluster_member'
   ##   - Export it and collect it on the DMGR, also making a relationship
   ##   - Just deal with the resource failure on the first run.
-  websphere_variable { 'AppServer01Logs':
+  websphere_variable { 'PROFILE_APP_001:CELL_01:AppServer01:LOG_ROOT':
     ensure       => 'present',
     variable     => 'LOG_ROOT',
     value        => '/opt/log/websphere/appserverlogs',
@@ -143,10 +143,10 @@ class profile::websphere::appserver { # lint:ignore:autoloader_layout
     user         => $user,
     require      => [
       File['/opt/log/websphere/wasmgmtlogs/appNode01'],
-      Websphere::Profile::Appserver['PROFILE_APP_001'],
+      Websphere_application_server::Profile::Appserver['PROFILE_APP_001'],
     ],
   }
-  websphere_jvm_log { 'AppNode01':
+  websphere_jvm_log { 'CELL_01:appNode01:AppServer01':
     profile             => 'PROFILE_APP_001',
     profile_base        => $profile_base,
     cell                => 'CELL_01',
@@ -165,10 +165,10 @@ class profile::websphere::appserver { # lint:ignore:autoloader_layout
     err_maxnum          => '3',
     err_start_hour      => '13',
     err_rollover_period => '24',
-    require             => Websphere::Profile::Appserver['PROFILE_APP_001'],
+    require             => Websphere_application_server::Profile::Appserver['PROFILE_APP_001'],
   }
 
-  websphere_jvm_log { 'AppServer01':
+  websphere_jvm_log { 'CELL_01:appNode01:AppServer01':
     profile             => 'PROFILE_APP_001',
     profile_base        => $profile_base,
     cell                => 'CELL_01',
@@ -187,7 +187,7 @@ class profile::websphere::appserver { # lint:ignore:autoloader_layout
     err_maxnum          => '3',
     err_start_hour      => '13',
     err_rollover_period => '24',
-    require             => Websphere::Profile::Appserver['PROFILE_APP_001'],
+    require             => Websphere_application_server::Profile::Appserver['PROFILE_APP_001'],
   }
 
 }
