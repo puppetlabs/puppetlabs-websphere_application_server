@@ -1,4 +1,4 @@
-websphere_jvm_log { 'CELL_01:appNode02:AppServer02':
+websphere_jvm_log { 'CELL_01:appNode02:node:AppServer02':
   profile_base        => '/opt/IBM/WebSphere85/Profiles',
   dmgr_profile        => 'PROFILE_DMGR_01',
   cell                => 'CELL_01',

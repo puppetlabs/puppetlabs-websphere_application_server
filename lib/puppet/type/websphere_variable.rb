@@ -10,24 +10,33 @@ Puppet::Type.newtype(:websphere_variable) do
     identity = lambda {|x| x}
     [
       [
+      /^(.*):(.*):(.*):(.*)$/,
+        [
+          [:cell, identity ],
+          [:scope, identity],
+          [:node, identity],
+          [:server, identity],
+        ]
+      ],
+      [
       /^(.*):(.*):(.*)$/,
-          [
-            [:profile, identity ],
-            [:cell, identity ],
-            [:variable, identity ]
-          ]
+        [
+          [:cell, identity ],
+          [:scope, identity],
+          [:node, identity],
+        ]
       ],
       [
       /^(.*):(.*)$/,
         [
-          [:profile, identity ],
-          [:variable, identity ],
+          [:cell, identity ],
+          [:scope, identity],
         ]
       ],
       [
       /^(.*)$/,
         [
-          [:variable, identity ]
+          [:cell, identity ],
         ]
       ]
     ]

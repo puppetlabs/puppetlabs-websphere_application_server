@@ -20,11 +20,20 @@ Puppet::Type.newtype(:websphere_jvm_log) do
       identity = lambda {|x| x}
       [
         [
+        /^(.*):(.*):(.*):(.*)$/,
+          [
+            [:cell, identity ],
+            [:node, identity ],
+            [:scope, identity ],
+            [:server, identity ]
+          ]
+        ],
+        [
         /^(.*):(.*):(.*)$/,
           [
             [:cell, identity ],
             [:node, identity ],
-            [:server, identity ]
+            [:scope, identity ],
           ]
         ],
         [

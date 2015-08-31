@@ -5,7 +5,7 @@ Manages JVM logging properties.
 #### Example
 
 ```puppet
-websphere_jvm_log { 'AppNode02 JVM Logs':
+websphere_jvm_log { 'CELL_01:appNode02:node:AppServer02':
   profile_base        => '/opt/IBM/WebSphere/AppServer/profiles',
   dmgr_profile        => 'PROFILE_DMGR_01',
   cell                => 'CELL_01',

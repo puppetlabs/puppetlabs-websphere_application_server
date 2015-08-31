@@ -462,7 +462,7 @@ __Node scoped variable__
 
 ```puppet
 # Example of a node scoped variable
-websphere_variable { 'PROFILE_APP_001:CELL_01:LOG_ROOT':
+websphere_variable { 'CELL_01:node:appNode01':
   ensure       => 'present',
   variable     => 'LOG_ROOT',
   value        => '/var/log/websphere/wasmgmtlogs/appNode01',
@@ -482,7 +482,7 @@ __Server scoped variable__
 # Example of a server scoped variable
 # NOTE: This will cause a FAILURE during the first Puppet run because the
 # cluster member has not yet been created on the DMGR.
-websphere_variable { 'PROFILE_APP_001:CELL_01:LOG_ROOT':
+websphere_variable { 'CELL_01:server:appNode01:AppServer01':
   ensure       => 'present',
   variable     => 'LOG_ROOT',
   value        => '/opt/log/websphere/appserverlogs',
@@ -518,7 +518,7 @@ This module provides a `websphere_jvm_log` type that can be used to manage
 JVM logging properties, such as log rotation criteria.
 
 ```puppet
-websphere_jvm_log { "CELL_01:appNode01:AppServer01":
+websphere_jvm_log { "CELL_01:appNode01:node:AppServer01":
   profile             => 'PROFILE_APP_001',
   profile_base        => '/opt/IBM/WebSphere/AppServer/profiles',
   cell                => 'CELL_01',

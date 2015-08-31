@@ -71,7 +71,7 @@ class websphere_profile::appserver { # lint:ignore:autoloader_layout
     group  => $group,
   }
 
-  websphere_jvm_log { "${dmgr_cell}:appNode01:AppServer01":
+  websphere_jvm_log { "${dmgr_cell}:appNode01:node:AppServer01":
     profile             => 'PROFILE_APP_001',
     profile_base        => $profile_base,
     cell                => $dmgr_cell,

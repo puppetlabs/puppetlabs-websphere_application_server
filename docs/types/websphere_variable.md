@@ -10,7 +10,7 @@ Manage a variable at _node_ scope on `appNode01`.  Setting the `LOG_ROOT`
 variable.
 
 ```puppet
-websphere_variable { 'appNode01Logs':
+websphere_variable { 'CELL_01:node:appNode01':
   ensure       => 'present',
   variable     => 'LOG_ROOT',
   value        => '/opt/log/websphere/wasmgmtlogs/appNode01',
