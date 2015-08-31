@@ -36,7 +36,7 @@ class profile::websphere::dmgr { # lint:ignore:autoloader_layout
   }
 
   ## Install the 8.5.5.4 FixPack
-  websphere::package { 'Websphere_8554_fixpack':
+  ibm_pkg { 'Websphere_8554_fixpack':
     ensure     => 'present',
     package    => $package_name,
     version    => '8.5.5004.20141119_1746',
@@ -48,7 +48,7 @@ class profile::websphere::dmgr { # lint:ignore:autoloader_layout
   }
 
   ## Install Java7
-  websphere::package { 'Websphere85_Java7':
+  ibm_pkg { 'Websphere85_Java7':
     ensure     => 'present',
     package    => $java7_package,
     version    => $java7_version,

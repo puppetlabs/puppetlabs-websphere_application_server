@@ -37,7 +37,7 @@ class profile::websphere::ihs { # lint:ignore:autoloader_layout
     webroot         => '/opt/web',
   }
 
-  websphere::package { 'Plugins':
+  ibm_pkg { 'Plugins':
     ensure     => 'present',
     target     => "${ibm_base_dir}/Plugins85",
     repository => '/vagrant/ibm/plg/repository.config',
