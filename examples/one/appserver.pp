@@ -105,7 +105,7 @@ class profile::websphere_application_server::appserver { # lint:ignore:autoloade
     group  => $group,
   }
 
-  websphere_variable { 'PROFILE_APP_001:CELL_01:LOG_ROOT':
+  websphere_variable { 'CELL_01:node:appNode01':
     ensure       => 'present',
     variable     => 'LOG_ROOT',
     value        => '/opt/log/websphere/wasmgmtlogs/appNode01',
@@ -130,7 +130,7 @@ class profile::websphere_application_server::appserver { # lint:ignore:autoloade
   ##     the 'websphere_cluster_member'
   ##   - Export it and collect it on the DMGR, also making a relationship
   ##   - Just deal with the resource failure on the first run.
-  websphere_variable { 'PROFILE_APP_001:CELL_01:AppServer01:LOG_ROOT':
+  websphere_variable { 'CELL_01:server:appNode01:AppServer01':
     ensure       => 'present',
     variable     => 'LOG_ROOT',
     value        => '/opt/log/websphere/appserverlogs',
@@ -146,7 +146,7 @@ class profile::websphere_application_server::appserver { # lint:ignore:autoloade
       Websphere_application_server::Profile::Appserver['PROFILE_APP_001'],
     ],
   }
-  websphere_jvm_log { 'CELL_01:appNode01:AppServer01':
+  websphere_jvm_log { 'CELL_01:appNode01:node:AppServer01':
     profile             => 'PROFILE_APP_001',
     profile_base        => $profile_base,
     cell                => 'CELL_01',
@@ -168,7 +168,7 @@ class profile::websphere_application_server::appserver { # lint:ignore:autoloade
     require             => Websphere_application_server::Profile::Appserver['PROFILE_APP_001'],
   }
 
-  websphere_jvm_log { 'CELL_01:appNode01:AppServer01':
+  websphere_jvm_log { 'CELL_01:appNode01:server:AppServer01':
     profile             => 'PROFILE_APP_001',
     profile_base        => $profile_base,
     cell                => 'CELL_01',
