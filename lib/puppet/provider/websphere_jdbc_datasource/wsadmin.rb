@@ -52,16 +52,23 @@ Puppet::Type.type(:websphere_jdbc_datasource).provide(:wsadmin, :parent => Puppe
     return configprop
   end
 
+  def params_string
+    params_list =  "-name #{resource[:name]} "
+    params_list << "-jndiName #{resource[:jndi_name]} "
+    params_list << "-dataStoreHelperClassName #{resource[:data_store_helper_class]} "
+    params_list << "-configureResourceProperties #{config_props} "
+    # append optional parameters
+    params_list << "-containerManagedPersistence #{resource[:container_managed_persistence]} " if resource[:container_managed_persistence]
+    params_list << "-componentManagedAuthenticationAlias #{resource[:component_managed_auth_alias]} " if resource[:component_managed_auth_alias]
+    params_list << "-description #{resource[:description]} " if resource[:description]
+
+    params_list
+  end
 
   def create
-cmd = <<-EOT
+    cmd = <<-EOT
 provider = AdminConfig.getid( '/#{scope('get')}/JDBCProvider:#{resource[:jdbc_provider]}/' )
-AdminTask.createDatasource(provider, '[-name "#{resource[:name]}" \
--jndiName #{resource[:jndi_name]} -dataStoreHelperClassName \
-#{resource[:data_store_helper_class]} -containerManagedPersistence \
-#{resource[:container_managed_persistence]} -componentManagedAuthenticationAlias \
-#{resource[:component_managed_auth_alias]} -configureResourceProperties \
-#{config_props} -description "#{resource[:description]}" ]')
+AdminTask.createDatasource(provider, '[#{params_string}]" \
 AdminConfig.save()
 EOT
 
@@ -74,7 +81,7 @@ EOT
 
   def exists?
     cmd = "\"print AdminConfig.list('DataSource', AdminConfig.getid( '/"
-    cmd += "#{scope('get')}/'))\""
+    cmd << "#{scope('get')}/'))\""
 
     self.debug "Querying JDBC Datasource with #{cmd}"
     result = wsadmin(:command => cmd, :user => resource[:user])
@@ -87,7 +94,6 @@ EOT
 
     self.debug "Datasource #{resource[:name]} doesn't seem to exist in #{scope('path')}"
     return false
-
   end
 
   def destroy
