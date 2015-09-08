@@ -12,22 +12,20 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
 
   ensurable
 
+  validate do
+    [:dmgr_profile, :user, :node].each do |value|
+      raise ArgumentError, "Invalid #{value.to_s} #{self[:value]}" unless value =~ /^[-0-9A-Za-z._]+$/
+    end
+
+    fail("Invalid profile_base #{self[:profile_base]}") unless Pathname.new(self[:profile_base]).absolute?
+    raise ArgumentError 'Invalid scope, must be "node", "server", "cell", or "cluster"' unless self[:scope] =~ /^(node|server|cell|cluster)$/
+  end
+
   newparam(:dmgr_profile) do
     desc <<-EOT
     The dmgr profile that this should be created under"
     Example: dmgrProfile01"
     EOT
-
-    validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid dmgr_profile #{value}")
-      end
-    end
-  end
-
-  newparam(:name) do
-    isnamevar
-    desc "The name of the datasource"
   end
 
   newparam(:profile_base) do
@@ -37,41 +35,27 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
 
     Example: /opt/IBM/WebSphere/AppServer/profiles"
     EOT
-
-    validate do |value|
-      fail("Invalid profile_base #{value}") unless Pathname.new(value).absolute?
-    end
   end
 
   newparam(:user) do
     defaultto 'root'
     desc "The user to run 'wsadmin' with"
-    validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid user #{value}")
-      end
-    end
   end
 
   newparam(:node) do
     desc "The name of the node to create this application server on"
-    validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid dmgr_profile #{value}")
-      end
-    end
   end
 
   newparam(:server) do
-
+    desc "The name of the server to create this application server on"
   end
 
   newparam(:cluster) do
-
+    desc "The name of the cluster to create this application server on"
   end
 
   newparam(:cell) do
-
+    desc "The name of the cell to create this application server on"
   end
 
   newparam(:scope) do
@@ -79,11 +63,6 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
     The scope to manage the JDBC Datasource at.
     Valid values are: node, server, cell, or cluster
     EOT
-    validate do |value|
-      unless value =~ /^(node|server|cell|cluster)$/
-        raise ArgumentError 'scope must be one of "node", "server", "cell", or "cluster"'
-      end
-    end
   end
 
   newparam(:jdbc_provider) do
@@ -114,9 +93,18 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
 
     Boolean: true or false
     EOT
-    newvalue :true
-    newvalue :false
-    defaultto true
+    newvalues(:true, :false)
+    defaultto :true
+  end
+
+  newparam(:component_managed_auth_alias) do
+    desc <<-EOT
+    The alias used for database authentication at run time.
+    This alias is only used when the application resource 
+    reference is using res-auth=Application.
+
+    String: Optional
+    EOT
   end
 
   newparam(:url) do
@@ -173,10 +161,6 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
       'com.ibm.websphere.rsadapter.DB2UniversalDataStoreHelper'
       'com.ibm.websphere.rsadapter.MicrosoftSQLServerDataStoreHelper'
     EOT
-  end
-
-  newparam(:component_managed_auth_alias) do
-
   end
 
   newparam(:wsadmin_user) do
