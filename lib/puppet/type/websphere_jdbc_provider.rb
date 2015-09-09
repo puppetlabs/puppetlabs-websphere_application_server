@@ -14,17 +14,20 @@ Puppet::Type.newtype(:websphere_jdbc_provider) do
 
   ensurable
 
+  validate do
+    [:dmgr_profile, :name, :user].each do |value|
+      raise ArgumentError, "Invalid #{value.to_s} #{self[:value]}" unless value =~ /^[-0-9A-Za-z._]+$/
+    end
+
+    fail("Invalid profile_base #{self[:profile_base]}") unless Pathname.new(self[:profile_base]).absolute?
+    raise ArgumentError 'Invalid scope, must be "node", "server", "cell", or "cluster"' unless self[:scope] =~ /^(node|server|cell|cluster)$/
+  end
+
   newparam(:dmgr_profile) do
     desc <<-EOT
       Required. The name of the DMGR _profile_ that this provider should be
       managed under.
     EOT
-
-    validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid dmgr_profile #{value}")
-      end
-    end
   end
 
   newparam(:name) do
@@ -38,10 +41,6 @@ Puppet::Type.newtype(:websphere_jdbc_provider) do
       `dmgr_profile` can be found.  The IBM default is
       `/opt/IBM/WebSphere/AppServer/profiles`
     EOT
-
-    validate do |value|
-      fail("Invalid profile_base #{value}") unless Pathname.new(value).absolute?
-    end
   end
 
   newparam(:user) do
@@ -49,21 +48,12 @@ Puppet::Type.newtype(:websphere_jdbc_provider) do
     desc <<-EOT
       Optional. The user to run the `wsadmin` command as. Defaults to 'root'
     EOT
-
-    validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid user #{value}")
-      end
-    end
   end
 
   newparam(:node) do
     desc <<-EOT
       Required if `scope` is server or node.
     EOT
-    validate do |value|
-      ## TODO
-    end
   end
 
   newparam(:server) do
@@ -89,11 +79,6 @@ Puppet::Type.newtype(:websphere_jdbc_provider) do
     The scope to manage the JDBC Provider at.
     Valid values are: node, server, cell, or cluster
     EOT
-    validate do |value|
-      unless value =~ /^(node|server|cell|cluster)$/
-        raise ArgumentError 'scope must be one of "node", "server", "cell", or "cluster"'
-      end
-    end
   end
 
   newparam(:dbtype) do

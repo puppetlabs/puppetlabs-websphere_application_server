@@ -32,21 +32,21 @@ Puppet::Type.type(:websphere_jdbc_provider).provide(:wsadmin, :parent => Puppet:
     end
   end
 
-  def create
-cmd = <<-EOT
-AdminTask.createJDBCProvider('[-scope #{scope('mod')} -databaseType \
-#{resource[:dbtype]} -providerType "#{resource[:providertype]}" \
--implementationType "#{resource[:implementation]}" -name "#{resource[:name]}" \
--description "#{resource[:description]}" -classpath \
-[ #{resource[:classpath]} ] -nativePath
-EOT
+  def params_string
+    params_list =  "-name \"#{resource[:name]}\" "
+    params_list << "-scope #{scope('mod')} "
+    params_list << "-databaseType #{resource[:dbtype]} "
+    params_list << "-providerType \"#{resource[:providertype]}\" "
+    params_list << "-implementationType \"#{resource[:implementation]}\" "
+    params_list << "-description \"#{resource[:description]}\" " if resource[:description]
+    params_list << "-classpath [ #{resource[:classpath]} ] " if resource[:classpath]
+    params_list << "-nativePath \"#{resource[:native_path]}\" " if resource[:nativepath]
 
-    if resource[:nativepath]
-      cmd = "#{cmd.chomp} [ #{resource[:nativepath]} ] "
-    else
-      cmd = cmd.chomp + ' "" '
-    end
-    cmd += "]'); AdminConfig.save()"
+    params_list
+  end
+
+  def create
+    cmd = "AdminTask.createJDBCProvider('[#{params_string}]'); AdminConfig.save()"
 
     self.debug "Creating JDBC Provider with #{cmd}"
     result = wsadmin(:file => cmd, :user => resource[:user])
@@ -56,7 +56,7 @@ EOT
 
   def exists?
     cmd = "\"print AdminConfig.list('JDBCProvider', AdminConfig.getid( '/"
-    cmd += "#{scope('get')}/'))\""
+    cmd << "#{scope('get')}/'))\""
 
     self.debug "Querying JDBC Provider with #{cmd}"
     result = wsadmin(:command => cmd, :user => resource[:user])
