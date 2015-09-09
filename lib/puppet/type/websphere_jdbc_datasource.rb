@@ -13,12 +13,17 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
   ensurable
 
   validate do
-    [:dmgr_profile, :user, :node].each do |value|
+    [:dmgr_profile, :name, :user, :node].each do |value|
       raise ArgumentError, "Invalid #{value.to_s} #{self[:value]}" unless value =~ /^[-0-9A-Za-z._]+$/
     end
 
     fail("Invalid profile_base #{self[:profile_base]}") unless Pathname.new(self[:profile_base]).absolute?
     raise ArgumentError 'Invalid scope, must be "node", "server", "cell", or "cluster"' unless self[:scope] =~ /^(node|server|cell|cluster)$/
+  end
+
+  newparam(:name) do
+    isnamevar
+    desc "The name of the datasource"
   end
 
   newparam(:dmgr_profile) do
