@@ -1,0 +1,22 @@
+HOSTS:
+  puppet:
+    roles:
+      - master
+      - dashboard
+      - database
+      - agent
+    platform: el-6-x86_64
+    box : puppetlabs/centos-6.6-64-nocm
+    hypervisor : vcloud
+  websphere:
+    roles:
+      - agent
+    platform: el-6-x86_64
+    box : puppetlabs/centos-6.6-64-nocm
+    hypervisor : vcloud
+
+CONFIG:
+  pe_dir: http://enterprise.delivery.puppetlabs.net/2015.2/preview
+  ssh:
+    auth_methods: ["password", "publickey"]
+    password: puppet
