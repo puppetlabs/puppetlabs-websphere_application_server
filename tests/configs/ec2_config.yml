@@ -10,7 +10,7 @@ HOSTS:
     user: ec2-user
     platform: el-7-x86_64
     hypervisor: ec2
-    amisize: c1.medium
+    amisize: m3.large
     snapshot: pe
   peagent:
     roles:
@@ -20,7 +20,7 @@ HOSTS:
     user: ec2-user
     platform: el-7-x86_64
     hypervisor: ec2
-    amisize: c1.medium
+    amisize: m3.large
     volume_size: 50
     snapshot: pe
 CONFIG:

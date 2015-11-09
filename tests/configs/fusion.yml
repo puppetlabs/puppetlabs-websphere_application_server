@@ -6,14 +6,14 @@ HOSTS:
       - database
       - agent
     platform: el-6-x86_64
-    snapshot: Fresh+YumUpdate
+    snapshot: FreshServer
     hypervisor : fusion
   websphere:
     roles:
       - agent
       - frictionless
     platform: el-6-x86_64
-    snapshot: Fresh+YumUpdate
+    snapshot: FreshServer
     hypervisor : fusion
 
 CONFIG:
