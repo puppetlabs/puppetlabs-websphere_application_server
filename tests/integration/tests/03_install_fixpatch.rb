@@ -1,9 +1,6 @@
 require 'erb'
 require 'master_manipulator'
-
 require 'websphere_helper'
-test_name 'FM-3808 - C93835 - Declare base class'
-test_name 'FM-3808 - C93836 - Create a websphere instance'
 test_name 'FM-3808 - C93837 - Install IBM fix patches'
 
 # Teardown
@@ -21,7 +18,7 @@ teardown do
 end
 
 local_files_root_path = ENV['FILES'] || "tests/files"
-manifest_template     = File.join(local_files_root_path, 'websphere_instance_manifest.erb')
+manifest_template     = File.join(local_files_root_path, 'websphere_fixpatch_manifest.erb')
 manifest_erb          = ERB.new(File.read(manifest_template)).result(binding)
 
 step 'Inject "site.pp" on Master'

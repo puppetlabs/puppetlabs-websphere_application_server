@@ -21,16 +21,16 @@
 #                  'http://int-resources.ops.puppetlabs.net/QA_resources/ibm_websphere/',
 #                  'was.repo.8550.ihs.ilan_part1.zip',
 #                  '"/ibminstallers/ibm/ndtrial"',)
-def download_and_uncompress(host, urllink, compressed_file, uncompress_to)
+def download_and_uncompress(host, installer_url, cfilename, dest_directory, directory_path)
 
   #ERB Template
-  installer_url = urllink
-  cfilename = compressed_file
-  dest_directory = uncompress_to
-  directory_path = uncompress_to
-  if compressed_file.include? "zip"
+  # installer_url = urllink
+  # cfilename = compressed_file
+  # dest_directory = uncompress_to
+  #directory_path = dest_directory
+  if cfilename.include? "zip"
     compress_type = 'zip'
-  elsif compressed_file.include? "tar.gz"
+  elsif cfilename.include? "tar.gz"
     compress_type = 'tar.gz'
   else
     fail_test "only zip or tar.gz are is valid compressed file "
