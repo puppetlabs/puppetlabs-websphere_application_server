@@ -1,0 +1,22 @@
+HOSTS:
+  puppet:
+    roles:
+      - master
+      - dashboard
+      - database
+      - agent
+    platform: el-6-x86_64
+    snapshot: FreshServer
+    hypervisor : fusion
+  websphere:
+    roles:
+      - agent
+      - frictionless
+    platform: el-6-x86_64
+    snapshot: FreshServer
+    hypervisor : fusion
+
+CONFIG:
+  ssh:
+    auth_methods: ["password", "publickey"]
+    password: puppet
