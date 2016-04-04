@@ -19,6 +19,7 @@ group :development, :unit_tests do
   gem 'simplecov',               :require => false
   gem 'puppet_facts',            :require => false
   gem 'json',                    :require => false
+  gem 'metadata-json-lint'
 end
 
 beaker_version = ENV['BEAKER_VERSION']
@@ -34,6 +35,7 @@ group :system_tests do
   end
   gem 'serverspec',    :require => false
   gem 'master_manipulator', '1.1.2',  :require => false
+  gem 'beaker-puppet_install_helper', :require => false
 end
 
 if facterversion = ENV['FACTER_GEM_VERSION']

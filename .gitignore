@@ -16,6 +16,10 @@ tags
 
 .vendor
 .bundler
+.bundle
+.vagrant
+log
+tmp
 Gemfile.lock
 spec/fixtures/modules/*
 examples/client_ffdc/
