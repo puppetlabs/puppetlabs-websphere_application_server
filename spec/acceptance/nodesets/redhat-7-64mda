@@ -1,0 +1,38 @@
+HOSTS:
+  puppet-master:
+    roles:
+      - master
+      - database
+      - dashboard
+      - agent
+    platform: el-7-x86_64
+    template: Delivery/Quality Assurance/Templates/vCloud/redhat-7-x86_64
+    hypervisor: vcloud
+  app-agent:
+    roles:
+      - agent
+      - appserver
+    platform: el-7-x86_64
+    template: Delivery/Quality Assurance/Templates/vCloud/redhat-7-x86_64
+    hypervisor: vcloud
+  dmgr-agent:
+    roles:
+      - agent
+      - dmgr
+    platform: el-7-x86_64
+    template: Delivery/Quality Assurance/Templates/vCloud/redhat-7-x86_64
+    hypervisor: vcloud
+  ihs-agent:
+    roles:
+      - agent
+      - ihs
+    platform: el-7-x86_64
+    template: Delivery/Quality Assurance/Templates/vCloud/redhat-7-x86_64
+    hypervisor: vcloud
+CONFIG:
+  nfs_server: none
+  consoleport: 443
+  datastore: instance0
+  folder: Delivery/Quality Assurance/Enterprise/Dynamic
+  resourcepool: delivery/Quality Assurance/Enterprise/Dynamic
+  pooling_api: http://vcloud.delivery.puppetlabs.net/
