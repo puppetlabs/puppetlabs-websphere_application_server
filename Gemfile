@@ -34,6 +34,7 @@ group :system_tests do
   end
   gem 'serverspec',    :require => false
   gem 'master_manipulator', '1.1.2',  :require => false
+  gem 'beaker-puppet_install_helper', :require => false
 end
 
 if facterversion = ENV['FACTER_GEM_VERSION']
