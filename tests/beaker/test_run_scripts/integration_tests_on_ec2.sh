@@ -19,9 +19,9 @@ bundle install --without build development test --path .bundle/gems
 
 bundle exec beaker \
   --preserve-host \
-  --host tests/configs/ec2_config.yml \
+  --host configs/ec2_config.yml \
   --debug \
-  --pre-suite tests/integration/pre-suite \
-  --tests tests/integration/tests \
+  --pre-suite pre-suite \
+  --tests tests \
   --keyfile ~/.ssh/id_rsa-acceptance \
   --load-path tests/lib
