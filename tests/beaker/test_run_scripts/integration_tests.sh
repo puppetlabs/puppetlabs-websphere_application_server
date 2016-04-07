@@ -6,7 +6,7 @@ BASENAME_CMD="basename ${SCRIPT_PATH}"
 SCRIPT_BASE_PATH=`eval ${BASENAME_CMD}`
 
 if [ $SCRIPT_BASE_PATH = "test_run_scripts" ]; then
-  cd ../../
+  cd ../
 fi
 
 # Work-around for RE-5005
@@ -19,9 +19,9 @@ bundle install --without build development test --path .bundle/gems
 
 bundle exec beaker \
   --preserve-host \
-  --host tests/configs/fusion.yml \
+  --host configs/fusion.yml \
   --debug \
-  --pre-suite tests/integration/pre-suite \
-  --tests tests/integration/tests \
+  --pre-suite pre-suite \
+  --tests tests \
   --keyfile ~/.ssh/id_rsa-acceptance \
-  --load-path tests/lib
+  --load-path lib
