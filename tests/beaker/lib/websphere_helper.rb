@@ -83,3 +83,36 @@ def verify_im_installed?(installed_directory)
     fail_test "Version has not been found in: #{installed_directory}/properties/version"
   end
 end
+
+# Verify if files/directories are created:
+#
+# ==== Attributes
+#
+# * +files+ - a file/directory or an array of files/directories that need to be verified
+# if they are successfully created
+#
+# ==== Returns
+#
+# +nil+
+#
+# ==== Raises
+#
+# fail_test messages
+#
+# ==== Examples
+#
+# verify_file_exist?('/opt/log/websphere')
+#
+def verify_file_exist?(files)
+  if files.kind_of?(Array)
+    files.each do |file|
+      if agent.file_exist?(file) == false
+        fail_test "File/directory is not exist: #{file}"
+      end
+    end
+  else
+    if agent.file_exist?(files) == false
+      fail_test "File/directory is not exist: #{files}"
+    end
+  end
+end
