@@ -30,13 +30,3 @@ local = { :module_name => 'websphere_application_server', :source => proj_root, 
 
 # in CI install from staging forge, otherwise from local
 install_dev_puppet_module_on(master, options[:forge_host] ? staging : local)
-
-# mapping NFS for WebSphere installer on the AIX PE agent:
-confine_block(:except, :roles => %w{master dashboard database}) do
-  agents.each do |agent|
-    if (agent['platform'] =~ /aix/ && agent.file_exist?("/mnt/QA_resources") == nil)
-      on(agent, "mkdir -p /mnt/QA_resources")
-      on(agent, "mount -o ro int-resources.ops.puppetlabs.net:/tank01/resources0/QA_resources /mnt/QA_resources")
-    end
-  end
-end
