@@ -83,3 +83,68 @@ def verify_im_installed?(installed_directory)
     fail_test "Version has not been found in: #{installed_directory}/properties/version"
   end
 end
+
+# Verify if files/directories are created:
+#
+# ==== Attributes
+#
+# * +files+ - a file/directory or an array of files/directories that need to be verified
+# if they are successfully created
+#
+# ==== Returns
+#
+# +nil+
+#
+# ==== Raises
+#
+# fail_test messages
+#
+# ==== Examples
+#
+# verify_file_exist?('/opt/log/websphere')
+#
+def verify_file_exist?(files)
+  error_message = "File/Directory does not exist: #{files}"
+  if files.kind_of?(Array)
+    files.each do |file|
+      if agent.file_exist?(file) == false
+        fail_test error_message
+      end
+    end
+  elsif files.kind_of(String)
+    if agent.file_exist?(files) == false
+      fail_test error_message
+    end
+  else
+    raise Exception
+  end
+end
+
+# remove websphere application server:
+#
+# ==== Attributes
+#
+# * +class_name+ - The websphere_application_server class that needs to
+# * be removed
+#
+# ==== Returns
+#
+# +nil+
+#
+# ==== Raises
+#
+# fail_test messages
+#
+# ==== Examples
+#
+# remove_websphere('websphere_application_server')
+#
+def remove_websphere(class_name)
+pp = <<-MANIFEST
+  class { "#{class_name}":
+    ensure => absent,
+  }
+MANIFEST
+  create_remote_file(agent, "/root/remove_websphere.pp", pp)
+  on(agent, "/opt/puppetlabs/puppet/bin/puppet apply /root/remove_websphere.pp")
+end
