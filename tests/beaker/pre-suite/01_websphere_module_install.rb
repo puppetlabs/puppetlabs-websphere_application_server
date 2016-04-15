@@ -1,9 +1,9 @@
 test_name 'FM-3808 - C94731 - Plug-in Sync Module from Master with Prerequisites Satisfied on Agent'
 
 step 'Install puppetlabs-websphere_application_server Module Dependencies'
-on(master, puppet('module install puppet-archive'))
-on(master, puppet('module install puppetlabs-stdlib'))
-on(master, puppet('module install puppetlabs-concat'))
+%w(puppet-archive puppetlabs-stdlib puppetlabs-concat).each do |dep|
+  on(master, puppet("module install #{dep}"))
+end
 
 # HACK to get IBM Installation Manager module onto the nodes from github
 pp = <<-MANIFEST

@@ -148,3 +148,65 @@ MANIFEST
   create_remote_file(agent, "/root/remove_websphere.pp", pp)
   on(agent, "/opt/puppetlabs/puppet/bin/puppet apply /root/remove_websphere.pp")
 end
+
+# Verify if websphere instance is created:
+#
+# ==== Attributes
+#
+# * +host+ - a PE agent where websphere instance is created
+#
+# * +ws_instance_name+ - name of the created websphere instance
+#
+# ==== Returns
+#
+# +nil+
+#
+# ==== Raises
+#
+# fail messages
+#
+# ==== Examples
+#
+# verify_websphere_created?(agent, 'WebSphere85')
+#
+def verify_websphere_created?(host, ws_instance_name)
+  #getting command line:
+  if (host['platform'] =~ /aix/)
+    command = "/usr/bin/ps -elf | grep -i #{ws_instance_name}"
+  elsif (host['platform'] =~ /linux/)
+    command = "ps -ef | grep -i #{ws_instance_name}"
+  end
+
+  on(host, command, :acceptable_exit_codes => 0)
+end
+
+# remove websphere instance:
+#
+# ==== Attributes
+#
+# * +instance_name+ - The websphere instance that needs to be removed
+#
+# ==== Returns
+#
+# +nil+
+#
+# ==== Raises
+#
+# fail_test messages
+#
+# ==== Examples
+#
+# remove_websphere(agent, 'websphere_application_server', '/opt/IBM')
+#
+def remove_websphere_instance(host, instance_name, remove_directories)
+  pp = <<-MANIFEST
+  websphere_application_server::instance { '#{instance_name}':
+    ensure => absent,
+  MANIFEST
+  create_remote_file(host, "/root/remove_websphere_instance.pp", pp)
+  on(host, "/opt/puppetlabs/puppet/bin/puppet apply /root/remove_websphere_instance.pp")
+
+  if remove_directories
+    on(agent, "rm -rf #{remove_directories}", :acceptable_exit_codes => [0,127])
+  end
+end
