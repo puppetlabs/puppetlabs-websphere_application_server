@@ -203,8 +203,8 @@ def remove_websphere_instance(host, instance_name, remove_directories)
   websphere_application_server::instance { '#{instance_name}':
     ensure => absent,
   MANIFEST
-  create_remote_file(host, "/root/remove_websphere_instance.pp", pp)
-  on(host, "/opt/puppetlabs/puppet/bin/puppet apply /root/remove_websphere_instance.pp")
+  create_remote_file(host, "/tmp/remove_websphere_instance.pp", pp)
+  on(host, "/opt/puppetlabs/puppet/bin/puppet apply /tmp/remove_websphere_instance.pp", :acceptable_exit_codes => [0,2])
 
   if remove_directories
     on(agent, "rm -rf #{remove_directories}", :acceptable_exit_codes => [0,127])
