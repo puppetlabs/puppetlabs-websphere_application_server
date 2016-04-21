@@ -46,7 +46,7 @@ step 'Run Puppet Agent to declare base class'
 confine_block(:except, :roles => %w{master dashboard database}) do
   agents.each do |agent|
     expect_failure('expected to fail due to FM-5093') do
-      on(agent, "/opt/puppetlabs/puppet/bin/puppet agent -t", :acceptable_exit_codes => [1,4,6]) do |result|
+      on(agent, puppet('agent -t'), :acceptable_exit_codes => [1,4,6]) do |result|
         assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
       end
     end

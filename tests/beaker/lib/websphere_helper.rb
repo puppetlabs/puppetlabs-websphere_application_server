@@ -210,3 +210,32 @@ def remove_websphere_instance(host, instance_name, remove_directories)
     on(agent, "rm -rf #{remove_directories}", :acceptable_exit_codes => [0,127])
   end
 end
+
+# Verify if the correct version is installed:
+#
+# ==== Attributes
+#
+# * +host+ - a PE agent where websphere instance is created
+#
+# * +command+ - the command executed on the host
+#
+# * +version+ - the version that needs to be verified that
+# it is successfully installed on the host
+#
+# ==== Returns
+#
+# +nil+
+#
+# ==== Raises
+#
+# fail messages
+#
+# ==== Examples
+#
+# verify_websphere(agent, "/opt/ibm/WebSphere85/AppServer/bin/versionInfo.sh", "8.5.5004.20141119_1746")
+#
+def verify_websphere(host, command, verify_str)
+  #getting full command line:
+  full_command = "#{command} | grep #{verify_str}"
+  on(host, full_command)
+end
