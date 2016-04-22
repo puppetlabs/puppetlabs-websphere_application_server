@@ -14,7 +14,7 @@ HOSTS:
       - agent
     platform: aix-5.3-power
     hypervisor: none
-    vmhostname: pe-aix-5.3-spec.delivery.puppetlabs.net
+    vmhostname: pe-aix-53-spec.delivery.puppetlabs.net
 CONFIG:
   nfs_server: NONE
   consoleport: 443
