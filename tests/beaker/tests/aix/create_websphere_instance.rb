@@ -13,7 +13,7 @@ teardown do
   end
 end
 
-local_files_root_path = ENV['FILES'] || "files"
+local_files_root_path = ENV['FILES'] || "tests/beaker/files"
 manifest_template     = File.join(local_files_root_path, 'websphere_instance_manifest.erb')
 manifest_erb          = ERB.new(File.read(manifest_template)).result(binding)
 
