@@ -24,8 +24,7 @@ package_name      = Object.const_get('PACKAGE_NAME')
 package_version   = Object.const_get('PACKAGE_VERSION')
 instance_name     = Object.const_get('INSTANCE_NAME')
 
-
-local_files_root_path = ENV['FILES'] || "files"
+local_files_root_path = ENV['FILES'] || "tests/beaker/files"
 manifest_template     = File.join(local_files_root_path, 'websphere_instance_manifest.erb')
 manifest_erb          = ERB.new(File.read(manifest_template)).result(binding)
 

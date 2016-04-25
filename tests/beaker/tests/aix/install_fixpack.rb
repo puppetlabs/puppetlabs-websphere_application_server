@@ -28,7 +28,7 @@ java_installer          = Object.const_get('JAVA_INSTALLER')
 java_package            = Object.const_get('JAVA_PACKAGE')
 java_version            = Object.const_get('JAVA_VERSION')
 
-local_files_root_path = ENV['FILES'] || "files"
+local_files_root_path = ENV['FILES'] || "tests/beaker/files"
 manifest_template     = File.join(local_files_root_path, 'websphere_fixpack_manifest.erb')
 manifest_erb          = ERB.new(File.read(manifest_template)).result(binding)
 
