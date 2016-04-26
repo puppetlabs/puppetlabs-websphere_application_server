@@ -33,7 +33,7 @@ class { 'websphere_application_server':
     base_dir => $base_dir,
 }
 
-websphere_application_server::instance { $instance_name:
+websphere_application_server::instance { "${instance_name}":
     target       => $instance_base,
     package      => $package_name,
     version      => $package_version,
