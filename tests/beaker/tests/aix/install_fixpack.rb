@@ -34,7 +34,6 @@ local_files_root_path = ENV['FILES'] || "tests/beaker/files"
 manifest_template     = File.join(local_files_root_path, 'websphere_fixpack_manifest.erb')
 manifest_erb          = ERB.new(File.read(manifest_template)).result(binding)
 
-puts "manifest erb \n#{manifest_erb}"
 step 'Inject "site.pp" on Master'
 site_pp = create_site_pp(master, :manifest => manifest_erb)
 inject_site_pp(master, get_site_pp_path(master), site_pp)
