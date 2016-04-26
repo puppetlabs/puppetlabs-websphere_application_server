@@ -19,7 +19,7 @@ bundle exec beaker \
   --repo-proxy \
   --host tests/beaker/configs/aix-71.yml \
   --debug \
-  --pre-suite pre-suite \
+  --pre-suite tests/beaker/pre-suite \
   --tests tests/beaker/tests/aix \
   --keyfile ~/.ssh/id_rsa-acceptance \
   --load-path tests/beaker/lib
