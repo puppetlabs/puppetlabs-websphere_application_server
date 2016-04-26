@@ -16,13 +16,13 @@ teardown do
 end
 
 # Get the ERB manifest:
-base_dir          = Object.const_get('BASE_DIR')
-instance_base     = Object.const_get('INSTANCE_BASE')
-profile_base      = Object.const_get('PROFILE_BASE')
-was_installer     = Object.const_get('WAS_INSTALLER')
-package_name      = Object.const_get('PACKAGE_NAME')
-package_version   = Object.const_get('PACKAGE_VERSION')
-instance_name     = Object.const_get('INSTANCE_NAME')
+base_dir          = WebSphereConstants.base_dir
+instance_base     = WebSphereConstants.instance_base
+profile_base      = WebSphereConstants.profile_base
+was_installer     = WebSphereConstants.was_installer
+package_name      = WebSphereConstants.package_name
+package_version   = WebSphereConstants.package_version
+instance_name     = WebSphereConstants.instance_name
 
 local_files_root_path = ENV['FILES'] || "tests/beaker/files"
 manifest_template     = File.join(local_files_root_path, 'websphere_instance_manifest.erb')

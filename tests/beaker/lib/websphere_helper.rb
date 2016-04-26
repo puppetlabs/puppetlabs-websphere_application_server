@@ -219,8 +219,9 @@ end
 #
 # * +command+ - the command executed on the host
 #
-# * +version+ - the version that needs to be verified that
-# it is successfully installed on the host
+# * +verify_str+ - a string that needs to be verified with WebSphere
+# for example, a string of WebSphere version that needs to be ensured
+# it is successfully installed on the host.
 #
 # ==== Returns
 #

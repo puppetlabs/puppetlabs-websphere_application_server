@@ -2,6 +2,7 @@ require 'erb'
 require 'master_manipulator'
 require 'websphere_helper'
 require 'installer_constants'
+
 test_name 'FM-5141 - C97867 - Install IBM fixpacks on aix'
 
 # Teardown
@@ -15,18 +16,19 @@ teardown do
 end
 
 #Get the ERB manifest:
-base_dir                = Object.const_get('BASE_DIR')
-instance_base           = Object.const_get('INSTANCE_BASE')
-profile_base            = Object.const_get('PROFILE_BASE')
-was_installer           = Object.const_get('WAS_INSTALLER')
-package_name            = Object.const_get('PACKAGE_NAME')
-package_version         = Object.const_get('PACKAGE_VERSION')
-update_package_version  = Object.const_get('UPDATE_PACKAGE_VERSION')
-instance_name           = Object.const_get('INSTANCE_NAME')
-fixpack_installer       = Object.const_get('FP_INSTALLER')
-java_installer          = Object.const_get('JAVA_INSTALLER')
-java_package            = Object.const_get('JAVA_PACKAGE')
-java_version            = Object.const_get('JAVA_VERSION')
+base_dir                = WebSphereConstants.base_dir
+instance_base           = WebSphereConstants.instance_base
+profile_base            = WebSphereConstants.profile_base
+was_installer           = WebSphereConstants.was_installer
+package_name            = WebSphereConstants.package_name
+package_version         = WebSphereConstants.package_version
+update_package_version  = WebSphereConstants.update_package_version
+instance_name           = WebSphereConstants.instance_name
+fixpack_installer       = WebSphereConstants.fixpack_installer
+java_installer          = WebSphereConstants.java_installer
+java_package            = WebSphereConstants.java_package
+java_version            = WebSphereConstants.java_version
+
 
 local_files_root_path = ENV['FILES'] || "tests/beaker/files"
 manifest_template     = File.join(local_files_root_path, 'websphere_fixpack_manifest.erb')
