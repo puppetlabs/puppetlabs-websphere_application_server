@@ -1,0 +1,66 @@
+$base_dir               = '<%= base_dir %>'
+$instance_name          = '<%= instance_name %>'
+$instance_base          = '<%= instance_base %>'
+$profile_base           = '<%= profile_base %>'
+$was_installer          = '<%= was_installer %>'
+$package_name           = '<%= package_name %>'
+$package_version        = '<%= package_version %>'
+$update_package_version = '<%= update_package_version %>'
+$user                   = 'webadmin'
+$group                  = 'webadmins'
+$fixpack_installer      = '<%= fixpack_installer %>'
+$java_installer         = '<%= java_installer %>'
+$java_package           = '<%= java_package %>'
+$java_version           = '<%= java_version %>'
+
+# Organizational log locations
+file { [
+    '/opt/log',
+    '/opt/log/websphere',
+    '/opt/log/websphere/appserverlogs',
+    '/opt/log/websphere/applogs',
+    '/opt/log/websphere/wasmgmtlogs',
+]:
+    ensure => 'directory',
+    owner  => $user,
+    group  => $group,
+}
+->
+
+class { 'websphere_application_server':
+    user     => $user,
+    group    => $group,
+    base_dir => $base_dir,
+}
+
+websphere_application_server::instance { "${instance_name}":
+    target       => $instance_base,
+    package      => $package_name,
+    version      => $package_version,
+    profile_base => $profile_base,
+    repository   => "${was_installer}/repository.config",
+    user         => $user,
+    group        => $group,
+}
+
+ibm_pkg { 'WebSphere_fixpack':
+    ensure        => 'present',
+    package       => $package_name,
+    version       => $update_package_version,
+    repository    => "${fixpack_installer}/repository.config",
+    target        => $instance_base,
+    package_owner => $user,
+    package_group => $group,
+    require       => Websphere_application_server::Instance["${instance_name}"],
+}
+
+ibm_pkg { 'Websphere_Java':
+    ensure        => 'present',
+    package       => $java_package,
+    version       => $java_version,
+    repository    => "${java_installer}/repository.config",
+    target        => $instance_base,
+    package_owner => $user,
+    package_group => $group,
+    require       => Ibm_pkg['WebSphere_fixpack'],
+}
