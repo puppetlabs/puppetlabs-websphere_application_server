@@ -269,3 +269,25 @@ def get_fresh_node(str)
     end
   end
 end
+
+# return node back to the pooler:
+#
+# ==== Attributes
+#
+# * +node_name+ - The hostname of the VM that needs to return back to vmPooler
+#
+# ==== Returns
+#
+# +nil+
+#
+# ==== Raises
+#
+# fail_test messages
+#
+# ==== Examples
+#
+# return_node_to_pooler('lh55s4v0mu1ufhb')
+#
+def return_node_to_pooler(node_name)
+  system("curl -X DELETE vcloud.delivery.puppetlabs.net/vm/#{node_name}")
+end

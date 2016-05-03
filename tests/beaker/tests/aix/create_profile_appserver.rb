@@ -15,7 +15,7 @@ teardown do
       #comment out due to FM-5130
       #remove_websphere_instance('websphere_application_server', '/opt/log/websphere /opt/IBM')
     end
-    system("curl -X DELETE vcloud.delivery.puppetlabs.net/vm/#{node_name}")
+    return_node_to_pooler(node_name)
   end
 end
 
@@ -51,7 +51,6 @@ MANIFEST
 step 'add create profile manifest to manifest_erb file'
 manifest_erb << pp
 
-puts "new manifest_erb: \n #{manifest_erb}"
 step 'Inject "site.pp" on Master'
 site_pp = create_site_pp(master, :manifest => manifest_erb)
 inject_site_pp(master, get_site_pp_path(master), site_pp)
@@ -63,7 +62,7 @@ confine_block(:except, :roles => %w{master dashboard database}) do
     step 'Run puppet agent to create profile: appserver:'
     expect_failure('Expected to fail due to FM-5093, FM-5130, and FM-5150') do
       on(agent, puppet('agent -t'), :acceptable_exit_codes => 1) do |result|
-      assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
+        assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
       end
     end
 
