@@ -240,3 +240,54 @@ def verify_websphere(host, command, verify_str)
   full_command = "#{command} | grep #{verify_str}"
   on(host, full_command)
 end
+
+# Get a fresh VM from vmPooler for WebSphere node
+#
+# ==== Attributes
+#
+# * +str+ - a vPooler VM template name
+#
+# ==== Returns
+#
+# +hostname of the acquired vPooler VM+
+#
+# ==== Raises
+#
+# fail messages
+#
+# ==== Examples
+#
+# get_fresh_node('centos-6-x86_64')
+#
+def get_fresh_node(str)
+  system("curl -d --url vcloud.delivery.puppetlabs.net/vm/#{str} > create_node.txt")
+  system("cat create_node.txt")
+  File.readlines('create_node.txt').each do |line|
+    if line =~/hostname/
+      hostname = line.scan(/(:\s+")(.*)(")/)[0][1]
+      return hostname
+    end
+  end
+end
+
+# return node back to the pooler:
+#
+# ==== Attributes
+#
+# * +node_name+ - The hostname of the VM that needs to return back to vmPooler
+#
+# ==== Returns
+#
+# +nil+
+#
+# ==== Raises
+#
+# fail_test messages
+#
+# ==== Examples
+#
+# return_node_to_pooler('lh55s4v0mu1ufhb')
+#
+def return_node_to_pooler(node_name)
+  system("curl -X DELETE vcloud.delivery.puppetlabs.net/vm/#{node_name}")
+end
