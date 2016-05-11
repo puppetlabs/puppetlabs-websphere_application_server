@@ -1,3 +1,5 @@
+require 'installer_constants'
+
 # Download a compressed file from http repository and uncompress it
 #
 # ==== Attributes
@@ -290,4 +292,41 @@ end
 #
 def return_node_to_pooler(node_name)
   system("curl -X DELETE vcloud.delivery.puppetlabs.net/vm/#{node_name}")
+end
+
+# Verify if a cluster or a cluster member exists:
+#
+# ==== Attributes
+#
+# * +host+ - a PE agent where websphere instance is created
+#
+# * +cluster_name+ - the string name of verified cluster
+#
+# * +cluster_member+ - the string of verified cluster member
+#
+# ==== Returns
+#
+# +nil+
+#
+# ==== Raises
+#
+# fail messages
+#
+# ==== Examples
+#
+# Verify if a cluster exists
+# verify_cluster(agent, 'MyCluster01')
+#
+# Verify if a cluster member exists
+# verify_cluster(agent, 'MyCluster01', 'AppServer01')
+def verify_cluster(host, cluster_name, cluster_member=nil)
+  instance_base = WebSphereConstants.instance_base
+  path          = "#{instance_base}/scriptLibraries/server/V70/AdminClusterManagement"
+
+  if cluster_member #verify if a cluster member exists
+    command = "#{path}.listClusterMembers(\"#{cluster_name}\") | grep \"#{cluster_member}\""
+  else #verify if a cluster exists
+    command = "#{path}.checkIfClusterExists(\"#{cluster_name}\")"
+  end
+  on(host, command)
 end

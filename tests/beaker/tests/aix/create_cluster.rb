@@ -32,6 +32,7 @@ fixpack_installer       = WebSphereConstants.fixpack_installer
 java_installer          = WebSphereConstants.java_installer
 java_package            = WebSphereConstants.java_package
 java_version            = WebSphereConstants.java_version
+cell                    = WebSphereConstants.cell
 
 local_files_root_path = ENV['FILES'] || "tests/beaker/files"
 manifest_template     = File.join(local_files_root_path, 'websphere_fixpack_manifest.erb')
@@ -42,7 +43,7 @@ pp = <<-MANIFEST
 websphere_application_server::profile::dmgr { 'PROFILE_DMGR_01':
   instance_base => $instance_base,
   profile_base  => $profile_base,
-  cell          => 'CELL_01',
+  cell          => $cell,
   node_name     => "#{node_name}",
   subscribe     => [
     Ibm_pkg['WebSphere_fixpack'],
@@ -53,7 +54,7 @@ websphere_application_server::profile::dmgr { 'PROFILE_DMGR_01':
 websphere_application_server::cluster { 'MyCluster01':
   profile_base => $profile_base,
   dmgr_profile => 'PROFILE_DMGR_01',
-  cell         => 'CELL_01',
+  cell         => $cell,
   require      => Websphere_application_server::Profile::Dmgr['PROFILE_DMGR_01'],
 }
 MANIFEST
@@ -75,9 +76,8 @@ confine_block(:except, :roles => %w{master dashboard database}) do
       end
     end
 
-    step 'Verify the cluster can start without error'
+    step 'Verify if the cluster exists'
     # Comment out the below line due to FM-5122
-    command = "#{instance_base}/scriptLibraries/server/V70/AdminClusterManagement.checkIfClusterExists(\"myCluster01\")"
-    #verify_websphere(agent, command, 'exist')
+    #verify_cluster(agent, 'MyCluster01')
   end
 end

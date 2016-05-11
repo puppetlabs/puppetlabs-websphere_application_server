@@ -32,6 +32,7 @@ fixpack_installer       = WebSphereConstants.fixpack_installer
 java_installer          = WebSphereConstants.java_installer
 java_package            = WebSphereConstants.java_package
 java_version            = WebSphereConstants.java_version
+cell                    = WebSphereConstants.cell
 
 local_files_root_path = ENV['FILES'] || "tests/beaker/files"
 manifest_template     = File.join(local_files_root_path, 'websphere_fixpack_manifest.erb')
@@ -61,7 +62,7 @@ websphere_application_server::cluster::member { 'AppServer01':
   ensure       => 'present',
   cluster      => 'MyCluster01',
   node         => "#{node_name}",
-  cell         => 'CELL_01',
+  cell         => $cell,
   profile_base => $profile_base,
   dmgr_profile => 'PROFILE_DMGR_01',
 }
@@ -86,7 +87,6 @@ confine_block(:except, :roles => %w{master dashboard database}) do
 
     step 'Verify the cluster can start without error'
     # Comment out the below line due to FM-5122
-    command = "#{instance_base}/scriptLibraries/server/V70/AdminClusterManagement.listClusterMembers(\"myCluster01\")"
-    #verify_websphere(agent, command, 'AppServer01')
+    #verify_cluster(agent, 'MyCluster01', 'AppServer01')
   end
 end
