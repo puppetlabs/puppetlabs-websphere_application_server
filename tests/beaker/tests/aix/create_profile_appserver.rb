@@ -32,6 +32,7 @@ fixpack_installer       = WebSphereConstants.fixpack_installer
 java_installer          = WebSphereConstants.java_installer
 java_package            = WebSphereConstants.java_package
 java_version            = WebSphereConstants.java_version
+cell                    = WebSphereConstants.cell
 
 local_files_root_path = ENV['FILES'] || "tests/beaker/files"
 manifest_template     = File.join(local_files_root_path, 'websphere_fixpack_manifest.erb')
@@ -43,7 +44,7 @@ pp = <<-MANIFEST
 websphere_application_server::profile::appserver { 'PROFILE_APP_001':
   instance_base  => $instance_base,
   profile_base   => $profile_base,
-  cell           => 'CELL_01',
+  cell           => $cell,
   node_name      => "#{node_name}",
 }
 MANIFEST

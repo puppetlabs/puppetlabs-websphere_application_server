@@ -43,7 +43,7 @@ pp = <<-MANIFEST
 websphere_application_server::profile::dmgr { 'PROFILE_DMGR_01':
   instance_base => $instance_base,
   profile_base  => $profile_base,
-  cell          => 'CELL_01',
+  cell          => $cell,
   node_name     => "#{node_name}",
   subscribe     => [
     Ibm_pkg['WebSphere_fixpack'],
@@ -54,7 +54,7 @@ websphere_application_server::profile::dmgr { 'PROFILE_DMGR_01':
 websphere_application_server::cluster { 'MyCluster01':
   profile_base => $profile_base,
   dmgr_profile => 'PROFILE_DMGR_01',
-  cell         => 'CELL_01',
+  cell         => $cell,
   require      => Websphere_application_server::Profile::Dmgr['PROFILE_DMGR_01'],
 }
 ->
