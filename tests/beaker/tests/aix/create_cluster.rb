@@ -3,7 +3,7 @@ require 'master_manipulator'
 require 'websphere_helper'
 require 'installer_constants'
 
-test_name 'FM-5152 - C97888 - Create profiles on AIX: appserver'
+test_name 'FM-5188 - C97900 - Create cluster on aix'
 
 #getting a fresh VM from vmPooler
 node_name = get_fresh_node('centos-6-x86_64')
@@ -40,12 +40,22 @@ manifest_erb          = ERB.new(File.read(manifest_template)).result(binding)
 
 # create appserver profile manifest:
 pp = <<-MANIFEST
-->
-websphere_application_server::profile::appserver { 'PROFILE_APP_001':
-  instance_base  => $instance_base,
-  profile_base   => $profile_base,
-  cell           => $cell,
-  node_name      => "#{node_name}",
+websphere_application_server::profile::dmgr { 'PROFILE_DMGR_01':
+  instance_base => $instance_base,
+  profile_base  => $profile_base,
+  cell          => $cell,
+  node_name     => "#{node_name}",
+  subscribe     => [
+    Ibm_pkg['WebSphere_fixpack'],
+    Ibm_pkg['Websphere_Java'],
+  ],
+}
+
+websphere_application_server::cluster { 'MyCluster01':
+  profile_base => $profile_base,
+  dmgr_profile => 'PROFILE_DMGR_01',
+  cell         => $cell,
+  require      => Websphere_application_server::Profile::Dmgr['PROFILE_DMGR_01'],
 }
 MANIFEST
 
@@ -56,19 +66,18 @@ step 'Inject "site.pp" on Master'
 site_pp = create_site_pp(master, :manifest => manifest_erb)
 inject_site_pp(master, get_site_pp_path(master), site_pp)
 
-# Application Server profile manifest
-
+# create cluster
 confine_block(:except, :roles => %w{master dashboard database}) do
   agents.each do |agent|
     step 'Run puppet agent to create profile: appserver:'
-    expect_failure('Expected to fail due to FM-5093, FM-5130, and FM-5150') do
+    expect_failure('Expected to fail due to FM-5093, FM-5130, FM-5150, and FM-5211') do
       on(agent, puppet('agent -t'), :acceptable_exit_codes => 1) do |result|
         assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
       end
     end
 
-    step "Verify the appserver profile is created: PROFILE_APP_001"
-    # Comment out the below line due to FM-5093, FM-5130, and FM-5150
-    #verify_file_exist?("#{profile_base}/PROFILE_APP_001")
+    step 'Verify if the cluster exists'
+    # Comment out the below line due to FM-5122
+    #verify_cluster(agent, 'MyCluster01')
   end
 end

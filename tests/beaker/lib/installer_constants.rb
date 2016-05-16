@@ -17,10 +17,12 @@ module WebSphereConstants
   @java_package           = 'com.ibm.websphere.IBMJAVA.v71'
   @java_version           = '7.1.2000.20141116_0823'
 
+  @cell                   = 'CELL_01'
+
   class << self
     attr_reader :base_dir, :instance_base, :profile_base, :was_installer, :instance_name,
                 :package_name,:package_version, :update_package_version, :fixpack_installer,
-                :java_installer, :java_package, :java_version
+                :java_installer, :java_package, :java_version, :cell
   end
 end
 
