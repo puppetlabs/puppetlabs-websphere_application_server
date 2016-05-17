@@ -1,15 +1,14 @@
 require 'spec_helper'
-describe 'websphere' do
+describe 'websphere_application_server' do
 
   let(:facts) do
     {
       :concat_basedir => '/dne',
-      :osfamily       => 'RedHat',
+      :osfamily       => 'Debian',
     }
   end
 
   context 'with default parameters' do
-    it { should contain_class('websphere') }
+    it { is_expected.to contain_class('websphere_application_server') }
   end
-
 end
