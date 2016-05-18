@@ -330,3 +330,34 @@ def verify_cluster(host, cluster_name, cluster_member=nil)
   end
   on(host, command)
 end
+
+# Utilize the WebSphere wsadmin tool with jython:
+#
+# ==== Attributes
+#
+# * +host+ - a PE agent where websphere instance is created
+#
+# * +wsadmin_object+ - the wsadmin object for administrative operations, there are 5 wsadmin objects:
+#                      AdminControl, AdminConfig, AdminApp, AdminTask, and Help
+#
+# * +verified_str+ - the string that need to be verified if it exists in the output of an wsadmin command/script
+#
+# ==== Returns
+#
+# +nil+
+#
+# ==== Raises
+#
+# fail messages
+#
+# ==== Examples
+#
+# Verify if a node scoped variable exists
+# wsadmin_tool("AdminTask.showVariables", "NODE_LOG_ROOT")
+def wsadmin_tool(host, wsadmin_object, verified_str)
+  profile_base = WebSphereConstants.profile_base
+  path          = "#{profile_base}/bin"
+  command = "#{path}/wsadmin.sh -lang jython -c '#{wsadmin_object}' | grep \"#{verified_str}\""
+
+  on(host, command)
+end
