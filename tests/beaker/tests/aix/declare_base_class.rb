@@ -1,6 +1,7 @@
 require 'erb'
 require 'master_manipulator'
 require 'websphere_helper'
+require 'installer_constants'
 test_name 'FM-5068 - C97833 - Declare base class on aix'
 
 # Teardown
@@ -14,11 +15,11 @@ teardown do
   end
 end
 
-pp = <<-MANIFEST
-  $base_dir         = '/opt/IBM'
-  $user             = 'webadmin'
-  $group            = 'webadmins'
+base_dir  = WebSphereConstants.base_dir
+user      = WebSphereConstants.user
+group     = WebSphereConstants.group
 
+pp = <<-MANIFEST
   # Organizational log locations
   file { [
     '/opt/log',
@@ -28,13 +29,13 @@ pp = <<-MANIFEST
     '/opt/log/websphere/wasmgmtlogs',
   ]:
     ensure => 'directory',
-    owner  => $user,
-    group  => $group,
+    owner  => "#{user}",
+    group  => "#{group}",
   }
   class { 'websphere_application_server':
-    user     => $user,
-    group    => $group,
-    base_dir => $base_dir,
+    user     => "#{user}",
+    group    => "#{group}",
+    base_dir => "#{base_dir}",
   }
 MANIFEST
 
