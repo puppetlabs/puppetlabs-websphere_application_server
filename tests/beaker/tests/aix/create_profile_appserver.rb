@@ -33,6 +33,7 @@ java_installer          = WebSphereConstants.java_installer
 java_package            = WebSphereConstants.java_package
 java_version            = WebSphereConstants.java_version
 cell                    = WebSphereConstants.cell
+appserver_title         = WebSphereConstants.appserver_title
 
 local_files_root_path = ENV['FILES'] || "tests/beaker/files"
 manifest_template     = File.join(local_files_root_path, 'websphere_fixpack_manifest.erb')
@@ -41,10 +42,10 @@ manifest_erb          = ERB.new(File.read(manifest_template)).result(binding)
 # create appserver profile manifest:
 pp = <<-MANIFEST
 ->
-websphere_application_server::profile::appserver { 'PROFILE_APP_001':
-  instance_base  => $instance_base,
-  profile_base   => $profile_base,
-  cell           => $cell,
+websphere_application_server::profile::appserver { '#{appserver_title}':
+  instance_base  => "#{instance_base}",
+  profile_base   => "#{profile_base}",
+  cell           => "#{cell}",
   node_name      => "#{node_name}",
 }
 MANIFEST
@@ -69,6 +70,6 @@ confine_block(:except, :roles => %w{master dashboard database}) do
 
     step "Verify the appserver profile is created: PROFILE_APP_001"
     # Comment out the below line due to FM-5093, FM-5130, and FM-5150
-    #verify_file_exist?("#{profile_base}/PROFILE_APP_001")
+    #verify_file_exist?("#{profile_base}/#{appserver_title}")
   end
 end
