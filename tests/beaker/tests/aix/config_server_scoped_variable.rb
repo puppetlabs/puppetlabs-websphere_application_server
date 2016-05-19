@@ -3,7 +3,7 @@ require 'master_manipulator'
 require 'websphere_helper'
 require 'installer_constants'
 
-test_name 'FM-5222 - C93843 - Config node scoped variable'
+test_name 'FM-5222 - C93844 - Config server scoped variable'
 
 #getting a fresh VM from vmPooler
 node_name = get_fresh_node('centos-6-x86_64')
@@ -33,6 +33,11 @@ java_installer          = WebSphereConstants.java_installer
 java_package            = WebSphereConstants.java_package
 java_version            = WebSphereConstants.java_version
 cell                    = WebSphereConstants.cell
+appserver_title         = WebSphereConstants.appserver_title
+dmgr_title              = WebSphereConstants.dmgr_title
+cluster_title           = WebSphereConstants.cluster_title
+cluster_member          = WebSphereConstants.cluster_member
+user                    = WebSphereConstants.user
 
 local_files_root_path = ENV['FILES'] || "tests/beaker/files"
 manifest_template     = File.join(local_files_root_path, 'websphere_fixpack_manifest.erb')
@@ -41,26 +46,54 @@ manifest_erb          = ERB.new(File.read(manifest_template)).result(binding)
 # create appserver profile manifest:
 pp = <<-MANIFEST
 ->
-websphere_application_server::profile::appserver { 'PROFILE_APP_001':
-  instance_base  => $instance_base,
-  profile_base   => $profile_base,
-  cell           => $cell,
+websphere_application_server::profile::appserver { '#{appserver_title}':
+  instance_base  => "#{instance_base}",
+  profile_base   => "#{profile_base}",
+  cell           => "#{cell}",
   node_name      => "#{node_name}",
 }
+->
+websphere_application_server::profile::dmgr { '#{dmgr_title}':
+  instance_base => "#{instance_base}",
+  profile_base  => "#{profile_base}",
+  cell          => "#{cell}",
+  node_name     => "#{node_name}",
+  subscribe     => [
+    Ibm_pkg['WebSphere_fixpack'],
+    Ibm_pkg['Websphere_Java'],
+  ],
+}
 
-websphere_variable { 'CELL_01:server:appNode01:AppServer01':
+websphere_application_server::cluster { '#{cluster_title}':
+  profile_base => "#{profile_base}",
+  dmgr_profile => '#{dmgr_title}',
+  cell         => "#{cell}",
+  require      => Websphere_application_server::Profile::Dmgr['#{dmgr_title}'],
+}
+->
+websphere_application_server::cluster::member { '#{cluster_member}':
   ensure       => 'present',
-  variable     => 'SERVER_LOG_ROOT',
+  cluster      => '#{cluster_title}',
+  node         => "#{node_name}",
+  cell         => "#{cell}",
+  profile_base => "#{profile_base}",
+  dmgr_profile => '#{dmgr_title}',
+}
+->
+websphere_variable { '#{cell}:server:#{node_name}:#{cluster_member}':
+  ensure       => 'present',
+  variable     => 'Server_LOG_ROOT',
   value        => '/opt/log/websphere/appserverlogs',
   scope        => 'server',
-  server       => 'AppServer01',
-  node         => 'appNode01',
-  cell         => $cell,
-  dmgr_profile => 'PROFILE_APP_001',
-  profile_base => $profile_base,
-  user         => 'webadmin',
-  require      => Websphere_application_server::Profile::Appserver['PROFILE_APP_001'],
+  server       => '#{cluster_member}',
+  node         => '#{node_name}',
+  cell         => '#{cell}',
+  dmgr_profile => '#{dmgr_title}',
+  profile_base => "#{profile_base}",
+  user         => '#{user}',
+  require      => Websphere_application_server::Profile::Appserver['#{appserver_title}'],
 }
+
 MANIFEST
 
 step 'add create profile manifest to manifest_erb file'

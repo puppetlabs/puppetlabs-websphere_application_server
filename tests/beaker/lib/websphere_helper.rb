@@ -355,9 +355,9 @@ end
 # Verify if a node scoped variable exists
 # wsadmin_tool("AdminTask.showVariables", "NODE_LOG_ROOT")
 def wsadmin_tool(host, wsadmin_object, verified_str)
-  profile_base = WebSphereConstants.profile_base
+  profile_base  = WebSphereConstants.profile_base
   path          = "#{profile_base}/bin"
-  command = "#{path}/wsadmin.sh -lang jython -c '#{wsadmin_object}' | grep \"#{verified_str}\""
+  command       = "#{path}/wsadmin.sh -lang jython -c '#{wsadmin_object}' | grep \"#{verified_str}\""
 
   on(host, command)
 end

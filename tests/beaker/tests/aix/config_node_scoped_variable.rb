@@ -33,6 +33,8 @@ java_installer          = WebSphereConstants.java_installer
 java_package            = WebSphereConstants.java_package
 java_version            = WebSphereConstants.java_version
 cell                    = WebSphereConstants.cell
+appserver_title         = WebSphereConstants.appserver_title
+user                    = WebSphereConstants.user
 
 local_files_root_path = ENV['FILES'] || "tests/beaker/files"
 manifest_template     = File.join(local_files_root_path, 'websphere_fixpack_manifest.erb')
@@ -41,24 +43,24 @@ manifest_erb          = ERB.new(File.read(manifest_template)).result(binding)
 # create appserver profile manifest:
 pp = <<-MANIFEST
 ->
-websphere_application_server::profile::appserver { 'PROFILE_APP_001':
-  instance_base  => $instance_base,
-  profile_base   => $profile_base,
-  cell           => $cell,
+websphere_application_server::profile::appserver { '#{appserver_title}':
+  instance_base  => "#{instance_base}",
+  profile_base   => "#{profile_base}",
+  cell           => "#{cell}",
   node_name      => "#{node_name}",
 }
 
-websphere_variable { 'CELL_01:node:appNode01':
+websphere_variable { "#{cell}:node:#{node_name}":
   ensure       => 'present',
   variable     => 'NODE_LOG_ROOT',
-  value        => '/var/log/websphere/wasmgmtlogs/appNode01',
+  value        => "/var/log/websphere/wasmgmtlogs/#{node_name}",
   scope        => 'node',
-  node         => 'appNode01',
-  cell         => $cell,
-  dmgr_profile => 'PROFILE_APP_001',
-  profile_base => $profile_base,
-  user         => 'webadmin',
-  require      => Websphere_application_server::Profile::Appserver['PROFILE_APP_001'],
+  node         => "#{node_name}",
+  cell         => "#{cell}",
+  dmgr_profile => "#{appserver_title}",
+  profile_base => "#{profile_base}",
+  user         => "#{user}",
+  require      => Websphere_application_server::Profile::Appserver['#{appserver_title}'],
 }
 MANIFEST
 
