@@ -33,6 +33,11 @@ java_installer          = WebSphereConstants.java_installer
 java_package            = WebSphereConstants.java_package
 java_version            = WebSphereConstants.java_version
 cell                    = WebSphereConstants.cell
+dmgr_title              = WebSphereConstants.dmgr_title
+cluster_title           = WebSphereConstants.cluster_title
+cluster_member          = WebSphereConstants.cluster_member
+user                    = WebSphereConstants.user
+group                   = WebSphereConstants.group
 
 local_files_root_path = ENV['FILES'] || "tests/beaker/files"
 manifest_template     = File.join(local_files_root_path, 'websphere_fixpack_manifest.erb')
@@ -40,10 +45,10 @@ manifest_erb          = ERB.new(File.read(manifest_template)).result(binding)
 
 # add cluster member manifest:
 pp = <<-MANIFEST
-websphere_application_server::profile::dmgr { 'PROFILE_DMGR_01':
-  instance_base => $instance_base,
-  profile_base  => $profile_base,
-  cell          => $cell,
+websphere_application_server::profile::dmgr { '#{dmgr_title}':
+  instance_base => "#{instance_base}",
+  profile_base  => "#{profile_base}",
+  cell          => "#{cell}",
   node_name     => "#{node_name}",
   subscribe     => [
     Ibm_pkg['WebSphere_fixpack'],
@@ -51,26 +56,26 @@ websphere_application_server::profile::dmgr { 'PROFILE_DMGR_01':
   ],
 }
 
-websphere_application_server::cluster { 'MyCluster01':
-  profile_base => $profile_base,
-  dmgr_profile => 'PROFILE_DMGR_01',
-  cell         => $cell,
-  require      => Websphere_application_server::Profile::Dmgr['PROFILE_DMGR_01'],
+websphere_application_server::cluster { '#{cluster_title}':
+  profile_base => "#{profile_base}",
+  dmgr_profile => "#{dmgr_title}",
+  cell         => "#{cell}",
+  require      => Websphere_application_server::Profile::Dmgr['#{dmgr_title}'],
 }
 ->
-@@websphere_application_server::cluster::member { 'AppServer01':
+@@websphere_application_server::cluster::member { '#{cluster_member}':
   ensure                           => 'present',
-  cluster                          => 'MyCluster01',
+  cluster                          => "#{cluster_title}",
   node                             => "#{node_name}",
-  cell                             => $cell,
+  cell                             => "#{cell}",
   jvm_maximum_heap_size            => '512',
   jvm_verbose_mode_class           => true,
   jvm_verbose_garbage_collection   => false,
   total_transaction_timeout        => '120',
   client_inactivity_timeout        => '20',
   threadpool_webcontainer_max_size => '75',
-  runas_user                       => 'webadmin',
-  runas_group                      => 'webadmins',
+  runas_user                       => "#{user}",
+  runas_group                      => "#{group}",
 }
 MANIFEST
 

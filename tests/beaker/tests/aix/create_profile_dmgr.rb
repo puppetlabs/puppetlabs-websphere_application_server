@@ -34,6 +34,7 @@ java_installer          = WebSphereConstants.java_installer
 java_package            = WebSphereConstants.java_package
 java_version            = WebSphereConstants.java_version
 cell                    = WebSphereConstants.cell
+dmgr_title              = WebSphereConstants.dmgr_title
 
 local_files_root_path = ENV['FILES'] || "tests/beaker/files"
 manifest_template     = File.join(local_files_root_path, 'websphere_fixpack_manifest.erb')
@@ -41,10 +42,10 @@ manifest_erb          = ERB.new(File.read(manifest_template)).result(binding)
 
 # create appserver profile manifest:
 pp = <<-MANIFEST
-websphere_application_server::profile::dmgr { 'PROFILE_DMGR_01':
-  instance_base => $instance_base,
-  profile_base  => $profile_base,
-  cell          => $cell,
+websphere_application_server::profile::dmgr { '#{dmgr_title}':
+  instance_base => "#{instance_base}",
+  profile_base  => "#{profile_base}",
+  cell          => "#{cell}",
   node_name     => "#{node_name}",
   subscribe     => [
     Ibm_pkg['WebSphere_fixpack'],
@@ -72,6 +73,6 @@ confine_block(:except, :roles => %w{master dashboard database}) do
 
     step 'Verify the dmgr profile is created: PROFILE_DMGR_01'
     # Comment out the below line due to FM-5211
-    #verify_file_exist?("#{profile_base}/PROFILE_DMGR_01")
+    #verify_file_exist?("#{profile_base}/#{dmgr_title}")
   end
 end
