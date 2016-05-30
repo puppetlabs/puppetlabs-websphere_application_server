@@ -1,0 +1,24 @@
+
+# Organizational log locations
+file { [
+    '/opt/log',
+    '/opt/log/websphere',
+    '/opt/log/websphere/appserverlogs',
+    '/opt/log/websphere/applogs',
+    '/opt/log/websphere/wasmgmtlogs',
+]:
+    ensure => 'directory',
+    owner  => '{{user}}',
+    group  => '{{group}}',
+}
+
+
+websphere_application_server::instance { "{{instance_name}}":
+    target       => '{{instance_base}}',
+    package      => '{{package_name}}',
+    version      => '{{package_version}}',
+    profile_base => '{{profile_base}}',
+    repository   => "{{was_installer}}/repository.config",
+    user         => '{{user}}',
+    group        => '{{group}}',
+}

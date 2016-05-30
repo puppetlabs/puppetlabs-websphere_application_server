@@ -20,7 +20,9 @@ group :development, :unit_tests do
   gem 'puppet_facts',            :require => false
   gem 'json',                    :require => false
   gem 'metadata-json-lint'
+  gem 'mustache'
 end
+
 
 beaker_version = ENV['BEAKER_VERSION']
 beaker_rspec_version = ENV['BEAKER_RSPEC_VERSION']

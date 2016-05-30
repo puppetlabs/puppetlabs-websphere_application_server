@@ -1,0 +1,17 @@
+file {"/opt/QA_resources":
+  ensure => "directory",
+}
+mount { "/opt/QA_resources":
+  device  => "int-resources.ops.puppetlabs.net:/tank01/resources0/QA_resources",
+  fstype  => "nfs",
+  ensure  => "mounted",
+  options => "defaults",
+  atboot  => true,
+}
+->
+class { 'ibm_installation_manager':
+  deploy_source => true,
+  group         => 'system',
+  source        => '/opt/QA_resources/ibm_websphere/agent.installer.aix.gtk.ppc_1.8.4000.20151125_0201.zip',
+  target        => '/opt/IBM/InstallationManager',
+}
