@@ -1,63 +1,52 @@
 require 'spec_helper_acceptance'
 require_relative './websphere_helper.rb'
 
-describe 'websphere_application_server class:' do
-  context 'default parameters' do
-    it 'should run successfully' do
-      pp = <<-EOS
-      class { 'websphere_application_server': }
-      EOS
-
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
-    end
-
-    describe file($default_base_dir) do
-      it { is_expected.to be_directory}
-      it { is_expected.to be_owned_by $default_user }
-      it { is_expected.to be_grouped_into $default_group }
-    end
+describe 'user and group are setup' do
+  before(:all) do
+    @template = 'websphere_base.pp.tmpl'
+    @config = {
+      user: 'webadmin',
+      group: 'webadmins',
+    }
+    @manifest = PuppetManifest.new(@template, @config)
+    @result = @manifest.execute
   end
 
-  context 'should set user and group:' do
-    it 'should run successfully' do
-      pp = <<-EOS
-      class { 'websphere_application_server':
-        user  => 'webadmin',
-        group => 'webadmins',
-      }
-      EOS
-
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
-    end
-
-    describe file($default_base_dir) do
-      it { is_expected.to be_directory}
-      it { is_expected.to be_owned_by 'webadmin' }
-      it { is_expected.to be_grouped_into 'webadmins' }
-    end
+  it 'should run successfully' do
+    expect(@result.exit_code).to eq 0
   end
 
-  context 'should be installed at base_dir:' do
-    it 'should run successfully' do
-      pp = <<-EOS
-      file { '/opt/myIBM':
-        ensure => directory,
-      }
-      class { 'websphere_application_server':
-        base_dir => '/opt/myIBM',
-        require  => File['/opt/myIBM'],
-      }
-      EOS
+  describe file($default_base_dir) do
+    it { is_expected.to be_directory}
+    it { is_expected.to be_owned_by 'webadmin' }
+    it { is_expected.to be_grouped_into 'webadmins' }
+  end
 
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
-    end
+end
 
-    describe file('/etc/puppetlabs/facter/facts.d/websphere.yaml') do
-      it { is_expected.to be_file }
-      it { is_expected.to contain %r{websphere_base_dir: /opt/myIBM} }
-    end
+describe 'should be installed at base_dir' do
+  before(:all) do
+    @template = 'websphere_file.pp.tmpl'
+    @config = {
+      base_dir: '/opt/myIBM',
+      require_file: "File['/opt/myIBM']",
+    }
+    @manifest = PuppetManifest.new(@template, @config)
+    @result = @manifest.execute
+  end
+
+  it 'should run successfully' do
+    expect(@result.exit_code).to eq 0
+  end
+
+  describe file($default_base_dir) do
+    it { is_expected.to be_directory}
+    it { is_expected.to be_owned_by 'webadmin' }
+    it { is_expected.to be_grouped_into 'webadmins' }
+  end
+
+  describe file('/etc/puppetlabs/facter/facts.d/websphere.yaml') do
+    it { is_expected.to be_file }
+    it { is_expected.to contain %r{websphere_base_dir: /opt/myIBM} }
   end
 end
