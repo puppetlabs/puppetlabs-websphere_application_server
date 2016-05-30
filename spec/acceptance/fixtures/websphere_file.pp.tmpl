@@ -1,0 +1,8 @@
+file { {{base_dir}}:
+  ensure => directory,
+}
+
+class { websphere_application_server: 
+  base_dir => {{base_dir}},
+  require => {{require_file}}
+}

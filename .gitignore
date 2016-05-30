@@ -25,3 +25,4 @@ spec/fixtures/modules/*
 examples/client_ffdc/
 client_ffdc
 pkg/
+Vagrantfile
