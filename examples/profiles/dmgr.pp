@@ -9,7 +9,7 @@ class websphere_profile::dmgr { # lint:ignore:autoloader_layout
   $instance_name    = 'WebSphere85'
   $instance_base    = "${base_dir}/${instance_name}/AppServer"
   $profile_base     = "${instance_base}/profiles"
-  $was_installer    = '/vagrant/ibm/ndtrial'
+  $was_installer    = '/mnt/QA_resources/ibm_websphere/ndtrial'
 
   $package_name     = 'com.ibm.websphere.NDTRIAL.v85'
   $package_version  = '8.5.5000.20130514_1044'
@@ -20,7 +20,7 @@ class websphere_profile::dmgr { # lint:ignore:autoloader_layout
   $dmgr_cell        = 'CELL_01'
   $dmgr_node        = 'dmgrNode01'
 
-  $java7_installer  = '/vagrant/ibm/java7'
+  $java7_installer  = '/mnt/QA_resources/ibm_websphere/ibm_was_java'
   $java7_package    = 'com.ibm.websphere.IBMJAVA.v71'
   $java7_version    = '7.1.2000.20141116_0823'
 
