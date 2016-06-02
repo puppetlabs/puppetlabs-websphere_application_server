@@ -12,7 +12,7 @@ class websphere_profile::appserver { # lint:ignore:autoloader_layout
   $instance_base    = "${base_dir}/${instance_name}/AppServer"
   $profile_base     = "${instance_base}/profiles"
 
-  $was_installer    = '/vagrant/ibm/ndtrial'
+  $was_installer    = '/mnt/QA_resources/ibm_websphere/ndtrial'
   $package_name     = 'com.ibm.websphere.NDTRIAL.v85'
   $package_version  = '8.5.5000.20130514_1044'
   $user             = 'webadmin'
@@ -23,7 +23,7 @@ class websphere_profile::appserver { # lint:ignore:autoloader_layout
   $dmgr_cell        = 'CELL_01'
   $dmgr_node        = 'NODE_DMGR_01'
 
-  $java7_installer  = '/vagrant/ibm/java7'
+  $java7_installer  = '/mnt/QA_resources/ibm_websphere/ibm_was_java'
   $java7_package    = 'com.ibm.websphere.IBMJAVA.v71'
   $java7_version    = '7.1.2000.20141116_0823'
 
@@ -45,6 +45,8 @@ class websphere_profile::appserver { # lint:ignore:autoloader_layout
   ## Export myself as a cluster member
   @@websphere_application_server::cluster::member { 'AppServer01':
     ensure                           => 'present',
+    dmgr_profile                     => $dmgr_profile,
+    profile_base                     => $profile_base,
     cluster                          => 'PuppetCluster01',
     node                             => 'appNode01',
     cell                             => $dmgr_cell,
