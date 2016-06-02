@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-websphere_application_server",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "author": "puppetlabs",
   "summary": "Manages IBM WebSphere Application Server",
   "license": "PuppetLabs-Enterprise",
@@ -28,13 +28,12 @@
         "6",
         "7"
       ]
-    },
+    }
+  ],
+  "requirements": [
     {
-      "operatingsystem": "AIX",
-      "operatingsystemrelease": [
-        "6.1",
-        "7.1"
-      ]
+      "name": "puppet",
+      "version_requirement": ">=4.0.0 < 5.0.0"
     }
   ],
   "dependencies": [
@@ -46,9 +45,8 @@
       "version_requirement":">= 4.6.0 < 5.0.0"
     },
     { "name": "puppetlabs/ibm_installation_manager",
-      "version_requirement": ">= 0.1.0"
+      "version_requirement": ">= 0.2.1 < 1.0.0"
     }
-  ],
-  "tags": ["ibm","websphere","was"]
+  ]
 }
 
