@@ -1,22 +1,33 @@
+require 'beaker'
 require 'beaker-rspec'
-require 'beaker/puppet_install_helper'
 require 'beaker/testmode_switcher/dsl'
 require 'mustache'
+require 'installer_constants'
 
-def timestamp
-  Time.now.strftime('%Y-%m-%d-%H:%M:%S.%L')
+def remote_group(host, group)
+  on(host, "cat /etc/group").stdout.include?(group)
 end
 
-PUPPET_INSTALL_TYPE = ENV['PUPPET_INSTALL_TYPE'] || 'pe'
-puts "Installing [#{PUPPET_INSTALL_TYPE}] put install type here ... #{timestamp}"
-run_puppet_install_helper unless ENV["BEAKER_provision"] == "no"
-puts "Installation complete ... #{timestamp}"
+def make_remote_dir(host, directory)
+  on(host, "test -d #{directory} || mkdir -p #{directory}")
+end
 
-UNSUPPORTED_PLATFORMS = ['Suse','windows','AIX','Solaris']
+def remote_file_exists(host, filepath)
+  on(host, "test -f #{filepath}")
+end
+
+def configure_master
+  hosts.find{ |x| x.host_hash[:roles].include?('master') } ? master : fail("No master node detected by role!")
+  make_remote_dir(master, HelperConstants.websphere_source_dir)
+  
+  unless remote_group(master, "system")
+    on(master, "groupadd system")
+  end
+  on(master, "yum install -y nfs-utils")
+end
 
 RSpec.configure do |c|
   proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
-
   c.formatter = :documentation
 
   if ENV['BEAKER_TESTMODE'] == 'local'
@@ -24,11 +35,16 @@ RSpec.configure do |c|
     return
   end
 
-  unless ENV["BEAKER_provision"] == "no"
-    # Configure all nodes in nodeset
+  if ENV["BEAKER_provision"] == "yes" ||  ENV["BEAKER_reload_dev_module"] == "yes"
     c.before :suite do
       puppet_module_install(:source => proj_root, :module_name => 'websphere_application_server')
     end
+  end
+
+  unless ENV["BEAKER_provision"] == "no"
+    # Configure all nodes in nodeset
+    configure_master
+    install_pe
     hosts.each do |host|
       on host, puppet('module','install','puppet-archive')
       on host, puppet('module','install','puppetlabs-stdlib')
@@ -45,7 +61,6 @@ class PuppetManifest < Mustache
 
     # decouple the config we're munging from the value used in the tests
     config = Marshal.load( Marshal.dump(config) )
-
     config.each do |key, value|
       config_value = self.class.to_generalized_data(value)
       instance_variable_set("@#{key}".to_sym, config_value)
