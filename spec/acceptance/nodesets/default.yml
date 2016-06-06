@@ -1,5 +1,5 @@
 HOSTS:
-  puppet-master:
+  u9e8qf6cejxpe8h.delivery.puppetlabs.net:
     roles:
       - master
       - database
@@ -8,21 +8,21 @@ HOSTS:
     platform: el-6-x86_64
     template: Delivery/Quality Assurance/Templates/vCloud/centos-6-x86_64
     hypervisor: vcloud
-  app-agent:
+  hoafqikwkxbdbci.delivery.puppetlabs.net:
     roles:
       - agent
       - appserver
     platform: el-6-x86_64
     template: Delivery/Quality Assurance/Templates/vCloud/centos-6-x86_64
     hypervisor: vcloud
-  dmgr-agent:
+  q5kvgoq4n0d3ibx.delivery.puppetlabs.net:
     roles:
       - agent
       - dmgr
     platform: el-6-x86_64
     template: Delivery/Quality Assurance/Templates/vCloud/centos-6-x86_64
     hypervisor: vcloud
-  ihs-agent:
+  gg149pb8ommw7xb.delivery.puppetlabs.net:
     roles:
       - agent
       - ihs

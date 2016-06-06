@@ -1,0 +1,17 @@
+HOSTS:
+  joy5v001ap2cp5b.delivery.puppetlabs.net: 
+    roles:
+      - master
+      - database
+      - dashboard
+      - agent
+    platform: el-6-x86_64
+    template: Delivery/Quality Assurance/Templates/vCloud/centos-6-x86_64
+    hypervisor: vcloud
+CONFIG:
+  nfs_server: none
+  consoleport: 443
+  datastore: instance0
+  folder: Delivery/Quality Assurance/Enterprise/Dynamic
+  resourcepool: delivery/Quality Assurance/Enterprise/Dynamic
+  pooling_api: http://vcloud.delivery.puppetlabs.net/

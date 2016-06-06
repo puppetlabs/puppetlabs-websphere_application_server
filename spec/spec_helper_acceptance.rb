@@ -1,22 +1,26 @@
 require 'beaker-rspec'
-require 'beaker/puppet_install_helper'
 require 'beaker/testmode_switcher/dsl'
 require 'mustache'
-
-def timestamp
-  Time.now.strftime('%Y-%m-%d-%H:%M:%S.%L')
-end
-
-PUPPET_INSTALL_TYPE = ENV['PUPPET_INSTALL_TYPE'] || 'pe'
-puts "Installing [#{PUPPET_INSTALL_TYPE}] put install type here ... #{timestamp}"
-run_puppet_install_helper unless ENV["BEAKER_provision"] == "no"
-puts "Installation complete ... #{timestamp}"
+require 'installer_constants'
 
 UNSUPPORTED_PLATFORMS = ['Suse','windows','AIX','Solaris']
+WEBSPHERE_SOURCE_DIR = "/opt/sources/ibm_websphere"
+
+def remote_group(host, group)
+  on(host, "cat /etc/group").stdout.include?(group)
+end
+
+def configure_master
+  hosts.find{ |x| x.host_hash[:roles].include?('master') } ? master : fail("No master node detected by role!")
+  on(master, "mkdir -p #{WEBSPHERE_SOURCE_DIR}")
+  unless remote_group(master, "system")
+    on(master, "groupadd system")
+  end
+  on(master, "yum install -y nfs-utils")
+end
 
 RSpec.configure do |c|
   proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
-
   c.formatter = :documentation
 
   if ENV['BEAKER_TESTMODE'] == 'local'
@@ -24,11 +28,16 @@ RSpec.configure do |c|
     return
   end
 
-  unless ENV["BEAKER_provision"] == "no"
-    # Configure all nodes in nodeset
+  if ENV["BEAKER_provision"] == "yes" ||  ENV["BEAKER_reload_dev_module"] == "yes"
     c.before :suite do
       puppet_module_install(:source => proj_root, :module_name => 'websphere_application_server')
     end
+  end
+
+  unless ENV["BEAKER_provision"] == "no"
+    # Configure all nodes in nodeset
+    configure_master
+    install_pe
     hosts.each do |host|
       on host, puppet('module','install','puppet-archive')
       on host, puppet('module','install','puppetlabs-stdlib')
