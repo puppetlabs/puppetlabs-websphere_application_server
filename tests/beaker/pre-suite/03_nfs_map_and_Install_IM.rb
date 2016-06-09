@@ -3,6 +3,20 @@ require 'websphere_helper'
 
 test_name 'FM-5068 - C97836 - Mapping NFS drive and install IBM Installation Manager'
 
+group   = nil
+source  = nil
+confine_block(:except, :roles => %w{master dashboard database}) do
+  agents.each do |agent|
+    if get_agent_platform(agent) == 'aix'
+      group   = 'system'
+      source  = '/mnt/QA_resources/ibm_websphere/agent.installer.aix.gtk.ppc_1.8.4000.20151125_0201.zip'
+    else
+      group   = 'root'
+      source  = '/mnt/QA_resources/ibm_websphere/agent.installer.linux.gtk.x86_64_1.8.3000.20150606_0047.zip'
+    end
+  end
+end
+
 pp = <<-MANIFEST
 file {"/mnt/QA_resources":
   ensure => "directory",
@@ -17,8 +31,8 @@ mount { "/mnt/QA_resources":
 ->
 class { 'ibm_installation_manager':
   deploy_source => true,
-  group         => 'system',
-  source        => '/mnt/QA_resources/ibm_websphere/agent.installer.aix.gtk.ppc_1.8.4000.20151125_0201.zip',
+  group         => '#{group}',
+  source        => '#{source}',
   target        => '/opt/IBM/InstallationManager',
 }
 MANIFEST
