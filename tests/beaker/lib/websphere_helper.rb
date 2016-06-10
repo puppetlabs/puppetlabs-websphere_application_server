@@ -361,3 +361,32 @@ def wsadmin_tool(host, wsadmin_object, verified_str)
 
   on(host, command)
 end
+
+# determind agent platforms:
+#
+# ==== Attributes
+#
+# * +host+ - a PE agent
+#
+# ==== Returns
+#
+# +string_of_agent_platform+
+#
+# ==== Raises
+#
+# fail messages
+#
+# ==== Examples
+#
+# get_agent_platform(agent)
+#
+def get_agent_platform(host)
+  #getting platform:
+  if (host['platform'] =~ /aix/)
+    return 'aix'
+  elsif (host['platform'] =~ /linux/ or host['platform'] =~ /ubuntu/)
+    return 'linux'
+  else
+    fail_test("#{host['platform']} platform is not supported")
+  end
+end
