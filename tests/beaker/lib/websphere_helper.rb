@@ -90,6 +90,8 @@ end
 #
 # ==== Attributes
 #
+# * +host+ - a PE agent where websphere instance is created
+#
 # * +files+ - a file/directory or an array of files/directories that need to be verified
 # if they are successfully created
 #
@@ -106,19 +108,10 @@ end
 # verify_file_exist?('/opt/log/websphere')
 #
 def verify_file_exist?(host, files)
-  error_message = "File/Directory does not exist: #{files}"
-  if files.kind_of?(Array)
-    files.each do |file|
-      if host.file_exist?(file) == false
-        fail_test error_message
-      end
+  files.each do |file|
+    if host.file_exist?(file) == false
+        raise "File/Directory does not exist: #{file}"
     end
-  elsif files.kind_of(String)
-    if host.file_exist?(files) == false
-      fail_test error_message
-    end
-  else
-    raise Exception
   end
 end
 
@@ -177,6 +170,8 @@ def verify_websphere_created?(host, ws_instance_name)
     command = "/usr/bin/ps -elf | grep -i #{ws_instance_name}"
   elsif (host['platform'] =~ /centos|fedora|debian|oracle|redhat|scientific|sles|ubuntu|el/)
     command = "ps -ef | grep -i #{ws_instance_name}"
+  else
+    fail_test("#{host['platform']} platform is not supported")
   end
 
   on(host, command, :acceptable_exit_codes => 0)

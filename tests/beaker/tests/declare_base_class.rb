@@ -39,7 +39,6 @@ pp = <<-MANIFEST
   }
 MANIFEST
 
-puts pp
 step 'Inject "site.pp" on Master'
 site_pp = create_site_pp(master, :manifest => pp)
 inject_site_pp(master, get_site_pp_path(master), site_pp)
