@@ -105,16 +105,16 @@ end
 #
 # verify_file_exist?('/opt/log/websphere')
 #
-def verify_file_exist?(files)
+def verify_file_exist?(host, files)
   error_message = "File/Directory does not exist: #{files}"
   if files.kind_of?(Array)
     files.each do |file|
-      if agent.file_exist?(file) == false
+      if host.file_exist?(file) == false
         fail_test error_message
       end
     end
   elsif files.kind_of(String)
-    if agent.file_exist?(files) == false
+    if host.file_exist?(files) == false
       fail_test error_message
     end
   else
@@ -175,7 +175,7 @@ def verify_websphere_created?(host, ws_instance_name)
   #getting command line:
   if (host['platform'] =~ /aix/)
     command = "/usr/bin/ps -elf | grep -i #{ws_instance_name}"
-  elsif (host['platform'] =~ /linux/)
+  elsif (host['platform'] =~ /centos|fedora|debian|oracle|redhat|scientific|sles|ubuntu|el/)
     command = "ps -ef | grep -i #{ws_instance_name}"
   end
 
@@ -384,7 +384,7 @@ def get_agent_platform(host)
   #getting platform:
   if (host['platform'] =~ /aix/)
     return 'aix'
-  elsif (host['platform'] =~ /linux/ or host['platform'] =~ /ubuntu/)
+  elsif (host['platform'] =~ /centos|fedora|debian|oracle|redhat|scientific|sles|ubuntu|el/)
     return 'linux'
   else
     fail_test("#{host['platform']} platform is not supported")

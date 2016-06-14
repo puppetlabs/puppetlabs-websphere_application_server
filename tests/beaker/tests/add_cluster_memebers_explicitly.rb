@@ -3,7 +3,7 @@ require 'master_manipulator'
 require 'websphere_helper'
 require 'installer_constants'
 
-test_name 'FM-5188 - C97919 - Add cluster members explicitly on aix'
+test_name 'FM-5188 - C97919 - Add cluster members explicitly'
 
 #getting a fresh VM from vmPooler
 node_name = get_fresh_node('centos-6-x86_64')
@@ -83,7 +83,7 @@ confine_block(:except, :roles => %w{master dashboard database}) do
   agents.each do |agent|
     step 'Run puppet agent to create profile: appserver:'
     expect_failure('Expected to fail due to FM-5093, FM-5130, FM-5150, and FM-5211') do
-      on(agent, puppet('agent -t'), :acceptable_exit_codes => 1) do |result|
+      on(agent, puppet('agent -t --graph'), :acceptable_exit_codes => 1) do |result|
         assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
       end
     end

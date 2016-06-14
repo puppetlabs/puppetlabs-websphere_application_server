@@ -3,7 +3,7 @@ require 'master_manipulator'
 require 'websphere_helper'
 require 'installer_constants'
 
-test_name 'FM-5120 - C97842 - create websphere instance on aix'
+test_name 'FM-5120 - C93836 - create a WebSphere instance'
 
 # Teardown
 teardown do

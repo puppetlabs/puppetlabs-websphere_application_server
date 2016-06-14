@@ -3,7 +3,7 @@ require 'master_manipulator'
 require 'websphere_helper'
 require 'installer_constants'
 
-test_name 'FM-5152 - C97888 - Create profiles on AIX: appserver'
+test_name 'FM-5152 - C93838 - Create appserver profile'
 
 #getting a fresh VM from vmPooler
 node_name = get_fresh_node('centos-6-x86_64')

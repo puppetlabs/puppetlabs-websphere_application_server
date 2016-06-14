@@ -3,7 +3,7 @@ require 'master_manipulator'
 require 'websphere_helper'
 require 'installer_constants'
 
-test_name 'FM-5188 - C97900 - Create cluster on aix'
+test_name 'FM-5188 - C93841 - Create a cluster'
 
 #getting a fresh VM from vmPooler
 node_name = get_fresh_node('centos-6-x86_64')

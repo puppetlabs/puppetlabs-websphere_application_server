@@ -20,6 +20,6 @@ bundle exec beaker \
   --host tests/beaker/configs/aix-71.yml \
   --debug \
   --pre-suite tests/beaker/pre-suite \
-  --tests tests/beaker/tests/aix \
+  --tests tests/beaker/tests \
   --keyfile ~/.ssh/id_rsa-acceptance \
   --load-path tests/beaker/lib

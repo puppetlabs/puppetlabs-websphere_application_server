@@ -3,7 +3,7 @@ require 'master_manipulator'
 require 'websphere_helper'
 require 'installer_constants'
 
-test_name 'FM-5188 - C97889 - Create profiles on AIX: dmgr'
+test_name 'FM-5188 - C93839 - Create dmgr profile'
 
 #getting a fresh VM from vmPooler
 node_name = get_fresh_node('centos-6-x86_64')
