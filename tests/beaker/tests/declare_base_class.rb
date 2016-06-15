@@ -57,12 +57,12 @@ confine_block(:except, :roles => %w{master dashboard database}) do
         #verify_file_exist?(files)
 
         step 'Verify if user and group are created:'
-          on(agent,  "cat /etc/passwd | grep webadmin", :acceptable_exit_codes => [1]) do |result|
-            assert_match(/webadmin/, result.stdout, 'Unexpected error was detected!')
-          end
-          on(agent,  "cat /etc/group | grep webadmins", :acceptable_exit_codes => [1]) do |result|
-            assert_match(/webadmins/, result.stdout, 'Unexpected error was detected!')
-          end
+        on(agent,  "cat /etc/passwd | grep webadmin", :acceptable_exit_codes => [1]) do |result|
+          assert_match(/webadmin/, result.stdout, 'Unexpected error was detected!')
+        end
+        on(agent,  "cat /etc/group | grep webadmins", :acceptable_exit_codes => [1]) do |result|
+          assert_match(/webadmins/, result.stdout, 'Unexpected error was detected!')
+        end
       end
     else #if not AIX
       on(agent, puppet('agent -t'), :acceptable_exit_codes => [0,2]) do |result|
