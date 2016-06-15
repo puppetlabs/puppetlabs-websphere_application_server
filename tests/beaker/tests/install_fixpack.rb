@@ -3,7 +3,7 @@ require 'master_manipulator'
 require 'websphere_helper'
 require 'installer_constants'
 
-test_name 'FM-5141 - C97867 - Install IBM fixpacks on aix'
+test_name 'FM-5141 - C93837 - Install IBM fixpacks'
 
 # Teardown
 teardown do
