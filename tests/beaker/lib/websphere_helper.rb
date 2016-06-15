@@ -108,10 +108,8 @@ end
 # verify_file_exist?('/opt/log/websphere')
 #
 def verify_file_exist?(host, files)
-  files.each do |file|
-    if host.file_exist?(file) == false
-        raise "File/Directory does not exist: #{file}"
-    end
+  [*files].each do |file|
+    assert(host.file_exist?(file), "Expected file/directory does not exist: #{file}")
   end
 end
 
