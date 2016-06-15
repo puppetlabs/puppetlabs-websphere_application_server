@@ -20,7 +20,8 @@ group :development, :unit_tests do
   gem 'puppet_facts',            :require => false
   gem 'json',                    :require => false
   gem 'metadata-json-lint'
-  gem 'mustache'
+  gem 'mustache', '0.99.8'
+  gem 'parallel_tests'
 end
 
 
@@ -40,6 +41,7 @@ group :system_tests do
   end
   gem 'serverspec',    :require => false
   gem 'master_manipulator', '1.1.2',  :require => false
+  gem "beaker-testmode_switcher", :require => false
   gem 'beaker-puppet_install_helper', :require => false
 end
 

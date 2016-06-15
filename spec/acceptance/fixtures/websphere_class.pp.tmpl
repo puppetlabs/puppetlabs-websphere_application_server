@@ -1,0 +1,8 @@
+class { '{{classname}}':
+  {{#optional}}
+    {{k}}   => '{{v}}',
+  {{/optional}}
+  {{#test}}
+    {{k}}   => {{v}},
+  {{/test}}
+}
