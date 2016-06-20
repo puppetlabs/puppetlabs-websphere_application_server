@@ -23,7 +23,7 @@ def configure_master
   unless remote_group(master, "system")
     on(master, "groupadd system")
   end
-  on(master, "yum install -y nfs-utils")
+  on(master, "puppet module install derdanne-nfs")
 end
 
 RSpec.configure do |c|
@@ -43,8 +43,9 @@ RSpec.configure do |c|
 
   unless ENV["BEAKER_provision"] == "no"
     # Configure all nodes in nodeset
-    configure_master
     install_pe
+    configure_master
+
     hosts.each do |host|
       on host, puppet('module','install','puppet-archive')
       on host, puppet('module','install','puppetlabs-stdlib')
