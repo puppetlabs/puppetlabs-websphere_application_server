@@ -1,5 +1,6 @@
 require 'beaker'
 require 'beaker-rspec'
+require 'beaker/puppet_install_helper'
 require 'beaker/testmode_switcher/dsl'
 require 'mustache'
 require 'installer_constants'
@@ -26,25 +27,21 @@ def configure_master
   on(master, "puppet module install derdanne-nfs")
 end
 
+run_puppet_install_helper
+
 RSpec.configure do |c|
   proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
   c.formatter = :documentation
 
   if ENV['BEAKER_TESTMODE'] == 'local'
-    puts "Tests are runing in local mode"
+    puts "Tests are running in local mode"
     return
   end
 
-  if ENV["BEAKER_provision"] == "yes" ||  ENV["BEAKER_reload_dev_module"] == "yes"
-    c.before :suite do
-      puppet_module_install(:source => proj_root, :module_name => 'websphere_application_server')
-    end
-  end
-
-  unless ENV["BEAKER_provision"] == "no"
+  if ENV["BEAKER_provision"] != "no"
     # Configure all nodes in nodeset
-    install_pe
     configure_master
+    puppet_module_install(:source => proj_root, :module_name => 'websphere_application_server')
 
     hosts.each do |host|
       on host, puppet('module','install','puppet-archive')
