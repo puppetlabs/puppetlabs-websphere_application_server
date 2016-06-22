@@ -4,7 +4,7 @@
 # This provider uses 'wsadmin' to handle the starting/stopping/restarting
 # of the service.
 #
-require 'puppet/provider/websphere_helper'
+require_relative '../websphere_helper'
 
 Puppet::Type.type(:websphere_cluster_member_service).provide(:wsadmin, :parent => Puppet::Provider::Websphere_Helper) do
 

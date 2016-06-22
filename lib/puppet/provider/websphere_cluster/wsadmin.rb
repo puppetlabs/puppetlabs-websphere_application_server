@@ -6,7 +6,7 @@
 # we're working with, and a system can have several profiles.
 #
 # This provider should just handle the creating and removal of clusters.
-require 'puppet/provider/websphere_helper'
+require_relative '../websphere_helper'
 
 Puppet::Type.type(:websphere_cluster).provide(:wsadmin, :parent => Puppet::Provider::Websphere_Helper) do
 
