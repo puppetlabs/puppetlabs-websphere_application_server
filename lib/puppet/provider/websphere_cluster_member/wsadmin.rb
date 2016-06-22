@@ -3,7 +3,7 @@
 # uses the 'wsadmin' tool to make changes.  We cannot modify the xml data, as
 # it's basically read-only.
 #
-require 'puppet/provider/websphere_helper'
+require_relative '../websphere_helper'
 
 Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, :parent => Puppet::Provider::Websphere_Helper) do
 

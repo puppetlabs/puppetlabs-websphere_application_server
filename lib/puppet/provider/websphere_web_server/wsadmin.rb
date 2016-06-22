@@ -1,4 +1,4 @@
-require 'puppet/provider/websphere_helper'
+require_relative '../websphere_helper'
 
 Puppet::Type.type(:websphere_web_server).provide(:wsadmin, :parent => Puppet::Provider::Websphere_Helper) do
 

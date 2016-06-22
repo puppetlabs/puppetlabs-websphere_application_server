@@ -3,7 +3,7 @@
 # This is pretty ugly.  We execute their stupid 'wsadmin' tool to query and
 # make changes.  That interprets Jython, which is whitespace sensitive.
 # That means we have a bunch of heredocs to provide our commands for it.
-require 'puppet/provider/websphere_helper'
+require_relative '../websphere_helper'
 
 Puppet::Type.type(:websphere_variable).provide(:wsadmin, :parent => Puppet::Provider::Websphere_Helper) do
 
