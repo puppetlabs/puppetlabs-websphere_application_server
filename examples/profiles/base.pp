@@ -8,22 +8,22 @@ class websphere_profile::base { # lint:ignore:autoloader_layout
   $instance_base    = "${base_dir}/${instance_name}/AppServer"
   $profile_base     = "${instance_base}/profiles"
 
-  $was_installer    = '/mnt/QA_resources/ibm_websphere/ndtrial'
+  $was_installer    = '/opt/QA_resources/ibm_websphere/ndtrial'
   $package_name     = 'com.ibm.websphere.NDTRIAL.v85'
   $package_version  = '8.5.5000.20130514_1044'
   $user             = 'webadmin'
   $group            = 'webadmins'
 
-  $java7_installer  = '/mnt/QA_resources/ibm_websphere/ibm_was_java'
+  $java7_installer  = '/opt/QA_resources/ibm_websphere/ibm_was_java'
   $java7_package    = 'com.ibm.websphere.IBMJAVA.v71'
   $java7_version    = '7.1.2000.20141116_0823'
 
   # Declare the IBM Installation Manager class. Make sure IM is installed.
   # We want to install it to /opt/IBM/InstallationManager
-  # We have it downloaded and extracted under /mnt/QA_resources/ibm/IM
+  # We have it downloaded and extracted under /opt/QA_resources/ibm/IM
   class { 'ibm_installation_manager':
     deploy_source => true,
-    source        => '/mnt/QA_resources/ibm_installation_manager/1.8.3/agent.installer.linux.gtk.x86_64_1.8.3000.20150606_0047.zip',
+    source        => '/opt/QA_resources/ibm_installation_manager/1.8.3/agent.installer.linux.gtk.x86_64_1.8.3000.20150606_0047.zip',
     target        => '/opt/IBM/InstallationManager',
   }
 
@@ -63,7 +63,7 @@ class websphere_profile::base { # lint:ignore:autoloader_layout
     ensure        => 'present',
     package       => $package_name,
     version       => '8.5.5004.20141119_1746',
-    repository    => '/mnt/QA_resources/ibm_websphere/FP/repository.config',
+    repository    => '/opt/QA_resources/ibm_websphere/FP/repository.config',
     target        => $instance_base,
     package_owner => $user,
     package_group => $group,
