@@ -16,11 +16,11 @@ module HelperConstants
 end
 
 module WebSphereConstants
-  @base_dir               = '/opt/ibm'
+  @base_dir               = '/opt/IBM'
   @user                   = 'webadmin'
   @group                  = 'webadmins'
-  @instance_base          = '/opt/ibm/WebSphere85/AppServer'
-  @profile_base           = '/opt/ibm/WebSphere85/AppServer/profiles'
+  @instance_base          = '/opt/IBM/WebSphere85/AppServer'
+  @profile_base           = '/opt/IBM/WebSphere85/AppServer/profiles'
 
   @was_installer          = '/opt/QA_resources/ibm_websphere/ndtrial'
 
