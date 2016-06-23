@@ -21,6 +21,13 @@ Puppet::Type.newtype(:websphere_web_server) do
     end
   end
 
+  newparam(:profile) do
+    desc <<-EOT
+      Optional. The profile of the server to use for executing wsadmin
+      commands. Will default to dmgr_profile if not set.
+    EOT
+  end
+
   newparam(:cell) do
     desc <<-EOT
     The cell that this web server should belong to.  This is used for adding

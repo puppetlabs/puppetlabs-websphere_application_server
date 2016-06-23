@@ -21,6 +21,13 @@ Puppet::Type.newtype(:websphere_cluster) do
     end
   end
 
+  newparam(:profile) do
+    desc <<-EOT
+      Optional. The profile of the server to use for executing wsadmin
+      commands. Will default to dmgr_profile if not set.
+    EOT
+  end
+
   newparam(:name) do
     isnamevar
 

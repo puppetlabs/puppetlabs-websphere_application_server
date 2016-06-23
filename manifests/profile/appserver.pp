@@ -102,6 +102,8 @@ define websphere_application_server::profile::appserver (
     ## Modifying SDK requires federation
     if $manage_sdk {
       websphere_sdk { "${title}_${sdk_name}":
+        node                => $node_name,
+        profile_base        => $profile_base,
         profile             => $profile_name,
         server              => 'all',
         sdkname             => $sdk_name,

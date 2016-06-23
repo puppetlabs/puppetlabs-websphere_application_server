@@ -41,12 +41,19 @@ Puppet::Type.newtype(:websphere_federate) do
 
   newparam(:profile) do
     isnamevar
-    desc "The profile to federate"
+    desc "Required. The profile to federate"
     validate do |value|
       unless value =~ /^[-0-9A-Za-z._]+$/
         fail("Invalid profile #{value}")
       end
     end
+  end
+
+  newparam(:dmgr_profile) do
+    desc <<-EOT
+      Optional. The dmgr_profile of the server to use for executing wsadmin
+      commands. Will default to profile if not set.
+    EOT
   end
 
   newparam(:profile_base) do

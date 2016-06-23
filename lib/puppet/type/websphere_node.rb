@@ -53,6 +53,13 @@ Puppet::Type.newtype(:websphere_node) do
     end
   end
 
+  newparam(:profile) do
+    desc <<-EOT
+      Optional. The profile of the server to use for executing wsadmin
+      commands. Will default to dmgr_profile if not set.
+    EOT
+  end
+
   ## We could make this a property later, but we'll need to ask for more
   ## parameters to do so.
   newparam(:hostname) do
