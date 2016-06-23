@@ -4,7 +4,7 @@ class websphere_profile::ihs { # lint:ignore:autoloader_layout
   $instance_name    = 'HTTPServer85'
   $instance_base    = "${ibm_base_dir}/${instance_name}"
 
-  $ihs_installer    = '/vagrant/ibm/ihs'
+  $ihs_installer    = '/opt/QA_resources/ibm_websphere/ihs_ilan'
   $package_name     = 'com.ibm.websphere.IHSILAN.v85'
   $package_version  = '8.5.5000.20130514_1044'
 
@@ -14,8 +14,9 @@ class websphere_profile::ihs { # lint:ignore:autoloader_layout
   $dmgr_profile     = 'PROFILE_DMGR_01'
   $dmgr_cell        = 'CELL_01'
   $dmgr_node        = 'NODE_DMGR_01'
+  $dmgr_host        = 'dmgr-centos'
 
-  $java7_installer  = '/vagrant/ibm/java7'
+  $java7_installer  = '/opt/QA_resources/ibm_websphere/ibm_was_java'
   $java7_package    = 'com.ibm.websphere.IBMJAVA.v71'
   $java7_version    = '7.1.2000.20141116_0823'
 
@@ -40,7 +41,7 @@ class websphere_profile::ihs { # lint:ignore:autoloader_layout
   ibm_pkg { 'Plugins':
     ensure     => 'present',
     target     => "${ibm_base_dir}/Plugins85",
-    repository => '/vagrant/ibm/plg/repository.config',
+    repository => '/opt/QA_resources/ibm_websphere/plg_ilan/repository.config',
     package    => 'com.ibm.websphere.PLGILAN.v85',
     version    => '8.5.5000.20130514_1044',
     require    => Websphere_application_server::Ihs::Instance['HTTPServer85'],
@@ -52,6 +53,7 @@ class websphere_profile::ihs { # lint:ignore:autoloader_layout
     plugin_base  => "${ibm_base_dir}/Plugins85",
     cell         => $dmgr_cell,
     node         => $dmgr_node,
+    dmgr_host    => $dmgr_host,
     httpd_config => '/opt/IBM/HTTPServer85/conf/httpd_test.conf',
     access_log   => '/opt/log/websphere/httpserver/access_log',
     error_log    => '/opt/log/websphere/httpserver/error_log',

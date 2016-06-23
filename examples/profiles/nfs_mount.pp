@@ -1,15 +1,15 @@
 class websphere_profile::nfs_mount {
-  file {"/mnt/QA_resources":
+  file {"/opt/QA_resources":
     ensure => "directory",
   }
-  package { 'nfs-common': }
+  package { 'nfs-utils': }
 
-  mount { "/mnt/QA_resources":
+  mount { "/opt/QA_resources":
     device  => "int-resources.ops.puppetlabs.net:/tank01/resources0/QA_resources",
     fstype  => "nfs",
     ensure  => "mounted",
     options => "defaults",
     atboot  => true,
-    require => Package['nfs-common'],
+    require => Package['nfs-utils'],
   }
 }

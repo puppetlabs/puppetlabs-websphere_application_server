@@ -36,12 +36,30 @@ Puppet::Type.newtype(:websphere_sdk) do
     raise ArgumentError, "Invalid instance_base #{self[:instance_base]}" unless Pathname.new(self[:instance_base]).absolute?
   end
 
+  newparam(:node) do
+    desc <<-EOT
+      The node name.
+    EOT
+  end
+
   newparam(:server) do
     desc <<-EOT
       The server in the scope for this variable.
       This can be a specific server or 'all' to affect all servers
 
       'all' corresponds to the 'managesdk.sh' option '-enableServers'
+    EOT
+  end
+
+  newparam(:dmgr_profile) do
+    desc <<-EOT
+      Optional: The dmgr_profile to use as base profile. Will use profile if unset.
+    EOT
+  end
+
+  newparam(:profile_base) do
+    desc <<-EOT
+      The profile base directory
     EOT
   end
 
@@ -88,6 +106,14 @@ Puppet::Type.newtype(:websphere_sdk) do
   newparam(:user) do
     defaultto 'root'
     desc "The user to run 'wsadmin' with"
+  end
+
+  newparam(:wsadmin_user) do
+    desc "The username for authentication if security is enabled."
+  end
+
+  newparam(:wsadmin_pass) do
+    desc "The username for authentication if security is enabled."
   end
 
   newparam(:username) do

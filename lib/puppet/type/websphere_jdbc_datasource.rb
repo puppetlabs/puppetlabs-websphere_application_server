@@ -33,6 +33,13 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
     EOT
   end
 
+  newparam(:profile) do
+    desc <<-EOT
+      Optional. The profile of the server to use for executing wsadmin
+      commands. Will default to dmgr_profile if not set.
+    EOT
+  end
+
   newparam(:profile_base) do
     desc <<-EOT
     The base directory that profiles are stored.

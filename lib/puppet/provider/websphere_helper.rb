@@ -10,7 +10,8 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
   ## profile-specific), the name of the profile, and credentials, if provided.
   ## Can we use the 'commands' method for this?
   def wascmd(file=nil)
-    wsadmin_cmd = "#{resource[:profile_base]}/#{resource[:dmgr_profile]}/bin/wsadmin.sh -lang jython"
+    profile_name = resource[:profile] || resource[:dmgr_profile]
+    wsadmin_cmd = "#{resource[:profile_base]}/#{profile_name}/bin/wsadmin.sh -lang jython"
 
     if resource[:wsadmin_user] && resource[:wsadmin_pass]
       wsadmin_cmd << " -username '#{resource[:wsadmin_user]}'"
@@ -173,7 +174,6 @@ EOT
   ## We want to make sure we sync the app node with the dmgr when things
   ## change.  This happens automatically anyway, but with a delay.
   def flush
-    Puppet.warning('helper flush!')
     sync_node
   end
 end
