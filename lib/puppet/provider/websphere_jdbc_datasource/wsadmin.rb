@@ -35,16 +35,16 @@ Puppet::Type.type(:websphere_jdbc_datasource).provide(:wsadmin, :parent => Puppe
   def config_props
     case resource[:data_store_helper_class]
     when 'com.ibm.websphere.rsadapter.DB2UniversalDataStoreHelper'
-      configprop = "[[databaseName java.lang.String #{resource[:database]}] "
+      configprop = "[[databaseName \"java.lang.String #{resource[:database]}\"] "
       configprop += "[driverType java.lang.Integer #{resource[:db2_driver]}] "
-      configprop += "[serverName java.lang.String #{resource[:db_server]}] "
+      configprop += "[serverName \"java.lang.String #{resource[:db_server]}\"] "
       configprop += "[portNumber java.lang.Integer #{resource[:db_port]}]]"
     when 'com.ibm.websphere.rsadapter.MicrosoftSQLServerDataStoreHelper'
-      configprop = "[[databaseName java.lang.String #{resource[:database]}] "
+      configprop = "[[databaseName \"java.lang.String #{resource[:database]}\"] "
       configprop += "[portNumber java.lang.Integer #{resource[:db_port]}] "
-      configprop += "[serverName java.lang.String #{resource[:db_server]}]]"
+      configprop += "[serverName \"java.lang.String #{resource[:db_server]}\"]]"
     when 'com.ibm.websphere.rsadapter.Oracle11gDataStoreHelper'
-      configprop = "[[URL java.lang.String #{resource[:url]}]]"
+      configprop = "[[URL java.lang.String \"#{resource[:url]}\"]]"
     else
       raise Puppet::Error, "Can't deal with #{resource[:data_store_helper_class]}"
     end
@@ -53,24 +53,24 @@ Puppet::Type.type(:websphere_jdbc_datasource).provide(:wsadmin, :parent => Puppe
   end
 
   def params_string
-    params_list =  "-name #{resource[:name]} "
-    params_list << "-jndiName #{resource[:jndi_name]} "
+    params_list =  "-name \"#{resource[:name]}\" "
+    params_list << "-jndiName \"#{resource[:jndi_name]}\" "
     params_list << "-dataStoreHelperClassName #{resource[:data_store_helper_class]} "
     params_list << "-configureResourceProperties #{config_props} "
     # append optional parameters
     params_list << "-containerManagedPersistence #{resource[:container_managed_persistence]} " if resource[:container_managed_persistence]
-    params_list << "-componentManagedAuthenticationAlias #{resource[:component_managed_auth_alias]} " if resource[:component_managed_auth_alias]
-    params_list << "-description #{resource[:description]} " if resource[:description]
+    params_list << "-componentManagedAuthenticationAlias \"#{resource[:component_managed_auth_alias]}\" " if resource[:component_managed_auth_alias]
+    params_list << "-description \"#{resource[:description]}\" " if resource[:description]
 
     params_list
   end
 
   def create
-    cmd = <<-EOT
-provider = AdminConfig.getid( '/#{scope('get')}/JDBCProvider:#{resource[:jdbc_provider]}/' )
-AdminTask.createDatasource(provider, '[#{params_string}]" \
+    cmd = <<-EOS
+provider = AdminConfig.getid('/#{scope('get')}/JDBCProvider:#{resource[:jdbc_provider]}/')
+AdminTask.createDatasource(provider, '[#{params_string}]')
 AdminConfig.save()
-EOT
+EOS
 
 
     self.debug "Creating JDBC Datasource with:\n#{cmd}"
