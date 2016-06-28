@@ -92,7 +92,13 @@ class WebSphereHelper
         file {"#{HelperConstants.qa_resources}":
           ensure => "directory",
         }
-        package { 'nfs-utils': }
+
+        if $::osfamily == 'Debian' {
+          $pkg = "nfs-common"
+        } else {
+          $pkg = "nfs-utils"
+        }
+        package { $pkg: }
 
         mount { "#{HelperConstants.qa_resources}":
           device  => "#{HelperConstants.qa_resource_source}",
