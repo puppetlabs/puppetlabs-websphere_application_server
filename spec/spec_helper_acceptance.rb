@@ -89,25 +89,26 @@ class WebSphereHelper
 
   def self.mount_QA_resources
     nfs_pp = <<-MANIFEST
-        file {"#{HelperConstants.qa_resources}":
-          ensure => "directory",
-        }
+      file {"#{HelperConstants.qa_resources}":
+        ensure => "directory",
+      }
 
-        if $::osfamily == 'Debian' {
-          $pkg = "nfs-common"
-        } else {
-          $pkg = "nfs-utils"
-        }
-        package { $pkg: }
+      if $::osfamily == 'Debian' {
+        $pkg = "nfs-common"
+      } else {
+        $pkg = "nfs-utils"
+      }
 
-        mount { "#{HelperConstants.qa_resources}":
-          device  => "#{HelperConstants.qa_resource_source}",
-          fstype  => "nfs",
-          ensure  => "mounted",
-          options => "defaults",
-          atboot  => true,
-          require => Package['nfs-utils'],
-        }
+      package { $pkg: }
+
+      mount { "#{HelperConstants.qa_resources}":
+        device  => "#{HelperConstants.qa_resource_source}",
+        fstype  => "nfs",
+        ensure  => "mounted",
+        options => "defaults",
+        atboot  => true,
+        require => Package[$pkg],
+      }
     MANIFEST
     result = self.agent_execute(nfs_pp)
     fail("nfs mount of QA software failed [#{HelperConstants.qa_resource_source}]") unless result.exit_code.to_s =~ /[0,2]/
