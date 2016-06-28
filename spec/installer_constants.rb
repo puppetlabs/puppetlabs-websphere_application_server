@@ -2,17 +2,10 @@
 module HelperConstants
   @unsupported_platforms    = ['Suse','windows','AIX','Solaris']
   @websphere_source_dir     = '/opt/sources/ibm_websphere'
-  @oracle_dir               = '/opt/oracle'
-  @jdbc_driver              = 'ojdbc6.jar'
-  @oracle_driver_target_dir = @oracle_dir + '/drivers'
-  @oracle_driver_source_dir = 'spec/acceptance/drivers'
-  @oracle_driver_source     = @oracle_driver_source_dir + '/' + @jdbc_driver
-  @oracle_driver_target     = @oracle_driver_target_dir + '/' + @jdbc_driver
   @qa_resources             = '/opt/QA_resources'
   @qa_resource_source       = 'int-resources.ops.puppetlabs.net:/tank01/resources0/QA_resources'
   class << self
-    attr_reader :unsupported_platforms, :websphere_source_dir, :oracle_dir, :jdbc_driver, :oracle_driver_target_dir,
-    :oracle_driver_source_dir, :oracle_driver_source, :oracle_driver_target, :qa_resources, :qa_resource_source
+    attr_reader :unsupported_platforms, :websphere_source_dir, :qa_resources, :qa_resource_source
   end
 end
 
@@ -79,12 +72,12 @@ module JDBCProviderConstants
   @providertype           = 'Oracle JDBC Driver'
   @implementation         = 'Connection pool data source'
   @description            = 'Created by Puppet'
-  @jdbc_driver            = HelperConstants.jdbc_driver
-  @classpath              = HelperConstants.oracle_driver_target
+  @jdbc_driver            = 'ojdbc6.jar'
+  @classpath              = HelperConstants.qa_resources + '/ibm_websphere/oracle/' + @jdbc_driver
 
   class << self
     attr_reader :jdbc_provider, :dmgr_profile, :profile_base, :user, :scope, :cell, :node, :server, :dbtype,
-    :providertype, :implementation, :description, :jdbc_driver, :classpath
+    :providertype, :implementation, :description, :jdbc_driver, :classpath, :oracle_driver_target, :jdbc_driver
   end
 end
 

@@ -26,7 +26,7 @@ def main
       puppet_module_install(:source => proj_root, :module_name => 'websphere_application_server')
 
       hosts.each do |host|
-        WebSphereHelper.mount_QA_resources(host, HelperConstants.qa_resource_source, HelperConstants.qa_resources)
+        WebSphereHelper.mount_QA_resources
         on host, puppet('module','install','puppet-archive')
         on host, puppet('module','install','puppetlabs-concat')
         on host, puppet('module','install','puppetlabs-ibm_installation_manager')
@@ -81,19 +81,30 @@ class WebSphereHelper
   def self.configure_master
     hosts.find{ |x| x.host_hash[:roles].include?('master') } ? master : fail("No master node detected by role!")
     make_remote_dir(master, HelperConstants.websphere_source_dir)
-    make_remote_dir(master, HelperConstants.oracle_driver_target_dir)
-    load_oracle_jdbc_driver(master)
 
     unless remote_group(master, "system")
       on(master, "groupadd system")
     end
-    on(master, "yum install -y nfs-utils")
   end
 
-  def self.mount_QA_resources(host, source, target)
-    make_remote_dir(host, target)
-    on(host, "mount -t nfs #{source} #{target}")
-    fail("Unable to mount the required QA resources [#{source}]") unless self.remote_dir_exists(host, WebSphereConstants.was_installer)
+  def self.mount_QA_resources
+    nfs_pp = <<-MANIFEST
+        file {"/opt/QA_resources":
+          ensure => "directory",
+        }
+        package { 'nfs-utils': }
+
+        mount { "/opt/QA_resources":
+          device  => "int-resources.ops.puppetlabs.net:/tank01/resources0/QA_resources",
+          fstype  => "nfs",
+          ensure  => "mounted",
+          options => "defaults",
+          atboot  => true,
+          require => Package['nfs-utils'],
+        }
+    MANIFEST
+    result = self.agent_execute(nfs_pp)
+    fail("nfs mount of QA software failed [int-resources.ops.puppetlabs.net:/tank01/resources0/QA_resources]") unless result.exit_code.to_s =~ /[0,2]/
   end
 end
 

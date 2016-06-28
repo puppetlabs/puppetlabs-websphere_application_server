@@ -4,11 +4,7 @@ shared_examples 'an idempotent resource' do
   end
 
   it 'should run a second time without changes' do
-    if @manifest.is_a? String
-      second_result = execute_manifest(@manifest, beaker_opts)
-    else
-      second_result = @manifest.execute
-    end
+    second_result = WebSphereHelper.agent_execute(@manifest)
     expect(second_result.exit_code).to eq 0
   end
 end

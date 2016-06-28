@@ -8,7 +8,7 @@ describe 'jdbc layer is setup and working' do
   before(:all) do
     hostname = WebSphereHelper.get_master
 
-    instance_manifest = <<-MANIFEST
+    @manifest = <<-MANIFEST
     websphere_jdbc_provider { '#{JDBCProviderConstants.jdbc_provider}':
       ensure         => 'present',
       dmgr_profile   => '#{JDBCProviderConstants.dmgr_profile}',
@@ -43,10 +43,12 @@ describe 'jdbc layer is setup and working' do
     }
 
     MANIFEST
-    @result = WebSphereHelper.agent_execute(instance_manifest)
+    @result = WebSphereHelper.agent_execute(@manifest)
   end
 
   it 'should run successfully' do
     expect(@result.exit_code).to eq 2
   end
+
+  it_behaves_like 'an idempotent resource'
 end
