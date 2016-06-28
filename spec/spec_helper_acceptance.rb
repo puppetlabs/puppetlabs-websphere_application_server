@@ -89,13 +89,13 @@ class WebSphereHelper
 
   def self.mount_QA_resources
     nfs_pp = <<-MANIFEST
-        file {"/opt/QA_resources":
+        file {"#{HelperConstants.qa_resources}":
           ensure => "directory",
         }
         package { 'nfs-utils': }
 
-        mount { "/opt/QA_resources":
-          device  => "int-resources.ops.puppetlabs.net:/tank01/resources0/QA_resources",
+        mount { "#{HelperConstants.qa_resources}":
+          device  => "#{HelperConstants.qa_resource_source}",
           fstype  => "nfs",
           ensure  => "mounted",
           options => "defaults",
@@ -104,7 +104,7 @@ class WebSphereHelper
         }
     MANIFEST
     result = self.agent_execute(nfs_pp)
-    fail("nfs mount of QA software failed [int-resources.ops.puppetlabs.net:/tank01/resources0/QA_resources]") unless result.exit_code.to_s =~ /[0,2]/
+    fail("nfs mount of QA software failed [#{HelperConstants.qa_resource_source}]") unless result.exit_code.to_s =~ /[0,2]/
   end
 end
 
