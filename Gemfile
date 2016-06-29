@@ -20,7 +20,6 @@ group :development, :unit_tests do
   gem 'puppet_facts',            :require => false
   gem 'json',                    :require => false
   gem 'metadata-json-lint'
-  gem 'mustache', '0.99.8'
   gem 'parallel_tests'
 end
 

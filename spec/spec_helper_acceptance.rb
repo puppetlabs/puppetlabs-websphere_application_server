@@ -2,122 +2,116 @@ require 'beaker'
 require 'beaker-rspec'
 require 'beaker/puppet_install_helper'
 require 'beaker/testmode_switcher/dsl'
-require 'mustache'
 require 'installer_constants'
 
-def remote_group(host, group)
-  on(host, "cat /etc/group").stdout.include?(group)
-end
+# automatically load any shared examples or contexts
+Dir["./spec/support/**/*.rb"].sort.each { |f| require f }
 
-def make_remote_dir(host, directory)
-  on(host, "test -d #{directory} || mkdir -p #{directory}")
-end
+def main
 
-def remote_file_exists(host, filepath)
-  on(host, "test -f #{filepath}")
-end
+  run_puppet_install_helper
 
-def configure_master
-  hosts.find{ |x| x.host_hash[:roles].include?('master') } ? master : fail("No master node detected by role!")
-  make_remote_dir(master, HelperConstants.websphere_source_dir)
-  
-  unless remote_group(master, "system")
-    on(master, "groupadd system")
-  end
-  on(master, "puppet module install derdanne-nfs")
-end
+  RSpec.configure do |c|
+    proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+    c.formatter = :documentation
 
-run_puppet_install_helper
-
-RSpec.configure do |c|
-  proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
-  c.formatter = :documentation
-
-  if ENV['BEAKER_TESTMODE'] == 'local'
-    puts "Tests are running in local mode"
-    return
-  end
-
-  if ENV["BEAKER_provision"] != "no"
-    # Configure all nodes in nodeset
-    configure_master
-    puppet_module_install(:source => proj_root, :module_name => 'websphere_application_server')
-
-    hosts.each do |host|
-      on host, puppet('module','install','puppet-archive')
-      on host, puppet('module','install','puppetlabs-stdlib')
-      on host, puppet('module','install','puppetlabs-concat')
-      on host, puppet('module','install','puppetlabs-ibm_installation_manager')
+    if ENV['BEAKER_TESTMODE'] == 'local'
+      puts "Tests are running in local mode"
+      return
     end
-  end
-end
 
+    if ENV["BEAKER_provision"] != "no"
+      # Configure all nodes in nodeset
+      WebSphereHelper.configure_master
+      puppet_module_install(:source => proj_root, :module_name => 'websphere_application_server')
 
-class PuppetManifest < Mustache
-  def initialize(file, config) # rubocop:disable Metrics/AbcSize
-    @template_file = File.join(Dir.getwd, 'spec', 'acceptance', 'fixtures', file)
-
-    # decouple the config we're munging from the value used in the tests
-    config = Marshal.load( Marshal.dump(config) )
-    config.each do |key, value|
-      config_value = self.class.to_generalized_data(value)
-      instance_variable_set("@#{key}".to_sym, config_value)
-      self.class.send(:attr_accessor, key)
-    end
-  end
-
-  def execute
-    Beaker::TestmodeSwitcher::DSL.execute_manifest(self.render, beaker_opts)
-  end
-
-  def self.to_generalized_data(val)
-    case val
-    when Hash
-      to_generalized_hash_list(val)
-    when Array
-      to_generalized_array_list(val)
-    else
-      val
-    end
-  end
-
-  # returns an array of :k =>, :v => hashes given a Hash
-  # { :a => 'b', :c => 'd' } -> [{:k => 'a', :v => 'b'}, {:k => 'c', :v => 'd'}]
-  def self.to_generalized_hash_list(hash)
-    hash.map { |k, v| { :k => k, :v => v }}
-  end
-
-  # necessary to build like [{ :values => Array }] rather than [[]] when there
-  # are nested hashes, for the sake of Mustache being able to render
-  # otherwise, simply return the item
-  def self.to_generalized_array_list(arr)
-    arr.map do |item|
-      if item.class == Hash
-        {
-          :values => to_generalized_hash_list(item)
-        }
-      else
-        item
+      hosts.each do |host|
+        WebSphereHelper.mount_QA_resources
+        on host, puppet('module','install','puppet-archive')
+        on host, puppet('module','install','puppetlabs-concat')
+        on host, puppet('module','install','puppetlabs-ibm_installation_manager')
+        WebSphereHelper.install_ibm_manager(host) if host.host_hash[:roles].include?('master')
       end
     end
   end
+end
 
-  def self.env_id
-    @env_id ||= (
-      ENV['BUILD_DISPLAY_NAME'] ||
-      (ENV['USER'] + '@' + Socket.gethostname.split('.')[0])
-    ).delete("'")
+class WebSphereHelper
+  def self.get_master
+    hosts.find{ |x| x.host_hash[:roles].include?('master') } ? master : Nil
   end
 
-  def self.rds_id
-    @rds_id ||= (
-      ENV['BUILD_DISPLAY_NAME'] ||
-      (ENV['USER'])
-    ).gsub(/\W+/, '')
+  def self.agent_execute(manifest)
+    Beaker::TestmodeSwitcher::DSL.execute_manifest(manifest, beaker_opts)
   end
 
-  def self.env_dns_id
-    @env_dns_id ||= @env_id.gsub(/[^\\dA-Za-z-]/, '')
+  def self.remote_group(host, group)
+    on(host, "cat /etc/group").stdout.include?(group)
+  end
+
+  def self.make_remote_dir(host, directory)
+    on(host, "test -d #{directory} || mkdir -p #{directory}")
+  end
+
+  def self.remote_dir_exists(host, directory)
+    on(host, "test -d #{directory}")
+  end
+
+  def self.remote_file_exists(host, filepath)
+    on(host, "test -f #{filepath}")
+  end
+
+  def self.load_oracle_jdbc_driver(host, source=HelperConstants.oracle_driver_source, target=HelperConstants.oracle_driver_target)
+    Beaker::DSL::Helpers::HostHelpers::scp_to(host, source, target)
+    fail("Failed to transfer the file [#{source}] to the remote") unless remote_file_exists(host, target)
+  end
+
+  def self.install_ibm_manager(host)
+    ibm_install_pp = <<-MANIFEST
+    class { 'ibm_installation_manager':
+      deploy_source => true,
+      source        => '/opt/QA_resources/ibm_installation_manager/1.8.3/agent.installer.linux.gtk.x86_64_1.8.3000.20150606_0047.zip',
+      target        => '/opt/IBM/InstallationManager',
+    }
+    MANIFEST
+    result = self.agent_execute(ibm_install_pp)
+    fail("IBM manager failed to install on [#{host}]") unless result.exit_code.to_s =~ /[0,2]/
+  end
+
+  def self.configure_master
+    hosts.find{ |x| x.host_hash[:roles].include?('master') } ? master : fail("No master node detected by role!")
+    make_remote_dir(master, HelperConstants.websphere_source_dir)
+
+    unless remote_group(master, "system")
+      on(master, "groupadd system")
+    end
+  end
+
+  def self.mount_QA_resources
+    nfs_pp = <<-MANIFEST
+      file {"#{HelperConstants.qa_resources}":
+        ensure => "directory",
+      }
+
+      if $::osfamily == 'Debian' {
+        $pkg = "nfs-common"
+      } else {
+        $pkg = "nfs-utils"
+      }
+
+      package { $pkg: }
+
+      mount { "#{HelperConstants.qa_resources}":
+        device  => "#{HelperConstants.qa_resource_source}",
+        fstype  => "nfs",
+        ensure  => "mounted",
+        options => "defaults",
+        atboot  => true,
+        require => Package[$pkg],
+      }
+    MANIFEST
+    result = self.agent_execute(nfs_pp)
+    fail("nfs mount of QA software failed [#{HelperConstants.qa_resource_source}]") unless result.exit_code.to_s =~ /[0,2]/
   end
 end
 
@@ -129,3 +123,6 @@ def beaker_opts
     environment: { }
   }
 end
+
+# execute main
+main
