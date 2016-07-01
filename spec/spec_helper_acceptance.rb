@@ -96,6 +96,7 @@ class WebSphereHelper
       if $::osfamily == 'Debian' {
         $pkg = "nfs-common"
       } else {
+        package {'lvm2': ensure => latest,} # work_around for rhel bug https://bugzilla.redhat.com/show_bug.cgi?id=1325394
         $pkg = "nfs-utils"
       }
 
