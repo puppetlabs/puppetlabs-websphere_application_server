@@ -2,14 +2,11 @@ fixtures:
   repositories:
     concat:
       repo: 'git://github.com/puppetlabs/puppetlabs-concat.git'
-      ref: '1.2.1'
     stdlib:
       repo: 'git://github.com/puppetlabs/puppetlabs-stdlib.git'
-      ref: '4.6.0'
     staging:
       repo: 'git://github.com/nanliu/puppet-staging.git'
-      ref: '1.0.2'
     ibm_installation_manager:
       repo: 'git://github.com/puppetlabs/puppetlabs-ibm_installation_manager.git'
   symlinks:
-    'websphere': "#{source_dir}"
+    'websphere_application_server': "#{source_dir}"
