@@ -52,7 +52,7 @@ class websphere_profile::ihs { # lint:ignore:autoloader_layout
     log_dir      => '/opt/log/websphere/httpserver',
     plugin_base  => "${ibm_base_dir}/Plugins85",
     cell         => $dmgr_cell,
-    node         => $dmgr_node,
+    node_name    => $dmgr_node,
     dmgr_host    => $dmgr_host,
     httpd_config => '/opt/IBM/HTTPServer85/conf/httpd_test.conf',
     access_log   => '/opt/log/websphere/httpserver/access_log',

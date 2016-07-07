@@ -3,7 +3,7 @@ websphere_jvm_log { 'CELL_01:appNode02:node:AppServer02':
   dmgr_profile        => 'PROFILE_DMGR_01',
   cell                => 'CELL_01',
   scope               => 'node',
-  node                => 'appNode02',
+  node_name           => 'appNode02',
   server              => 'AppServer02',
   out_filename        => '/tmp/SystemOut.log',
   out_rollover_type   => 'BOTH',

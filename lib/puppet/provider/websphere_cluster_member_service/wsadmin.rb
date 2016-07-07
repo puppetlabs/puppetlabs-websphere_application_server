@@ -15,7 +15,7 @@ Puppet::Type.type(:websphere_cluster_member_service).provide(:wsadmin, :parent =
 
   def start
     cmd = "\"AdminControl.invoke(AdminControl.queryNames('WebSphere:*,type="
-    cmd += "NodeAgent,node=%s' % '" + resource[:node] + "'), 'launchProcess',"
+    cmd += "NodeAgent,node=%s' % '" + resource[:node_name] + "'), 'launchProcess',"
     cmd += "['" + resource[:name] + "'],['java.lang.String'])\""
 
     self.debug "Starting with command #{cmd}"
@@ -31,7 +31,7 @@ Puppet::Type.type(:websphere_cluster_member_service).provide(:wsadmin, :parent =
       if result =~ /Error found in String ""; cannot create ObjectName/
         msg = <<-END
         Could not start cluster member #{resource[:name]}. The service on
-        node #{resource[:node]} may not be running.
+        node #{resource[:node_name]} may not be running.
         END
         self.notice msg
       end
@@ -43,7 +43,7 @@ Puppet::Type.type(:websphere_cluster_member_service).provide(:wsadmin, :parent =
 
   def restart
     cmd = "\"the_id = AdminControl.queryNames('cell=" + resource[:cell]
-    cmd += ",node=" + resource[:node] + ",j2eeType=J2EEServer,process="
+    cmd += ",node=" + resource[:node_name] + ",j2eeType=J2EEServer,process="
     cmd += resource[:name] + ",*');"
     cmd += "AdminControl.invoke(the_id, 'restart', '[]', '[]')\""
 
@@ -55,7 +55,7 @@ Puppet::Type.type(:websphere_cluster_member_service).provide(:wsadmin, :parent =
 
   def stop
     cmd = "\"the_id = AdminControl.queryNames('cell=" + resource[:cell]
-    cmd += ",node=" + resource[:node] + ",j2eeType=J2EEServer,process="
+    cmd += ",node=" + resource[:node_name] + ",j2eeType=J2EEServer,process="
     cmd += resource[:name] + ",*');"
     cmd += "AdminControl.invoke(the_id, 'stop')\""
 
@@ -81,7 +81,7 @@ Puppet::Type.type(:websphere_cluster_member_service).provide(:wsadmin, :parent =
     cmd = wascmd
     cmd += "\"AdminControl.getAttribute(AdminControl.queryNames('WebSphere:*"
     cmd += ",type=Server,node=%s,process=%s' % ('"
-    cmd += resource[:node] + "', '"
+    cmd += resource[:node_name] + "', '"
     cmd += resource[:name] + "')), 'state')\""
 
     ## This actually returns a scripting error if the thing isn't running and

@@ -21,7 +21,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, :parent => Puppet
 
   def create
     cmd = "\"AdminTask.createClusterMember('[-clusterName "
-    cmd += resource[:cluster] + ' -memberConfig [-memberNode ' + resource[:node]
+    cmd += resource[:cluster] + ' -memberConfig [-memberNode ' + resource[:node_name]
     cmd += ' -memberName ' + resource[:name] + ' -memberWeight ' + resource[:weight]
     cmd += ' -genUniquePorts ' + resource[:gen_unique_ports].to_s
     cmd += "]]')\""
@@ -44,7 +44,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, :parent => Puppet
 
   def destroy
     cmd = "\"AdminTask.deleteClusterMember('[-clusterName "
-    cmd += resource[:cluster] + ' -memberNode ' + resource[:node]
+    cmd += resource[:cluster] + ' -memberNode ' + resource[:node_name]
     cmd += ' -memberName ' + resource[:name]
     cmd += "]')\""
 
@@ -53,7 +53,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, :parent => Puppet
 
   ## Helper method for modifying JVM properties
   def jvm_property(name,value)
-    cmd = "\"AdminTask.setJVMProperties('[-nodeName " + resource[:node]
+    cmd = "\"AdminTask.setJVMProperties('[-nodeName " + resource[:node_name]
     cmd += ' -serverName ' + resource[:name] + ' -'
     cmd += name + ' '
     cmd += value
@@ -69,7 +69,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, :parent => Puppet
   def runas_user=(value)
     cmd = "\"the_id = AdminConfig.list('ProcessExecution','(cells/"
     cmd += resource[:cell]
-    cmd += '/nodes/' + resource[:node] + '/servers/'
+    cmd += '/nodes/' + resource[:node_name] + '/servers/'
     cmd += resource[:name] + "|server.xml)');"
     cmd += "AdminConfig.modify(the_id, [['runAsUser', '" + resource[:runas_user]
     cmd += "']])\""
@@ -84,7 +84,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, :parent => Puppet
   def runas_group=(value)
     cmd = "\"the_id = AdminConfig.list('ProcessExecution','(cells/"
     cmd += resource[:cell]
-    cmd += '/nodes/' + resource[:node] + '/servers/'
+    cmd += '/nodes/' + resource[:node_name] + '/servers/'
     cmd += resource[:name] + "|server.xml)');"
     cmd += "AdminConfig.modify(the_id, [['runAsGroup', '" + resource[:runas_group]
     cmd += "']])\""
@@ -102,7 +102,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, :parent => Puppet
   def umask=(value)
     cmd = "\"the_id = AdminConfig.list('ProcessExecution','(cells/"
     cmd += resource[:cell]
-    cmd += '/nodes/' + resource[:node] + '/servers/'
+    cmd += '/nodes/' + resource[:node_name] + '/servers/'
     cmd += resource[:name] + "|server.xml)');"
     cmd += "AdminConfig.modify(the_id, [['umask', '" + resource[:umask]
     cmd += "']])\""
@@ -225,7 +225,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, :parent => Puppet
   def total_transaction_timeout=(value)
     cmd = "\"the_id = AdminConfig.list('TransactionService','(cells/"
     cmd += resource[:cell]
-    cmd += '/nodes/' + resource[:node] + '/servers/'
+    cmd += '/nodes/' + resource[:node_name] + '/servers/'
     cmd += resource[:name] + "|server.xml)');"
     cmd += 'AdminConfig.modify(the_id, \'[[totalTranLifetimeTimeout "'
     cmd += resource[:total_transaction_timeout]
@@ -245,7 +245,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, :parent => Puppet
   def client_inactivity_timeout=(value)
     cmd = "\"the_id = AdminConfig.list('TransactionService','(cells/"
     cmd += resource[:cell]
-    cmd += '/nodes/' + resource[:node] + '/servers/'
+    cmd += '/nodes/' + resource[:node_name] + '/servers/'
     cmd += resource[:name] + "|server.xml)');"
     cmd += 'AdminConfig.modify(the_id, \'[[clientInactivityTimeout "'
     cmd += resource[:client_inactivity_timeout]
@@ -266,7 +266,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, :parent => Puppet
     ## (J|P)ython is whitespace sensitive, and this bit doesn't do well when
     ## being passed as a normal command-line argument.
 cmd = <<END
-the_id=AdminConfig.getid('/Node:#{resource[:node]}/Server:#{resource[:name]}/')
+the_id=AdminConfig.getid('/Node:#{resource[:node_name]}/Server:#{resource[:name]}/')
 tpList=AdminConfig.list('ThreadPool', the_id).split(lineSeparator)
 for tp in tpList:
   if tp.count('WebContainer') == 1:
@@ -289,7 +289,7 @@ END
     ## (J|P)ython is whitespace sensitive, and this bit doesn't do well when
     ## being passed as a normal command-line argument.
 cmd = <<END
-the_id=AdminConfig.getid('/Node:#{resource[:node]}/Server:#{resource[:name]}/')
+the_id=AdminConfig.getid('/Node:#{resource[:node_name]}/Server:#{resource[:name]}/')
 tpList=AdminConfig.list('ThreadPool', the_id).split(lineSeparator)
 for tp in tpList:
   if tp.count('WebContainer') == 1:

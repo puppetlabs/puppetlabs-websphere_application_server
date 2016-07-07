@@ -36,12 +36,6 @@ Puppet::Type.newtype(:websphere_sdk) do
     raise ArgumentError, "Invalid instance_base #{self[:instance_base]}" unless Pathname.new(self[:instance_base]).absolute?
   end
 
-  newparam(:node) do
-    desc <<-EOT
-      The node name.
-    EOT
-  end
-
   newparam(:server) do
     desc <<-EOT
       The server in the scope for this variable.

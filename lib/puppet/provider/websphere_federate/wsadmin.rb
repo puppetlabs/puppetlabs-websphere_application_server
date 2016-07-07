@@ -14,7 +14,7 @@ require 'yaml'
 Puppet::Type.type(:websphere_federate).provide(:wsadmin) do
 
   def exists?
-    path = "#{resource[:profile_base]}/#{resource[:profile]}/config/cells/#{resource[:cell]}/nodes/#{resource[:node]}/servers"
+    path = "#{resource[:profile_base]}/#{resource[:profile]}/config/cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers"
     if File.exists?(path)
       self.debug "Already federated: " + path + " exists"
       return true
@@ -62,7 +62,7 @@ Puppet::Type.type(:websphere_federate).provide(:wsadmin) do
 
       self.debug "result: #{result}"
       unless result =~ /Node .* has been successfully federated/
-        raise Puppet::Error, "#{resource[:node]} may not have been successful federating. Run with --debug for details."
+        raise Puppet::Error, "#{resource[:node_name]} may not have been successful federating. Run with --debug for details."
         false
       end
 
@@ -95,7 +95,7 @@ Puppet::Type.type(:websphere_federate).provide(:wsadmin) do
 
     self.debug "result: #{result}"
     unless result =~ /Removal of node .* is complete/
-      raise Puppet::Error, "#{resource[:node]} may not have been successful unfederating. Run with --debug for details."
+      raise Puppet::Error, "#{resource[:node_name]} may not have been successful unfederating. Run with --debug for details."
       false
     end
 

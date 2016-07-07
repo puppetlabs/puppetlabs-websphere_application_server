@@ -12,7 +12,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
     raise ArgumentError, 'scope is required' if self[:scope].nil?
     raise ArgumentError, 'server is required' if self[:server].nil? and self[:scope].to_s =~ /^server$/i
     raise ArgumentError, 'cell is required' if self[:cell].nil?
-    raise ArgumentError, 'node is required' if self[:node].nil?
+    raise ArgumentError, 'node_name is required' if self[:node_name].nil?
     raise ArgumentError, 'profile is required' if self[:profile].nil?
   end
 
@@ -23,7 +23,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
         /^(.*):(.*):(.*):(.*)$/,
           [
             [:cell, identity ],
-            [:node, identity ],
+            [:node_name, identity ],
             [:scope, identity ],
             [:server, identity ]
           ]
@@ -32,7 +32,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
         /^(.*):(.*):(.*)$/,
           [
             [:cell, identity ],
-            [:node, identity ],
+            [:node_name, identity ],
             [:scope, identity ],
           ]
         ],
@@ -40,7 +40,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
         /^(.*):(.*)$/,
           [
             [:cell, identity ],
-            [:node, identity ]
+            [:node_name, identity ]
           ]
         ],
         [
@@ -174,12 +174,12 @@ Puppet::Type.newtype(:websphere_jvm_log) do
     end
   end
 
-  newparam(:node) do
+  newparam(:node_name) do
     isnamevar
 
     validate do |value|
       unless value =~ /^[-0-9A-Za-z._]+$/
-        raise ArgumentError, "Invalid node: #{value}"
+        raise ArgumentError, "Invalid node_name: #{value}"
       end
     end
   end

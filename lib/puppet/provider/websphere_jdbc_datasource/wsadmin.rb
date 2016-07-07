@@ -10,16 +10,16 @@ Puppet::Type.type(:websphere_jdbc_datasource).provide(:wsadmin, :parent => Puppe
       path     = "cells/#{resource[:cell]}"
     when 'server'
       mod_path = "Cell=#{resource[:cell]},Server=#{resource[:server]}"
-      get      = "Cell:#{resource[:cell]}/Node:#{resource[:node]}/Server:#{resource[:server]}"
-      path     = "cells/#{resource[:cell]}/nodes/#{resource[:node]}/servers/#{resource[:server]}"
+      get      = "Cell:#{resource[:cell]}/Node:#{resource[:node_name]}/Server:#{resource[:server]}"
+      path     = "cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/#{resource[:server]}"
     when 'cluster'
       mod_path = "Cluster=#{resource[:cluster]}"
       get      = "Cell:#{resource[:cell]}/ServerCluster:#{resource[:cluster]}"
       path     = "cells/#{resource[:cell]}/clusters/#{resource[:cluster]}"
     when 'node'
-      mod_path = "Node=#{resource[:node]}"
-      get      = "Cell:#{resource[:cell]}/Node:#{resource[:node]}"
-      path     = "cells/#{resource[:cell]}/nodes/#{resource[:node]}"
+      mod_path = "Node=#{resource[:node_name]}"
+      get      = "Cell:#{resource[:cell]}/Node:#{resource[:node_name]}"
+      path     = "cells/#{resource[:cell]}/nodes/#{resource[:node_name]}"
     end
 
     case what

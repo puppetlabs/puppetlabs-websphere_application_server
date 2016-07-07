@@ -40,7 +40,7 @@ Puppet::Type.newtype(:websphere_app_server) do
     end
   end
 
-  newparam(:node) do
+  newparam(:node_name) do
     desc <<-EOT
       Required. The name of the _node_ to create this server on.  Refer to the
       `websphere_node` type for managing the creation of nodes.

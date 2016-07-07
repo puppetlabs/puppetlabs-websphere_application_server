@@ -35,7 +35,7 @@ Puppet::Type.newtype(:websphere_federate) do
     desc "Required. The dmgr host to federate with"
   end
 
-  newparam(:node) do
+  newparam(:node_name) do
     desc "Required. The node name to federate"
   end
 

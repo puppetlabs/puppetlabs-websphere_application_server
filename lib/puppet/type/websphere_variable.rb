@@ -14,7 +14,7 @@ Puppet::Type.newtype(:websphere_variable) do
         [
           [:cell, identity ],
           [:scope, identity],
-          [:node, identity],
+          [:node_name, identity],
           [:server, identity],
         ]
       ],
@@ -23,7 +23,7 @@ Puppet::Type.newtype(:websphere_variable) do
         [
           [:cell, identity ],
           [:scope, identity],
-          [:node, identity],
+          [:node_name, identity],
         ]
       ],
       [
@@ -46,7 +46,7 @@ Puppet::Type.newtype(:websphere_variable) do
     raise ArgumentError, "Invalid scope #{self[:scope]}: Must be cell, cluster, node, or server" unless self[:scope] =~ /^(cell|cluster|node|server)$/
     raise ArgumentError, 'server is required when scope is server' if self[:server].nil? and self[:scope] == 'server'
     raise ArgumentError, 'cell is required' if self[:cell].nil?
-    raise ArgumentError, 'node is required when scope is server, cell, or node' if self[:node].nil? and self[:scope] =~ /(server|cell|node)/
+    raise ArgumentError, 'node_name is required when scope is server, cell, or node' if self[:node_name].nil? and self[:scope] =~ /(server|cell|node)/
     raise ArgumentError, 'cluster is required when scope is cluster' if self[:cluster].nil? and self[:scope] =~ /^cluster$/
     raise ArgumentError, "Invalid profile_base #{self[:profile_base]}" unless Pathname.new(self[:profile_base]).absolute?
 
@@ -58,7 +58,7 @@ Puppet::Type.newtype(:websphere_variable) do
       end
     end
 
-    [:variable, :server, :cell, :node, :cluster, :profile, :user].each do |value|
+    [:variable, :server, :cell, :node_name, :cluster, :profile, :user].each do |value|
       raise ArgumentError, "Invalid #{value.to_s} #{self[:value]}" unless value =~ /^[-0-9A-Za-z._]+$/
     end
   end
@@ -94,7 +94,7 @@ Puppet::Type.newtype(:websphere_variable) do
     desc "The cell that this variable should be set in"
   end
 
-  newparam(:node) do
+  newparam(:node_name) do
     desc "The node that this variable should be set under"
   end
 

@@ -152,10 +152,10 @@ Puppet::Type.newtype(:websphere_cluster_member) do
     end
   end
 
-  newparam(:node) do
+  newparam(:node_name) do
     validate do |value|
       unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid node #{value}")
+        fail("Invalid node_name #{value}")
       end
     end
   end

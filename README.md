@@ -175,7 +175,7 @@ In the following example, a `websphere::cluster::member` resource is defined on 
 @@websphere_application_server::cluster::member { 'AppServer01':
   ensure                           => 'present',
   cluster                          => 'MyCluster01',
-  node                             => 'appNode01',
+  node_name                        => 'appNode01',
   cell                             => 'CELL_01',
   jvm_maximum_heap_size            => '512',
   jvm_verbose_mode_class           => true,
@@ -198,7 +198,7 @@ To explicitly add each member:
 websphere_application_server::cluster::member { 'AppServer01':
   ensure       => 'present',
   cluster      => 'MyCluster01',
-  node         => 'appNode01',
+  node_name    => 'appNode01',
   cell         => 'CELL_01',
   profile_base => '/opt/IBM/WebSphere/AppServer/profiles',
   dmgr_profile => 'PROFILE_DMGR_01',
@@ -219,7 +219,7 @@ websphere_variable { 'CELL_01:node:appNode01':
   variable     => 'LOG_ROOT',
   value        => '/var/log/websphere/wasmgmtlogs/appNode01',
   scope        => 'node',
-  node         => 'appNode01',
+  node_name    => 'appNode01',
   cell         => 'CELL_01',
   dmgr_profile => 'PROFILE_APP_001',
   profile_base => '/opt/IBM/WebSphere/AppServer/profiles',
@@ -241,7 +241,7 @@ websphere_variable { 'CELL_01:server:appNode01:AppServer01':
   value        => '/opt/log/websphere/appserverlogs',
   scope        => 'server',
   server       => 'AppServer01',
-  node         => 'appNode01',
+  node_name    => 'appNode01',
   cell         => 'CELL_01',
   dmgr_profile => 'PROFILE_APP_001',
   profile_base => $profile_base,
@@ -272,7 +272,7 @@ websphere_jvm_log { "CELL_01:appNode01:node:AppServer01":
   profile_base        => '/opt/IBM/WebSphere/AppServer/profiles',
   cell                => 'CELL_01',
   scope               => 'node',
-  node                => 'appNode01',
+  node_name           => 'appNode01',
   server              => 'AppServer01',
   out_filename        => '/tmp/SystemOut.log',
   out_rollover_type   => 'BOTH',
@@ -313,7 +313,7 @@ websphere_jdbc_provider { 'Puppet Test':
   user           => 'webadmin',
   scope          => 'node',
   cell           => 'CELL_01',
-  node           => 'appNode01',
+  node_name      => 'appNode01',
   server         => 'AppServer01',
   dbtype         => 'Oracle',
   providertype   => 'Oracle JDBC Driver',
@@ -336,7 +336,7 @@ websphere_jdbc_datasource { 'Puppet Test':
   user                          => 'webadmin',
   scope                         => 'node',
   cell                          => 'CELL_01',
-  node                          => 'appNode01',
+  node_name                     => 'appNode01',
   server                        => 'AppServer01',
   jdbc_provider                 => 'Puppet Test',
   jndi_name                     => 'myTest',
@@ -1557,7 +1557,7 @@ instance.
 
 Defaults to `true`
 
-##### `node`
+##### `node_name`
 
 Specifies the node name to use for creation on a DMGR.
 
@@ -1768,7 +1768,7 @@ JVM
 Optional. Boolean. Manages the `disableJIT` setting for the cluster member's
 JVM
 
-##### `node`
+##### `node_name`
 
 The node that this cluster member should be created on.
 
@@ -1861,7 +1861,7 @@ not.
 The name of the application server to create or manage.  Defaults to the
 resource title.
 
-##### `node`
+##### `node_name`
 
 Required. The name of the _node_ to create this server on.  Refer to the
 `websphere_node` type for managing the creation of nodes.
@@ -2014,7 +2014,9 @@ JVM
 Optional. Boolean. Manages the `disableJIT` setting for the cluster member's
 JVM
 
-##### `node`
+##### `node_name`
+
+Required. The name of the _node_ to add as a cluster member.
 
 ##### `replicator_entry`
 
@@ -2108,7 +2110,7 @@ Required. The cluster that the cluster member belongs to.
 The name of the cluster member that this service belongs to.  Defaults to the
 resource title.
 
-##### `node`
+##### `node_name`
 
 Required. The name of the _node_ that this cluster member is on. Refer to the
 `websphere_node` type for managing the creation of nodes.
@@ -2162,7 +2164,7 @@ hood.
 
 Required. The name of the cell to federate with.
 
-##### `node`
+##### `node_name`
 
 Required. The name of the _node_ to federate.
 
@@ -2221,7 +2223,7 @@ Valid values are: node, server, cell, or cluster.
 
 Required.  The cell that this datasource should be managed under.
 
-##### `node`
+##### `node_name`
 
 Required if `scope` is server or node.
 
@@ -2369,7 +2371,7 @@ Valid values are: node, server, cell, or cluster.
 
 Required.  The cell that this provider should be managed under.
 
-##### `node`
+##### `node_name`
 
 Required if `scope` is server or node.
 
@@ -2484,7 +2486,7 @@ The server to manage the properties on. Required if `scope` is 'server'
 
 Required. The cell that the node or server belongs to
 
-##### `node`
+##### `node_name`
 
 Required.  The node to manage properties on.
 
@@ -2549,7 +2551,7 @@ Time period (log repeat time) for time-based log rotation of SystemErr. 1-24.
 The name of the application server to create or manage.  Defaults to the
 resource title.
 
-##### `node`
+##### `node_name`
 
 Required. The name of the _node_ to create this server on.  Refer to the
 `websphere_node` type for managing the creation of nodes.
@@ -2597,7 +2599,7 @@ The name of the node to add. Defaults to the resource's title.
 
 The hostname that the server can be reached at - probably the FQDN.
 
-##### `node`
+##### `node_name`
 
 The name of the node manage.  Synonomous with `name`.  Defaults to the value
 of `name`.  I'm not sure why both exist - name is actually only used to
@@ -2713,11 +2715,6 @@ that are created with the manageprofiles command. The -sdkname parameter
 specifies the default SDK name to use. The sdkName value must be an SDK
 name that is enabled for the product installation.
 
-##### `node`
-
-The name of the _node_ to create this server on.  Refer to the
-`websphere_node` type for managing the creation of nodes.
-
 ##### `dmgr_profile`
 
 Required. The name of the DMGR profile to create this application server under.
@@ -2784,7 +2781,7 @@ Required when `scope` is `server`
 
 Required. The cell that this variable should be set in.
 
-##### `node`
+##### `node_name`
 
 The node that this variable should be set under.  This is required when scope
 is set to `node` or `server`
@@ -2853,7 +2850,7 @@ The name of the web server to manage.  Defaults to the resource title.
 The cell that this web server belongs to.  This is used for managing instances
 in a cell.  The DMGR uses this to identify which servers belong to it.
 
-##### `node`
+##### `node_name`
 
 The name of the node to create this web server on.  Refer to the
 `websphere_node` type for information on managing nodes.

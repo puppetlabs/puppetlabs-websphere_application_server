@@ -47,7 +47,7 @@ Puppet::Type.newtype(:websphere_web_server) do
     end
   end
 
-  newparam(:node) do
+  newparam(:node_name) do
     desc "The name of the node to create this web server on"
     validate do |value|
       unless value =~ /^[-0-9A-Za-z._]+$/

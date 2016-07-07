@@ -33,7 +33,7 @@ define websphere_application_server::ihs::server (
   $error_log               = 'error_log',
   $export_node             = true,
   $export_server           = true,
-  $node                    = $::fqdn,
+  $node_name               = $::fqdn,
   $node_hostname           = $::fqdn,
   $node_os                 = undef,
   $cell                    = undef,
@@ -116,7 +116,7 @@ define websphere_application_server::ihs::server (
 
     validate_re($_node_os, '(aix|linux)', "Invalid node_os: #{_node_os}. Must be 'aix' or 'linux'")
 
-    if !$cell or !$node or !$dmgr_host {
+    if !$cell or !$node_name or !$dmgr_host {
       fail('cell, node, and dmgr_host is required when export_node is true')
     }
 
@@ -124,7 +124,7 @@ define websphere_application_server::ihs::server (
 
 
     @@websphere_node { "ihs_${title}_${node_hostname}":
-      node      => $node,
+      node_name => $node_name,
       os        => $_node_os,
       hostname  => $node_hostname,
       cell      => $cell,
@@ -134,7 +134,7 @@ define websphere_application_server::ihs::server (
     if $export_server {
       @@websphere_web_server { "web_${title}_${node_hostname}":
         name              => $title,
-        node              => $node,
+        node_name         => $node_name,
         cell              => $cell,
         admin_user        => $admin_username,
         admin_pass        => $admin_password,
@@ -149,7 +149,5 @@ define websphere_application_server::ihs::server (
         require           => Websphere_node["ihs_${title}_${node_hostname}"],
       }
     }
-
   }
-
 }

@@ -3,7 +3,7 @@ require_relative '../websphere_helper'
 Puppet::Type.type(:websphere_web_server).provide(:wsadmin, :parent => Puppet::Provider::Websphere_Helper) do
 
   def create
-    cmd = "\"AdminTask.createWebServer('#{resource[:node]}', "
+    cmd = "\"AdminTask.createWebServer('#{resource[:node_name]}', "
     cmd += "'[-name #{resource[:name]} -templateName #{resource[:template]} "
     cmd += "-serverConfig [ -webPort #{resource[:web_port]} -serviceName "
     cmd += "-webInstallRoot #{resource[:install_root]} -webProtocol "
@@ -84,7 +84,7 @@ END
 #    cmd += "process=dmgr,platform=common,node=NODE_DMGR_01,"
 #    cmd += "version=8.5.5.4,type=PluginCfgGenerator,mbeanIdentifier=PluginCfgGenerator,cell=CELL_01,spec=1.0', 'propagateKeyring', '[/opt/IBM/WebSphere85/Profiles/PROFILE_DMGR_01/config CELL_01 ihstest ihstest]', '[java.lang.String java.lang.String java.lang.String java.lang.String]')\""
 
-    self.debug "Propagating keyring to '#{resource[:node]}' with jython:\n#{cmd}"
+    self.debug "Propagating keyring to '#{resource[:node_name]}' with jython:\n#{cmd}"
     result = wsadmin(:file => cmd, :user => resource[:user])
     self.debug "Propagation result:\n#{result}"
 
