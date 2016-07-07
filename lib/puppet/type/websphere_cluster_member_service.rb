@@ -95,14 +95,14 @@ Puppet::Type.newtype(:websphere_cluster_member_service) do
     end
   end
 
-  newparam(:node) do
+  newparam(:node_name) do
     desc <<-EOT
       Required. The name of the _node_ that this cluster member is on. Refer to
       the `websphere_node` type for managing the creation of nodes.
     EOT
     validate do |value|
       unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid node #{value}")
+        fail("Invalid node_name #{value}")
       end
     end
   end

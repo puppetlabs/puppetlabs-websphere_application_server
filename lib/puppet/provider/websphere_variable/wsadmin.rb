@@ -20,13 +20,13 @@ Puppet::Type.type(:websphere_variable).provide(:wsadmin, :parent => Puppet::Prov
       mod   = "cells/#{resource[:cell]}/clusters/#{resource[:cluster]}"
       file  += "/config/cells/#{resource[:cell]}/clusters/#{resource[:cluster]}/variables.xml"
     when 'node'
-      query = "/Cell:#{resource[:cell]}/Node:#{resource[:node]}"
-      mod   = "cells/#{resource[:cell]}/nodes/#{resource[:node]}"
-      file  << "/config/cells/#{resource[:cell]}/nodes/#{resource[:node]}/variables.xml"
+      query = "/Cell:#{resource[:cell]}/Node:#{resource[:node_name]}"
+      mod   = "cells/#{resource[:cell]}/nodes/#{resource[:node_name]}"
+      file  << "/config/cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/variables.xml"
     when 'server'
-      query = "/Cell:#{resource[:cell]}/Node:#{resource[:node]}/Server:#{resource[:server]}"
-      mod   = "cells/#{resource[:cell]}/nodes/#{resource[:node]}/servers/#{resource[:server]}"
-      file  << "/config/cells/#{resource[:cell]}/nodes/#{resource[:node]}/servers/#{resource[:server]}/variables.xml"
+      query = "/Cell:#{resource[:cell]}/Node:#{resource[:node_name]}/Server:#{resource[:server]}"
+      mod   = "cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/#{resource[:server]}"
+      file  << "/config/cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/#{resource[:server]}/variables.xml"
     else
       raise Puppet::Error, "Unknown scope: #{resource[:scope]}"
     end

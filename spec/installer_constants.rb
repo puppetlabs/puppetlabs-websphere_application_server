@@ -66,7 +66,7 @@ module JDBCProviderConstants
   @user                   = WebSphereConstants.user
   @scope                  = 'node'
   @cell                   = WebSphereConstants.cell
-  @node                   = 'appNode01'
+  @node_name              = 'appNode01'
   @server                 = WebSphereConstants.cluster_member
   @dbtype                 = 'Oracle'
   @providertype           = 'Oracle JDBC Driver'
@@ -76,7 +76,7 @@ module JDBCProviderConstants
   @classpath              = HelperConstants.qa_resources + '/ibm_websphere/oracle/' + @jdbc_driver
 
   class << self
-    attr_reader :jdbc_provider, :dmgr_profile, :profile_base, :user, :scope, :cell, :node, :server, :dbtype,
+    attr_reader :jdbc_provider, :dmgr_profile, :profile_base, :user, :scope, :cell, :node_name, :server, :dbtype,
     :providertype, :implementation, :description, :jdbc_driver, :classpath, :oracle_driver_target, :jdbc_driver
   end
 end

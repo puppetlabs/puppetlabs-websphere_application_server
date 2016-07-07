@@ -11,14 +11,14 @@ Puppet::Type.type(:websphere_jvm_log).provide(:wsadmin, :parent => Puppet::Provi
     file = "#{resource[:profile_base]}/#{resource[:profile]}"
 
     case resource[:scope]
-    when :node
-      query = "/Cell:#{resource[:cell]}/Node:#{resource[:node]}/Server:nodeagent"
-      mod = "cells/#{resource[:cell]}/nodes/#{resource[:node]}"
-      file << "/config/cells/#{resource[:cell]}/nodes/#{resource[:node]}/servers/nodeagent/server.xml"
+    when :node_name
+      query = "/Cell:#{resource[:cell]}/Node:#{resource[:node_name]}/Server:nodeagent"
+      mod = "cells/#{resource[:cell]}/nodes/#{resource[:node_name]}"
+      file << "/config/cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/nodeagent/server.xml"
     when :server
-      query = "/Cell:#{resource[:cell]}/Node:#{resource[:node]}/Server:#{resource[:server]}"
-      mod = "cells/#{resource[:cell]}/nodes/#{resource[:node]}/servers/#{resource[:server]}"
-      file << "/config/cells/#{resource[:cell]}/nodes/#{resource[:node]}/servers/#{resource[:server]}/server.xml"
+      query = "/Cell:#{resource[:cell]}/Node:#{resource[:node_name]}/Server:#{resource[:server]}"
+      mod = "cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/#{resource[:server]}"
+      file << "/config/cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/#{resource[:server]}/server.xml"
     else
       raise Puppet::Error, "Unknown scope: #{resource[:scope]}"
     end

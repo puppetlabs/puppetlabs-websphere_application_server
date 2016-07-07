@@ -12,7 +12,7 @@ Puppet::Type.newtype(:websphere_node) do
     #### Example
 
     websphere_node { 'IHS Server':
-      node         => 'ihsServer01',
+      node_name    => 'ihsServer01',
       os           => 'linux',
       hostname     => 'ihs01.example.com',
       cell         => 'CELL_01',
@@ -26,10 +26,10 @@ Puppet::Type.newtype(:websphere_node) do
     An IHS server can export a resource:
 
     @@websphere_node { $::fqdn:
-      node     => $::fqdn,
-      os       => 'linux',
-      hostname => $::fqdn,
-      cell     => 'CELL_01',
+      node_name => $::fqdn,
+      os        => 'linux',
+      hostname  => $::fqdn,
+      cell      => 'CELL_01',
 
     A DMGR can collect it and append its profile information to it:
 
@@ -71,7 +71,7 @@ Puppet::Type.newtype(:websphere_node) do
     end
   end
 
-  newparam(:node) do
+  newparam(:node_name) do
     isnamevar
     desc <<-EOT
       The name of the node to manage.  Defaults to the `name` parameter value.

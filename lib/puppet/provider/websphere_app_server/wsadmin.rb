@@ -4,7 +4,7 @@ Puppet::Type.type(:websphere_app_server).provide(:wsadmin, :parent => Puppet::Pr
 
   def create
     #AdminTask.createApplicationServer('appNode01', '[-name asdf -templateName default -genUniquePorts true ]')
-    cmd = "\"AdminTask.createApplicationServer('" + resource[:node]
+    cmd = "\"AdminTask.createApplicationServer('" + resource[:node_name]
     cmd += "', '[-name " + resource[:name] + ' -templateName default '
     cmd += "-genUniquePorts true ]')\""
 
@@ -20,14 +20,14 @@ Puppet::Type.type(:websphere_app_server).provide(:wsadmin, :parent => Puppet::Pr
     result = wsadmin(:command => cmd, :user => resource[:user])
     self.debug result
 
-    unless result =~ /^#{resource[:name]}\(cells\/.*\/nodes\/#{resource[:node]}\/servers\/#{resource[:name]}/
+    unless result =~ /^#{resource[:name]}\(cells\/.*\/nodes\/#{resource[:node_name]}\/servers\/#{resource[:name]}/
       return false
     end
     true
   end
 
   def destroy
-    cmd = "\"AdminTask.deleteServer('[-serverName #{resource[:name]} -nodeName #{resource[:node]} ]')\""
+    cmd = "\"AdminTask.deleteServer('[-serverName #{resource[:name]} -nodeName #{resource[:node_name]} ]')\""
 
     self.debug "Running #{cmd}"
     result = wsadmin(:command => cmd, :user => resource[:user])

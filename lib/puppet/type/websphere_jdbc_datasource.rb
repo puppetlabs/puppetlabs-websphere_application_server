@@ -13,7 +13,7 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
   ensurable
 
   validate do
-    [:dmgr_profile, :name, :user, :node].each do |value|
+    [:dmgr_profile, :name, :user, :node_name].each do |value|
       raise ArgumentError, "Invalid #{value.to_s} #{self[:value]}" unless value =~ /^[-0-9A-Za-z._]+$/
     end
 
@@ -54,7 +54,7 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
     desc "The user to run 'wsadmin' with"
   end
 
-  newparam(:node) do
+  newparam(:node_name) do
     desc "The name of the node to create this application server on"
   end
 

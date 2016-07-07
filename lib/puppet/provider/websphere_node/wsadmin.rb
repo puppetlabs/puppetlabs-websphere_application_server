@@ -3,7 +3,7 @@ require_relative '../websphere_helper'
 Puppet::Type.type(:websphere_node).provide(:wsadmin, :parent => Puppet::Provider::Websphere_Helper) do
 
   def create
-    cmd = "\"AdminTask.createUnmanagedNode('[-nodeName #{resource[:node]} "
+    cmd = "\"AdminTask.createUnmanagedNode('[-nodeName #{resource[:node_name]} "
     cmd += "-hostName #{resource[:hostname]} -nodeOperatingSystem "
     cmd += "#{resource[:os]}]')\""
 
@@ -19,14 +19,14 @@ Puppet::Type.type(:websphere_node).provide(:wsadmin, :parent => Puppet::Provider
     result = wsadmin(:command => cmd, :user => resource[:user])
     self.debug result
 
-    unless result =~ /^('|")?#{resource[:node]}$/
+    unless result =~ /^('|")?#{resource[:node_name]}$/
       return false
     end
     return true
   end
 
   def destroy
-    cmd = "\"AdminTask.removeUnmanagedNode('[-nodeName #{resource[:node]}]')\""
+    cmd = "\"AdminTask.removeUnmanagedNode('[-nodeName #{resource[:node_name]}]')\""
 
     self.debug "Running #{cmd}"
     result = wsadmin(:command => cmd, :user => resource[:user])

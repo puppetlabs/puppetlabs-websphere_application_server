@@ -57,7 +57,7 @@ Puppet::Type.newtype(:websphere_jdbc_provider) do
     EOT
   end
 
-  newparam(:node) do
+  newparam(:node_name) do
     desc <<-EOT
       Required if `scope` is server or node.
     EOT
