@@ -83,7 +83,7 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
     unless server_xml
       server_xml = resource[:profile_base] + '/' \
         + resource[:dmgr_profile] + '/config/cells/' \
-        + resource[:cell] + '/nodes/' + resource[:node] \
+        + resource[:cell] + '/nodes/' + resource[:node_name] \
         + '/servers/' + resource[:server] + '/server.xml'
     end
 
@@ -112,7 +112,7 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
   def sync_node
 
     sync_status = "\"the_id = AdminControl.completeObjectName('type=NodeSync,"
-    sync_status << "node=#{resource[:node]},*');"
+    sync_status << "node=#{resource[:node_name]},*');"
     sync_status << "AdminControl.invoke(the_id, 'isNodeSynchronized')\""
 
     status = wsadmin(
@@ -120,7 +120,7 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
       :user       => resource[:user],
       :failonfail => false
     )
-    self.debug "Sync status #{resource[:node]}: #{status}"
+    self.debug "Sync status #{resource[:node_name]}: #{status}"
 
     unless status.include?("'true'")
       if status =~ /Error found in String ""; cannot create ObjectName/
@@ -129,13 +129,13 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
         isn't running or reachable.  A message about "cannot create ObjectName
         often indicates this.  Ensure that the NODE service is running.
         If the node service isn't running, synchronization will happen once
-        it's started.  Node: #{resource[:node]}
+        it's started.  Node: #{resource[:node_name]}
         "
         EOT
         self.debug msg
       else
         sync = "\"the_id = AdminControl.completeObjectName('type=NodeSync,"
-        sync << "node=#{resource[:node]},*');"
+        sync << "node=#{resource[:node_name]},*');"
         sync << "AdminControl.invoke(the_id, 'sync')\""
 
         result = wsadmin(
@@ -143,7 +143,7 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
           :user       => resource[:user],
           :failonfail => false
         )
-        self.debug "Sync node #{resource[:node]}: #{result}"
+        self.debug "Sync node #{resource[:node_name]}: #{result}"
         result
       end
     end
@@ -156,16 +156,16 @@ ns = AdminControl.queryNames('WebSphere:*,type=Server,name=#{resource[:server]}'
 server = ns[0]
 AdminControl.invoke(server, 'restart')
 EOT
-      self.debug "Restarting #{resource[:node]} #{resource[:server]} with #{cmd}"
+      self.debug "Restarting #{resource[:node_name]} #{resource[:server]} with #{cmd}"
       result = wsadmin(:file => cmd, :user => resource[:user], :failonfail => false)
       self.debug "Result: #{result}"
     end
 
-    if resource[:node]
-      cmd = "\"na = AdminControl.queryNames('type=NodeAgent,node=#{resource[:node]},*');"
+    if resource[:node_name]
+      cmd = "\"na = AdminControl.queryNames('type=NodeAgent,node=#{resource[:node_name]},*');"
       cmd << "AdminControl.invoke(na,'restart','true true')\""
 
-      self.debug "Restarting node: #{resource[:node]} with #{cmd}"
+      self.debug "Restarting node: #{resource[:node_name]} with #{cmd}"
       result = wsadmin(:command => cmd, :user => resource[:user], :failonfail => false)
       self.debug "Result: #{result}"
     end
