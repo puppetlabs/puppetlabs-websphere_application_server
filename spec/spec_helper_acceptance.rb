@@ -41,6 +41,18 @@ class WebSphereHelper
     hosts.find{ |x| x.host_hash[:roles].include?('master') } ? master : Nil
   end
 
+  def self.get_fresh_node(str)
+    system("curl -d --url vcloud.delivery.puppetlabs.net/vm/#{str} > create_node.txt")
+    system("cat create_node.txt")
+    File.readlines('create_node.txt').each do |line|
+      if line =~/hostname/
+        hostname = line.scan(/(:\s+")(.*)(")/)[0][1]
+        return hostname
+      end
+    end
+    system("rm -rf create_node.txt")
+  end
+
   def self.agent_execute(manifest)
     Beaker::TestmodeSwitcher::DSL.execute_manifest(manifest, beaker_opts)
   end
