@@ -106,7 +106,7 @@ module JavaInstallerConstants
 end
 
 module WebSphereCluster
-  @cluster_name                 = 'PuppetCluster01'
+  @cluster_name                 = WebSphereConstants.cluster_title
 
   class << self
     attr_reader :cluster_name
