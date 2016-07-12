@@ -8,8 +8,8 @@ describe 'add cluster members' do
   context "Start testing...." do
     before(:all) do
       hostname = WebSphereHelper.get_master
-      member1 = WebSphereHelper.get_fresh_node('redhat-7-x86_64')
-      member2 = WebSphereHelper.get_fresh_node('centos-6-x86_64')
+     # member1 = WebSphereHelper.get_fresh_node('redhat-7-x86_64')
+     # member2 = WebSphereHelper.get_fresh_node('centos-6-x86_64')
 
       it " explicitly" do
         @manifest = <<-MANIFEST
@@ -19,8 +19,8 @@ describe 'add cluster members' do
           profile_base  => '#{JDBCProviderConstants.profile_base}',
           cell          => '#{JDBCProviderConstants.cell}',
           template_path => "#{WebSphereConstants.instance_base}/profileTemplates/managed",
-          dmgr_host     => "#{hostname}",
-          node_name     => "#{member1}",
+          dmgr_host     => "#{hostname}.delivery.puppetlabs.net",
+          node_name     => "#{hostname}",
           user          => '#{WebSphereConstants.user}',
           group         => '#{WebSphereConstants.group}',
         }
@@ -29,7 +29,7 @@ describe 'add cluster members' do
         #{WebSphereConstants.class_name}::cluster::member { "#{WebSphereConstants.appserver_title}_explicitly":
           ensure       => 'present',
           cluster      => "#{WebSphereCluster.cluster_name}",
-          node_name    => "#{member1}",
+          node_name    => "#{hostname}",
           cell         => "#{WebSphereConstants.cell}",
           profile_base => "#{WebSphereConstants.profile_base}",
           dmgr_profile => "#{WebSphereConstants.dmgr_title}",
@@ -46,8 +46,8 @@ describe 'add cluster members' do
           profile_base  => '#{JDBCProviderConstants.profile_base}',
           cell          => '#{JDBCProviderConstants.cell}',
           template_path => "#{WebSphereConstants.instance_base}/profileTemplates/managed",
-          dmgr_host     => "#{hostname}",
-          node_name     => "#{member2}",
+          dmgr_host     => "#{hostname}.delivery.puppetlabs.net",
+          node_name     => "#{hostname}",
           user          => '#{WebSphereConstants.user}',
           group         => '#{WebSphereConstants.group}',
         }
@@ -56,7 +56,7 @@ describe 'add cluster members' do
         #{WebSphereConstants.class_name}::cluster::member { "#{WebSphereConstants.appserver_title}_exported_res":
         ensure       => 'present',
         cluster      => "#{WebSphereCluster.cluster_name}",
-        node_name    => "#{member2}",
+        node_name    => "#{hostname}",
         cell         => "#{WebSphereConstants.cell}",
         }
         MANIFEST
