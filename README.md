@@ -918,7 +918,7 @@ The group that should "own" this profile.
 
 ##### `dmgr_host`
 
-String. Defaults to `$::fqdn`
+Required. String containing the `$dmgr_host` value defined in `websphere_application_server::profile::dmgr`.
 
 The address used to connect to the DMGR host.
 
