@@ -4,7 +4,7 @@ require 'installer_constants'
 shared_context 'with a websphere dmgr' do
   before(:all) do
     hostname = WebSphereHelper.get_master
-    instance_manifest = <<-MANIFEST
+    @manifest = <<-MANIFEST
       ## Create a DMGR Profile
       #{WebSphereConstants.class_name}::profile::dmgr { '#{WebSphereConstants.dmgr_title}':
         instance_base => '#{WebSphereConstants.instance_base}',
@@ -24,7 +24,7 @@ shared_context 'with a websphere dmgr' do
         require      => Websphere_application_server::Profile::Dmgr['#{WebSphereConstants.dmgr_title}'],
       }
     MANIFEST
-    @result = WebSphereHelper.agent_execute(instance_manifest)
+    @result = WebSphereHelper.agent_execute(@manifest)
   end
 
   it 'should run successfully' do

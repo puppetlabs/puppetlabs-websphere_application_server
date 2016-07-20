@@ -2,7 +2,7 @@ require 'spec_helper_acceptance'
 require 'installer_constants'
 
 describe 'jdbc layer is setup and working' do
-  include_context "with a websphere base"
+  include_context "with a websphere class"
   include_context "with a websphere dmgr"
 
   before(:all) do
