@@ -29,7 +29,7 @@ def main
         WebSphereHelper.mount_QA_resources
         on host, puppet('module','install','puppet-archive')
         on host, puppet('module','install','puppetlabs-concat')
-        on host, puppet('module','install','puppetlabs-ibm_installation_manager')
+        on host, puppet('module','install', '--ignore-dependencies','puppetlabs-ibm_installation_manager')
         WebSphereHelper.install_ibm_manager(host) if host.host_hash[:roles].include?('master')
       end
     end
