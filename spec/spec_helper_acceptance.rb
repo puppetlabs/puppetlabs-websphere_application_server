@@ -41,8 +41,8 @@ class WebSphereHelper
     hosts.find{ |x| x.host_hash[:roles].include?('master') } ? master : Nil
   end
 
-  def self.get_fresh_node(str)
-    system("curl -d --url vcloud.delivery.puppetlabs.net/vm/#{str} > create_node.txt")
+  def self.get_fresh_node(node_name)
+    system("curl -d --url vcloud.delivery.puppetlabs.net/vm/#{node_name} > create_node.txt")
     system("cat create_node.txt")
     File.readlines('create_node.txt').each do |line|
       if line =~/hostname/
@@ -51,6 +51,7 @@ class WebSphereHelper
       end
     end
     system("rm -rf create_node.txt")
+    raise 'Unable to get a fresh node created in the pooler [#{node_name}]'
   end
 
   def self.agent_execute(manifest)

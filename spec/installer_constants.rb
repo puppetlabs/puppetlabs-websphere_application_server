@@ -14,7 +14,7 @@ module WebSphereConstants
   @user                   = 'webadmin'
   @group                  = 'webadmins'
   @instance_base          = @base_dir + '/WebSphere85/AppServer'
-  @profile_base           = @base_dir + '/WebSphere85/AppServer/profiles'
+  @profile_base           = @instance_base + '/profiles'
 
   @was_installer          = HelperConstants.qa_resources + '/ibm_websphere/ndtrial'
   @repository             = @was_installer + '/repository.config'
