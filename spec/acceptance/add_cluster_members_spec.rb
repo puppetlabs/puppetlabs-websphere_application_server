@@ -8,8 +8,8 @@ describe 'add cluster members' do
   context "Start testing...." do
     before(:all) do
       hostname = WebSphereHelper.get_master
-     # member1 = WebSphereHelper.get_fresh_node('redhat-7-x86_64')
-     # member2 = WebSphereHelper.get_fresh_node('centos-6-x86_64')
+      member1 = WebSphereHelper.get_fresh_node('redhat-7-x86_64')
+      member2 = WebSphereHelper.get_fresh_node('centos-6-x86_64')
 
       it " explicitly" do
         @manifest = <<-MANIFEST
