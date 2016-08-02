@@ -56,6 +56,7 @@ define websphere_application_server::profile::dmgr (
     command => "${instance_base}/bin/manageprofiles.sh ${_options} && test -d ${_profile_base}/${profile_name}",
     creates => "${_profile_base}/${profile_name}",
     path    => '/bin:/usr/bin:/sbin:/usr/sbin',
+    cwd     => "${instance_base}/bin",
     user    => $user,
     timeout => 900,
   }
