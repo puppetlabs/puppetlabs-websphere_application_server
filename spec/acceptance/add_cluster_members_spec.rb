@@ -2,7 +2,7 @@ require 'spec_helper_acceptance'
 require 'installer_constants'
 
 describe 'add cluster members' do
-  include_context "with a websphere base"
+  include_context "with a websphere class"
   include_context "with a websphere dmgr"
 
   context "Start testing...." do
