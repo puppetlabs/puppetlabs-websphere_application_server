@@ -59,6 +59,7 @@ define websphere_application_server::profile::dmgr (
     cwd     => "${instance_base}/bin",
     user    => $user,
     timeout => 900,
+    returns => [0, 2]
   }
 
   # Ensure ownership of profile directory is correct
