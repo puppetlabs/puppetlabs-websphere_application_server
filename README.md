@@ -169,7 +169,7 @@ In this example, a cluster called `MyCluster01` will be created.  Provide the `p
 
 There are two ways to add cluster members.  The DMGR can explicitly declare each member or the members can export a resource to add themselves.
 
-In the following example, a `websphere::cluster::member` resource is defined on the application server and exported.
+In the following example, a `websphere_application_server::cluster::member` resource is defined on the application server and exported.
 
 ```puppet
 @@websphere_application_server::cluster::member { 'AppServer01':
@@ -554,7 +554,7 @@ Manages the base installation of a WebSphere instance.
 
 ##### `base_dir`
 
-Default is `$::websphere::base_dir`, as in, it will default to the value of `base_dir` that is specified when declaring the base class `websphere`.
+Default is `$::websphere_application_server::base_dir`, as in, it will default to the value of `base_dir` that is specified when declaring the base class `websphere`.
 
 This should point to the base directory that WebSphere instances should be installed to.  IBM's default is `/opt/IBM`
 
@@ -681,14 +681,14 @@ so here.
 
 Specifies the user that should "own" this instance of WebSphere.
 
-Defaults to `$::websphere::user`, referring to whatever user was provided when
+Defaults to `$::websphere_application_server::user`, referring to whatever user was provided when
 declaring the base `websphere` class.
 
 ##### `group`
 
 Specifies the group that should "own" this instance of WebSphere.
 
-Defaults to `$::websphere::group`, referring to whatever group was provided
+Defaults to `$::websphere_application_server::group`, referring to whatever group was provided
 when declaring the base `websphere` class.
 
 ##### `user_home`
@@ -726,7 +726,7 @@ All files and directories under `path` will be owned by this group.
 
 Manages the ownership of a specified path. See notes below for the usecase for this.
 
-**Parameters within `websphere_application_server::`**:
+**Parameters within `websphere_application_server::ownership`**:
 
 ##### `path`
 
@@ -749,7 +749,7 @@ All files and directories under `path` will be owned by this group.
 
 Manages a DMGR profile.
 
-**Parameters within `websphere_application_server::`**:
+**Parameters within `websphere_application_server::profile::dmgr`**:
 
 ##### `instance_base`
 
@@ -780,13 +780,13 @@ alpha-numeric.
 
 ##### `user`
 
-String. Defaults to `$::websphere::user`
+String. Defaults to `$::websphere_application_server::user`
 
 The user that should "own" this profile.
 
 ##### `group`
 
-String. Defaults to `$::websphere::group`
+String. Defaults to `$::websphere_application_server::group`
 
 The group that should "own" this profile.
 
@@ -819,7 +819,7 @@ should be managed by this defined type instance.  In IBM terms, this is
 `startManager.sh` and `stopManager.sh`
 
 If set to `false`, the service should be managed via the
-`websphere::profile::service` defined type by the user.
+`websphere_application_server::profile::service` defined type by the user.
 
 ##### `manage_sdk`
 
@@ -874,7 +874,7 @@ information.
 
 Manages an application server profile.
 
-**Parameters within `websphere_application_server::`**:
+**Parameters within `websphere_application_server::profile::appserver`**:
 
 ##### `instance_base`
 
@@ -906,13 +906,13 @@ alpha-numeric.
 
 ##### `user`
 
-String. Defaults to `$::websphere::user`
+String. Defaults to `$::websphere_application_server::user`
 
 The user that should "own" this profile.
 
 ##### `group`
 
-String. Defaults to `$::websphere::group`
+String. Defaults to `$::websphere_application_server::group`
 
 The group that should "own" this profile.
 
@@ -969,7 +969,7 @@ should be managed by this defined type instance.  In IBM terms, this is
 `startNode.sh` and `stopNode.sh`
 
 If set to `false`, the service should be managed via the
-`websphere::profile::service` defined type by the user.
+`websphere_application_server::profile::service` defined type by the user.
 
 ##### `manage_sdk`
 
@@ -995,7 +995,7 @@ This is only relevant if `manage_federation` and `manage_sdk` is `true`
 
 Manages the service for a profile (DMGR or Application Server).
 
-**Parameters within `websphere_application_server::`**:
+**Parameters within `websphere_application_server::profile::service`**:
 
 ##### `type`
 
@@ -1026,7 +1026,7 @@ script.
 
 Defaults to `root`.  Typically, the user will match whatever user "owns" the
 instance.  Refer to the `user` parameter for the
-`websphere::profile::appserver` and `websphere::profile::dmgr` types.
+`websphere_application_server::profile::appserver` and `websphere_application_server::profile::dmgr` types.
 
 ##### `ensure`
 
@@ -1087,14 +1087,14 @@ and _start_ the service to restart it.
 
 Manages the installation of an IHS instance.
 
-**Parameters within `websphere_application_server::`**:
+**Parameters within `websphere_application_server::ihs::instance`**:
 
 ##### `base_dir`
 
 Specifies the full path to the _base_ directory that IHS and IBM instances
 should be installed to.  The IBM default is `/opt/IBM`
 
-The module default is `$::websphere::base_dir`
+The module default is `$::websphere_application_server::base_dir`
 
 ##### `target`
 
@@ -1108,7 +1108,7 @@ this resource.
 So if we declared it as such:
 
 ```puppet
-websphere::ihs::instance { 'HTTPServer85': }
+websphere_application_server::ihs::instance { 'HTTPServer85': }
 ```
 
 And assumed IBM defaults, it would be installed to `/opt/IBM/HTTPServer85`
@@ -1216,14 +1216,14 @@ so here.
 
 Specifies the user that should "own" this instance of IHS.
 
-Defaults to `$::websphere::user`, referring to whatever user was provided when
+Defaults to `$::websphere_application_server::user`, referring to whatever user was provided when
 declaring the base `websphere` class.
 
 ##### `group`
 
 Specifies the group that should "own" this instance of IHS.
 
-Defaults to `$::websphere::group`, referring to whatever group was provided
+Defaults to `$::websphere_application_server::group`, referring to whatever group was provided
 when declaring the base `websphere` class.
 
 ##### `user_home`
@@ -1238,7 +1238,7 @@ Defaults to `$target`
 
 Specifies the full path to where log files should be placed.
 
-In `websphere::ihs::instance`, this only manages the directory.
+In `websphere_application_server::ihs::instance`, this only manages the directory.
 
 Defaults to `${target}/logs`
 
@@ -1248,7 +1248,7 @@ Specifies the full path to where individual document roots will be stored.
 
 This is basically the base directory for doc roots.
 
-In `websphere::ihs::instance`, this only manages the directory.
+In `websphere_application_server::ihs::instance`, this only manages the directory.
 
 Defaults to `/opt/web`
 
@@ -1323,7 +1323,7 @@ Defaults to `password`
 
 Manages server instances on an IHS system.
 
-**Parameters within `websphere_application_server::`**:
+**Parameters within `websphere_application_server::ihs::server`**:
 
 ##### `target`
 
@@ -1623,7 +1623,7 @@ collect.  Otherwise, it's optional.
 
 Manage WebSphere clusters.
 
-**Parameters within `websphere_application_server::`**:
+**Parameters within `websphere_application_server::cluster`**:
 
 ##### `ensure`
 
@@ -1660,7 +1660,7 @@ Boolean. Defaults to `true`.
 Specifies whether _exported_ resources relating to WebSphere clusters should
 be _collected_ by this instance of the defined type.
 
-If true, `websphere::cluster::member`, `websphere_cluster_member`, and
+If true, `websphere_application_server::cluster::member`, `websphere_cluster_member`, and
 `websphere_cluster_member_service` resources will be _collected_ that match
 this __cell__.
 
@@ -1676,13 +1676,13 @@ needed for collecting cluster members.  Defaults to `$::fqdn`
 ##### `user`
 
 The user that should run the `wsadmin` commands.  Defaults to
-`$::websphere::user`
+`$::websphere_application_server::user`
 
 #### Defined Type: websphere_application_server::cluster::member
 
 Manage WebSphere cluster members and their services.
 
-**Parameters within `websphere_application_server::`**:
+**Parameters within `websphere_application_server::cluster::member`**:
 
 ##### `ensure`
 
@@ -1814,7 +1814,7 @@ Examples: `PROFILE_DMGR_01` or `dmgrProfile01`
 ##### `profile_base`
 
 Required. The full path to the profiles directory where the `dmgr_profile` can
-be found.  The IBM default is `/opt/IBM/WebSphere/AppServer/profiles`
+be found.  The IBM default is `/opt/IBM/WebSphere/AppServer/profiles`.
 
 ##### `user`
 
@@ -1847,7 +1847,7 @@ to do so.
 
 Manages WebSphere Application Servers
 
-**Parameters within `websphere_application_server::`**:
+**Parameters within `websphere_app_server`**:
 
 ##### `ensure`
 
@@ -1893,7 +1893,7 @@ Optional. The password for `wsadmin` authentication if security is enabled.
 
 Manages the creation of WebSphere clusters on a DMGR.
 
-**Parameters within `websphere_application_server::`**:
+**Parameters within `websphere_cluster`**:
 
 ##### `ensure`
 
@@ -1932,7 +1932,7 @@ Optional. The password for `wsadmin` authentication if security is enabled.
 
 Manages cluster members, including various settings.
 
-**Parameters within `websphere_application_server::`**:
+**Parameters within `websphere_cluster_member`**:
 
 ##### `ensure`
 
@@ -2089,7 +2089,7 @@ Optional. The password for `wsadmin` authentication if security is enabled.
 
 Manages a cluster member service.
 
-**Parameters within `websphere_application_server::`**:
+**Parameters within `websphere_cluster_member_service`**:
 
 ##### `ensure`
 
@@ -2150,7 +2150,7 @@ Optional. The password for `wsadmin` authentication if security is enabled.
 
 Manages the federation of an application server with a cell.
 
-**Parameters within `websphere_application_server::`**:
+**Parameters within `websphere_federate`**:
 
 ##### `ensure`
 
@@ -2205,7 +2205,7 @@ Optional. The password for `addNode.sh` authentication if security is enabled.
 
 Manages datasources.
 
-**Parameters within `websphere_application_server::`**:
+**Parameters within `websphere_jdbc_datasource`**:
 
 ##### `ensure`
 
@@ -2353,7 +2353,7 @@ Optional. The password for `wsadmin` authentication if security is enabled.
 
 Manages JDBC providers.
 
-**Parameters within `websphere_application_server::`**:
+**Parameters within `websphere_jdbc_provider`**:
 
 ##### `ensure`
 
@@ -2470,7 +2470,7 @@ Optional. The password for `wsadmin` authentication if security is enabled.
 
 Manages the JVM logging properties for nodes or servers.
 
-**Parameters within `websphere_application_server::`**:
+**Parameters within `websphere_jvm_log`**:
 
 ##### `scope`
 
@@ -2583,7 +2583,7 @@ Optional. The password for `wsadmin` authentication if security is enabled.
 
 Manages the creation of unmanaged nodes in a WebSphere cell.
 
-**Parameters within `websphere_application_server::`**:
+**Parameters within `websphere_node`**:
 
 ##### `ensure`
 
@@ -2656,7 +2656,7 @@ Optional. The password for `wsadmin` authentication if security is enabled.
 
 Manages the SDK version for a WebSphere profile or server.
 
-**Parameters within `websphere_application_server::`**:
+**Parameters within `websphere_sdk`**:
 
 ##### `ensure`
 
@@ -2742,7 +2742,7 @@ Optional. The password for `wsadmin` authentication if security is enabled.
 
 Manages WebSphere environment variables.
 
-**Parameters within `websphere_application_server::`**:
+**Parameters within `websphere_variable`**:
 
 ##### `ensure`
 
@@ -2833,7 +2833,7 @@ Optional. The password for `wsadmin` authentication if security is enabled.
 
 Manages the creation and configuration of WebSphere web servers.
 
-**Parameters within `websphere_application_server::`**:
+**Parameters within `websphere_web_server`**:
 
 ##### `ensure`
 
