@@ -7,7 +7,8 @@
     * [Beginning with websphere_application_server](#beginning-with-websphere_application_server)
 3. [Usage](#usage)
     * [Creating a websphere_application_server instance](#creating-a-websphere_application_server-instance)
-    * [Install FixPacks](#install-fixpacks)
+    * [Install FixPacks](#fixpacks)
+    * [Installation dependencies](#installation-dependencies)
     * [Creating Profiles](#creating-profiles)
     * [Creating a Cluster](#creating-a-cluster)
     * [Configuring the instance](#configuring-the-instance)
@@ -77,7 +78,7 @@ websphere_application_server::instance { 'WebSphere85':
 }
 ```
 
-### Install FixPacks
+### FixPacks
 
 It's common to install an IBM "FixPack" after the base installation.
 
@@ -109,6 +110,68 @@ ibm_pkg { 'Java7':
   require       => Websphere_application_server::Package['WebSphere_8554'],
 }
 ```
+
+### Installation dependencies
+
+The basic setup of the WebSphere Application Server has dependencies in the
+software installation steps. The module requires the types to be installed in
+the same manifest in the order of class -> instance -> fixpack -> java.
+
+An example is provided below
+
+```
+file { [
+  '/opt/log',
+  '/opt/log/websphere',
+  '/opt/log/websphere/appserverlogs',
+  '/opt/log/websphere/applogs',
+  '/opt/log/websphere/wasmgmtlogs',
+]:
+  ensure => 'directory',
+  owner  => 'wsadmin',
+  group  => 'wsadmins',
+}
+
+class { 'websphere_application_server':
+  user     => 'webadmin',
+  group    => 'webadmins',
+  base_dir => '/opt/IBM',
+}
+
+websphere_application_server::instance { 'WebSphere85':
+  target       => '/opt/IBM/WebSphere/AppServer',
+  package      => 'com.ibm.websphere.NDTRIAL.v85',
+  version      => '8.5.5000.20130514_1044',
+  profile_base => '/opt/IBM/WebSphere/AppServer/profiles',
+  repository   => '/mnt/myorg/was/repository.config',
+}
+
+ibm_pkg { 'WebSphere_8554':
+  ensure        => 'present',
+  package       => 'com.ibm.websphere.NDTRIAL.v85',
+  version       => '8.5.5004.20141119_1746',
+  target        => '/opt/IBM/WebSphere/AppServer',
+  repository    => '/mnt/myorg/was_8554/repository.config',
+  package_owner => 'wsadmin',
+  package_group => 'wsadmins',
+  require       => Websphere_application_server::Instance['WebSphere85'],
+}
+
+ibm_pkg { 'Java7':
+  ensure        => 'present',
+  package       => 'com.ibm.websphere.IBMJAVA.v71',
+  version       => '7.1.2000.20141116_0823',
+  target        => '/opt/IBM/WebSphere/AppServer',
+  repository    => '/mnt/myorg/java7/repository.config',
+  package_owner => 'wsadmin',
+  package_group => 'wsadmins',
+  require       => Websphere_application_server::Package['WebSphere_8554'],
+}
+```
+
+The fixpack must reference a valid instance which is declared in the _same_ manifest.
+Likewise the java install must reference a valid fixpack installation in the _same_
+manifest.
 
 ### Creating Profiles
 
@@ -255,7 +318,7 @@ In the example above is a _server_ scoped variable for the
 `websphere_application_server::cluster::member` defined type.
 
 The server-scoped variables _cannot_ be managed until/unless
-a corresponding cluster member exists on the DMGR. 
+a corresponding cluster member exists on the DMGR.
 
 Optionally, these variables can be declared on the DMGR.  This allow
 setting relationships between the cluster member and the variable resource.
