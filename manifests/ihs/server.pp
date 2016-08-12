@@ -87,6 +87,18 @@ define websphere_application_server::ihs::server (
     creates => $_log_dir,
   }
 
+  file_line { 'Adding user':
+    path => "$_httpd_config",
+    line => 'user $user',
+    match   => "^user.*$",
+  }
+
+  file_line { 'Adding group':
+    path => "$_httpd_config",
+    line => 'group $group',
+    match   => "^user.*$",
+  }
+
   file { "${title}_httpd_config":
     ensure  => 'file',
     path    => $_httpd_config,
@@ -116,8 +128,16 @@ define websphere_application_server::ihs::server (
 
     validate_re($_node_os, '(aix|linux)', "Invalid node_os: #{_node_os}. Must be 'aix' or 'linux'")
 
-    if !$cell or !$node_name or !$dmgr_host {
-      fail('cell, node, and dmgr_host is required when export_node is true')
+    if !$cell {
+      fail('cell is required when export_node is true')
+    }
+
+    if !$node_name {
+      fail('node_name is required when export_node is true')
+    }
+
+    if !$dmgr_host {
+      fail('dmgr_host is required when export_node is true')
     }
 
     validate_bool($propagate_keyring)
