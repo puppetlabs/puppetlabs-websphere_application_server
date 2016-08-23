@@ -20,6 +20,8 @@ def main
       return
     end
 
+    puppet_module_install(:source => proj_root, :module_name => 'websphere_application_server')
+
     if ENV["BEAKER_provision"] != "no"
       # Configure all nodes in nodeset
       WebSphereHelper.configure_master
@@ -30,6 +32,7 @@ def main
         on host, puppet('module','install','puppet-archive')
         on host, puppet('module','install','puppetlabs-concat')
         on host, puppet('module','install', '--ignore-dependencies','puppetlabs-ibm_installation_manager')
+        on host, "yum install -y lsof"
         WebSphereHelper.install_ibm_manager(host) if host.host_hash[:roles].include?('master')
       end
     end
@@ -39,6 +42,10 @@ end
 class WebSphereHelper
   def self.get_master
     hosts.find{ |x| x.host_hash[:roles].include?('master') } ? master : Nil
+  end
+
+  def self.get_ihs_server
+    hosts.find{ |x| x.host_hash[:roles].include?('ihs') }
   end
 
   def self.get_fresh_node(node_name)
