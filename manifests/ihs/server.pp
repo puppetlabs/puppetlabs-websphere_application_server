@@ -1,9 +1,12 @@
 # Manage web server (http) instances on IHS
+#$user                    = $::websphere_application_server::user,
+#$group                   = $::websphere_application_server::group,
+
 define websphere_application_server::ihs::server (
   $target,
   $httpd_config            = undef,
-  $user                    = $::websphere_application_server::user,
-  $group                   = $::websphere_application_server::group,
+  $user                    = 'webadmin',
+  $group                   = 'webadmins',
   $docroot                 = undef,
   $instance                = $title,
   $httpd_config_template   = "${module_name}/ihs/httpd.conf.erb",
@@ -89,14 +92,24 @@ define websphere_application_server::ihs::server (
 
   file_line { 'Adding user':
     path => "$_httpd_config",
-    line => 'user $user',
-    match   => "^user.*$",
+    line => "User ${user}",
+    match   => "^User $",
   }
 
   file_line { 'Adding group':
     path => "$_httpd_config",
-    line => 'group $group',
-    match   => "^user.*$",
+    line => "Group ${group}",
+    match   => "^Group $",
+  }
+
+  file { '/etc/ld.so.conf.d/httpd-pp-lib.conf':
+    ensure => present,
+  }
+
+  file_line { 'Adding shared library paths':
+    ensure => present,
+    path => "/etc/ld.so.conf.d/httpd-pp-lib.conf",
+    line => "/opt/IBM/HTTPServer/lib",
   }
 
   file { "${title}_httpd_config":
