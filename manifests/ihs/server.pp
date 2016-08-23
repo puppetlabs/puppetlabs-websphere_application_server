@@ -1,9 +1,12 @@
 # Manage web server (http) instances on IHS
+#$user                    = $::websphere_application_server::user,
+#$group                   = $::websphere_application_server::group,
+
 define websphere_application_server::ihs::server (
   $target,
   $httpd_config            = undef,
-  $user                    = $::websphere_application_server::user,
-  $group                   = $::websphere_application_server::group,
+  $user                    = 'webadmin',
+  $group                   = 'webadmins',
   $docroot                 = undef,
   $instance                = $title,
   $httpd_config_template   = "${module_name}/ihs/httpd.conf.erb",
@@ -87,6 +90,28 @@ define websphere_application_server::ihs::server (
     creates => $_log_dir,
   }
 
+  file_line { 'Adding user':
+    path => "$_httpd_config",
+    line => "User ${user}",
+    match   => "^User $",
+  }
+
+  file_line { 'Adding group':
+    path => "$_httpd_config",
+    line => "Group ${group}",
+    match   => "^Group $",
+  }
+
+  file { '/etc/ld.so.conf.d/httpd-pp-lib.conf':
+    ensure => present,
+  }
+
+  file_line { 'Adding shared library paths':
+    ensure => present,
+    path => "/etc/ld.so.conf.d/httpd-pp-lib.conf",
+    line => "/opt/IBM/HTTPServer/lib",
+  }
+
   file { "${title}_httpd_config":
     ensure  => 'file',
     path    => $_httpd_config,
@@ -116,8 +141,16 @@ define websphere_application_server::ihs::server (
 
     validate_re($_node_os, '(aix|linux)', "Invalid node_os: #{_node_os}. Must be 'aix' or 'linux'")
 
-    if !$cell or !$node_name or !$dmgr_host {
-      fail('cell, node, and dmgr_host is required when export_node is true')
+    if !$cell {
+      fail('cell is required when export_node is true')
+    }
+
+    if !$node_name {
+      fail('node_name is required when export_node is true')
+    }
+
+    if !$dmgr_host {
+      fail('dmgr_host is required when export_node is true')
     }
 
     validate_bool($propagate_keyring)

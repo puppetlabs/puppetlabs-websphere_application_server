@@ -112,3 +112,14 @@ module WebSphereCluster
     attr_reader :cluster_name
   end
 end
+
+module IhsInstance
+  @ihs_target                   = 'HTTPServer'
+  @package_ihs                  = 'com.ibm.websphere.IHSILAN.v85'
+  @package_plugin               = 'com.ibm.websphere.PLGILAN.v85'
+  @dmgr_host                    = 'dmgr-centos'
+  
+  class << self
+    attr_reader :ihs_target, :package_ihs, :package_plugin, :dmgr_host
+  end
+end
