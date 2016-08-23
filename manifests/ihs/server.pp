@@ -1,7 +1,4 @@
 # Manage web server (http) instances on IHS
-#$user                    = $::websphere_application_server::user,
-#$group                   = $::websphere_application_server::group,
-
 define websphere_application_server::ihs::server (
   $target,
   $httpd_config            = undef,

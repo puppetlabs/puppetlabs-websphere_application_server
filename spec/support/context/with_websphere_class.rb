@@ -13,13 +13,13 @@ shared_context 'with a websphere class' do
 
     local_files_root_path = ENV['FILES'] || File.expand_path(File.join(File.dirname(__FILE__), '../../acceptance/fixtures'))
     manifest_template     = File.join(local_files_root_path, 'websphere_class.erb')
-    @manifest             = ERB.new(File.read(manifest_template)).result(binding)
+    manifest             = ERB.new(File.read(manifest_template)).result(binding)
 
-    @result = WebSphereHelper.agent_execute(@manifest)
-    
+    @class_result = WebSphereHelper.agent_execute(manifest)
+
   end
 
-  it 'should run successfully' do
-    expect(@result.exit_code).to eq 2
+  it 'class should run successfully' do
+    expect(@class_result.exit_code).to eq 2
   end
 end

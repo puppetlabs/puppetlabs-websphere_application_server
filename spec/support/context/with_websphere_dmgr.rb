@@ -24,10 +24,10 @@ shared_context 'with a websphere dmgr' do
         require      => Websphere_application_server::Profile::Dmgr['#{WebSphereConstants.dmgr_title}'],
       }
     MANIFEST
-    @result = WebSphereHelper.agent_execute(@manifest)
+    @dmgr_result = WebSphereHelper.agent_execute(@manifest)
   end
 
-  it 'should run successfully' do
-    expect(@result.exit_code).to eq 2
+  it 'dmgr should run successfully' do
+    expect(@dmgr_result.exit_code).to eq 2
   end
 end
