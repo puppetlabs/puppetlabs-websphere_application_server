@@ -30,6 +30,15 @@ def main
         on host, puppet('module','install','puppet-archive')
         on host, puppet('module','install','puppetlabs-concat')
         on host, puppet('module','install', '--ignore-dependencies','puppetlabs-ibm_installation_manager')
+
+        if host['platform'] =~ /^el/
+          on(host, 'yum install -y lsof')
+        elsif host['platform'] =~ /^ubuntu|^debian/
+          on(host, 'apt-get install -y lsof')
+        else
+          fail("Acceptance tests cannot run as OS package [lsof] cannot be installed")
+        end
+
         WebSphereHelper.install_ibm_manager(host) if host.host_hash[:roles].include?('master')
       end
     end
@@ -39,6 +48,10 @@ end
 class WebSphereHelper
   def self.get_master
     hosts.find{ |x| x.host_hash[:roles].include?('master') } ? master : Nil
+  end
+
+  def self.get_ihs_server
+    hosts.find{ |x| x.host_hash[:roles].include?('ihs') }
   end
 
   def self.get_fresh_node(node_name)
