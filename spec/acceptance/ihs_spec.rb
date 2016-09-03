@@ -10,7 +10,7 @@ describe 'Create the IHS instance' do
     @ihs_host     = @ihs_server.hostname
     @listen_port  = 10080
 
-    # create appserver profile manifest:
+    #create appserver profile manifest:
     @manifest = <<-MANIFEST
       class { 'websphere_application_server':
         user     => "#{WebSphereConstants.user}",
@@ -58,7 +58,6 @@ describe 'Create the IHS instance' do
   end
 
   it 'should run without errors' do
-    binding.pry
     expect(@result.exit_code).to eq 2
   end
 
@@ -88,5 +87,66 @@ describe 'Create the IHS instance' do
       expect(response_lines[0]).to match(/^<title>IBM HTTP Server(.*)+<\/title>$/)
       expect(response_lines[1]).to match(/^200$/)
     end
+  end
+
+  context 'shall stop the IHS server' do
+    before(:all) do
+      @ihs_server   = WebSphereHelper.get_ihs_server
+      @ihs_host     = @ihs_server.hostname
+      @listen_port  = 10080
+
+      @manifest = <<-MANIFEST
+        websphere_application_server::ihs::instance { '#{IhsInstance.ihs_target}':
+          target           => "#{WebSphereConstants.base_dir}/#{IhsInstance.ihs_target}",
+          package          => "#{IhsInstance.package_ihs}",
+          version          => "#{WebSphereConstants.package_version}",
+          repository       => '/opt/QA_resources/ibm_websphere/ihs_ilan/repository.config',
+          install_options  => '-properties user.ihs.httpPort=80',
+          user             => "#{WebSphereConstants.user}",
+          group            => "#{WebSphereConstants.group}",
+          manage_user      => false,
+          manage_group     => false,
+          log_dir          => '/opt/log/websphere/httpserver',
+          admin_username   => 'httpadmin',
+          admin_password   => 'password',
+          webroot          => '/opt/web',
+        }
+
+        ibm_pkg { 'Plugins':
+          ensure     => 'present',
+          target     => "#{WebSphereConstants.base_dir}/Plugins",
+          repository => '/opt/QA_resources/ibm_websphere/plg_ilan/repository.config',
+          package    => "#{IhsInstance.package_plugin}",
+          version    => "#{WebSphereConstants.package_version}",
+          require    => Websphere_application_server::Ihs::Instance['#{IhsInstance.ihs_target}'],
+        }
+
+        websphere_application_server::ihs::server { 'ihs_server':
+          status      => 'stopped',
+          target      => "#{WebSphereConstants.base_dir}/#{IhsInstance.ihs_target}",
+          log_dir     => '/opt/log/websphere/httpserver',
+          plugin_base => "#{WebSphereConstants.base_dir}/Plugins",
+          dmgr_host    => #{IhsInstance.dmgr_host},
+          cell        => "#{WebSphereConstants.cell}",
+          httpd_config => "#{WebSphereConstants.base_dir}/#{IhsInstance.ihs_target}/conf/httpd_test.conf",
+          access_log  => '/opt/log/websphere/httpserver/access_log',
+          error_log   => '/opt/log/websphere/httpserver/error_log',
+          listen_port => "#{@listen_port}",
+          require     => Ibm_pkg['Plugins'],
+        }
+      MANIFEST
+      @result = WebSphereHelper.agent_execute(@manifest)
+    end
+
+    it 'should run without errors' do
+      expect(@result.exit_code).to eq 2
+    end
+
+    it 'should not be listening on the configured port' do
+      ports_ihs_listening = on(@ihs_server, "lsof -ti :#{@listen_port}", :acceptable_exit_codes => [0,1]).stdout
+      expect(ports_ihs_listening.empty?).to be true
+    end
+
+    it_behaves_like 'an idempotent resource'
   end
 end
