@@ -1,9 +1,10 @@
 # Manage web server (http) instances on IHS
+
 define websphere_application_server::ihs::server (
   $target,
   $httpd_config            = undef,
-  $user                    = 'webadmin',
-  $group                   = 'webadmins',
+  $user                    = $::websphere_application_server::user,
+  $group                   = $::websphere_application_server::group,
   $docroot                 = undef,
   $instance                = $title,
   $httpd_config_template   = "${module_name}/ihs/httpd.conf.erb",

@@ -12,14 +12,18 @@ describe 'Create the IHS instance' do
 
     # create appserver profile manifest:
     @manifest = <<-MANIFEST
+      class { 'websphere_application_server':
+        user     => "#{WebSphereConstants.user}",
+        group    => "#{WebSphereConstants.group}",
+        base_dir => "#{WebSphereConstants.base_dir}",
+      }
+
       websphere_application_server::ihs::instance { '#{IhsInstance.ihs_target}':
         target           => "#{WebSphereConstants.base_dir}/#{IhsInstance.ihs_target}",
         package          => "#{IhsInstance.package_ihs}",
         version          => "#{WebSphereConstants.package_version}",
         repository       => '/opt/QA_resources/ibm_websphere/ihs_ilan/repository.config',
         install_options  => '-properties user.ihs.httpPort=80',
-        user             => "#{WebSphereConstants.user}",
-        group            => "#{WebSphereConstants.group}",
         manage_user      => false,
         manage_group     => false,
         log_dir          => '/opt/log/websphere/httpserver',
