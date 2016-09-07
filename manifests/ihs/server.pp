@@ -2,6 +2,7 @@
 
 define websphere_application_server::ihs::server (
   $target,
+  $status                  = 'running',
   $httpd_config            = undef,
   $user                    = $::websphere_application_server::user,
   $group                   = $::websphere_application_server::group,
@@ -110,6 +111,11 @@ define websphere_application_server::ihs::server (
     line => "/opt/IBM/HTTPServer/lib",
   }
 
+  exec { 'refresh_ld_cache':
+     command => 'ldconfig',
+     path    => [ '/sbin/' ],
+   }
+
   file { "${title}_httpd_config":
     ensure  => 'file',
     path    => $_httpd_config,
@@ -118,10 +124,10 @@ define websphere_application_server::ihs::server (
   }
 
   service { "${title}_httpd":
-    ensure    => 'running',
-    start     => "su - ${user} -c \"${target}/bin/apachectl -k start -f '${_httpd_config}'\"",
-    stop      => "su - ${user} -c \"${target}/bin/apachectl -k stop -f '${_httpd_config}'\"",
-    restart   => "su - ${user} -c \"${target}/bin/apachectl -k restart -f '${_httpd_config}'\"",
+    ensure    => "${status}",
+    start     => "su - ${user} -c \"${target}/bin/apachectl -d ${target} -k start -f '${_httpd_config}'\"",
+    stop      => "su - ${user} -c \"${target}/bin/apachectl -d ${target} -k stop -f '${_httpd_config}'\"",
+    restart   => "su - ${user} -c \"${target}/bin/apachectl -d ${target} -k restart -f '${_httpd_config}'\"",
     hasstatus => false,
     pattern   => "${target}/bin/httpd.*-f ${_httpd_config}",
     provider  => 'base',
