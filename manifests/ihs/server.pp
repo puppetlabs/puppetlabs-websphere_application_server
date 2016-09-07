@@ -2,48 +2,48 @@
 
 define websphere_application_server::ihs::server (
   $target,
-  $status                  = 'running',
-  $httpd_config            = undef,
-  $user                    = $::websphere_application_server::user,
-  $group                   = $::websphere_application_server::group,
-  $docroot                 = undef,
-  $instance                = $title,
-  $httpd_config_template   = "${module_name}/ihs/httpd.conf.erb",
-  $timeout                 = '300',
-  $max_keep_alive_requests = '100',
-  $keep_alive              = 'On',
-  $keep_alive_timeout      = '10',
-  $thread_limit            = '25',
-  $server_limit            = '64',
-  $start_servers           = '1',
-  $max_clients             = '600',
-  $min_spare_threads       = '25',
-  $max_spare_threads       = '75',
-  $threads_per_child       = '25',
-  $max_requests_per_child  = '25',
+  $status                   = 'running',
+  $httpd_config             = undef,
+  $user                     = $::websphere_application_server::user,
+  $group                    = $::websphere_application_server::group,
+  $docroot                  = undef,
+  $instance                 = $title,
+  $httpd_config_template    = "${module_name}/ihs/httpd.conf.erb",
+  $timeout                  = '300',
+  $max_keep_alive_requests  = '100',
+  $keep_alive               = 'On',
+  $keep_alive_timeout       = '10',
+  $thread_limit             = '25',
+  $server_limit             = '64',
+  $start_servers            = '1',
+  $max_clients              = '600',
+  $min_spare_threads        = '25',
+  $max_spare_threads        = '75',
+  $threads_per_child        = '25',
+  $max_requests_per_child   = '25',
   $limit_request_field_size = '12392',
-  $listen_address          = $::fqdn,
-  $listen_port             = '10080',
-  $server_admin_email      = 'user@example.com',
-  $server_name             = $::fqdn,
-  $server_listen_port      = '80',
-  $pid_file                = "${title}.pid",
-  $replace_config          = true,
-  $directory_index         = 'index.html index.html.var',
-  $log_dir                 = undef,
-  $access_log              = 'access_log',
-  $error_log               = 'error_log',
-  $export_node             = true,
-  $export_server           = true,
-  $node_name               = $::fqdn,
-  $node_hostname           = $::fqdn,
-  $node_os                 = undef,
-  $cell                    = undef,
-  $admin_username          = 'httpadmin',
-  $admin_password          = 'password',
-  $plugin_base             = '/opt/IBM/Plugins',
-  $propagate_keyring       = true,
-  $dmgr_host               = undef,
+  $listen_address           = $::fqdn,
+  $listen_port              = '10080',
+  $server_admin_email       = 'user@example.com',
+  $server_name              = $::fqdn,
+  $server_listen_port       = '80',
+  $pid_file                 = "${title}.pid",
+  $replace_config           = true,
+  $directory_index          = 'index.html index.html.var',
+  $log_dir                  = undef,
+  $access_log               = 'access_log',
+  $error_log                = 'error_log',
+  $export_node              = true,
+  $export_server            = true,
+  $node_name                = $::fqdn,
+  $node_hostname            = $::fqdn,
+  $node_os                  = undef,
+  $cell                     = undef,
+  $admin_username           = 'httpadmin',
+  $admin_password           = 'password',
+  $plugin_base              = '/opt/IBM/Plugins',
+  $propagate_keyring        = true,
+  $dmgr_host                = undef,
 ) {
 
   Exec {
@@ -90,15 +90,15 @@ define websphere_application_server::ihs::server (
   }
 
   file_line { 'Adding user':
-    path => "$_httpd_config",
-    line => "User ${user}",
-    match   => "^User $",
+    path  => $_httpd_config,
+    line  => "User ${user}",
+    match => '^User $',
   }
 
   file_line { 'Adding group':
-    path => "$_httpd_config",
-    line => "Group ${group}",
-    match   => "^Group $",
+    path  => $_httpd_config,
+    line  => "Group ${group}",
+    match => '^Group $',
   }
 
   file { '/etc/ld.so.conf.d/httpd-pp-lib.conf':
@@ -107,14 +107,14 @@ define websphere_application_server::ihs::server (
 
   file_line { 'Adding shared library paths':
     ensure => present,
-    path => "/etc/ld.so.conf.d/httpd-pp-lib.conf",
-    line => "/opt/IBM/HTTPServer/lib",
+    path   => '/etc/ld.so.conf.d/httpd-pp-lib.conf',
+    line   => '/opt/IBM/HTTPServer/lib',
   }
 
   exec { 'refresh_ld_cache':
-     command => 'ldconfig',
-     path    => [ '/sbin/' ],
-   }
+    command => 'ldconfig',
+    path    => [ '/sbin/' ],
+  }
 
   file { "${title}_httpd_config":
     ensure  => 'file',
@@ -124,7 +124,7 @@ define websphere_application_server::ihs::server (
   }
 
   service { "${title}_httpd":
-    ensure    => "${status}",
+    ensure    => $status,
     start     => "su - ${user} -c \"${target}/bin/apachectl -d ${target} -k start -f '${_httpd_config}'\"",
     stop      => "su - ${user} -c \"${target}/bin/apachectl -d ${target} -k stop -f '${_httpd_config}'\"",
     restart   => "su - ${user} -c \"${target}/bin/apachectl -d ${target} -k restart -f '${_httpd_config}'\"",
@@ -136,7 +136,6 @@ define websphere_application_server::ihs::server (
 
   # Exporting for a DMGR to collect.
   if $export_node {
-
     if $node_os {
       $_node_os = $node_os
     } else {
