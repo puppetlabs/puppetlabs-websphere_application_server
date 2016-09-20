@@ -1,13 +1,17 @@
+ENV['WEBSPHERE_NODES_REQUIRED'] = 'master app'
+
 require 'spec_helper_acceptance'
 require 'installer_constants'
 
 describe 'add cluster members' do
-  include_context "with a websphere class"
-  include_context "with a websphere dmgr"
 
   context "Start testing...." do
     before(:all) do
-      hostname = WebSphereHelper.get_master
+      @agent = WebSphereHelper.get_ihs_server
+      WebSphereInstance.install(@agent)
+      WebSphereDmgr.install(@agent)
+
+      hostname = @agent.hostname
       member1 = WebSphereHelper.get_fresh_node('redhat-7-x86_64')
       member2 = WebSphereHelper.get_fresh_node('centos-6-x86_64')
 
@@ -35,7 +39,8 @@ describe 'add cluster members' do
           dmgr_profile => "#{WebSphereConstants.dmgr_title}",
         }
         MANIFEST
-        @result = WebSphereHelper.agent_execute(@manifest)
+        runner = BeakerAgentRunner.new
+        @result = runner.execute_agent_on(@agent, @manifest)
         expect(@result.exit_code).to eq 2
       end
 
@@ -60,7 +65,7 @@ describe 'add cluster members' do
         cell         => "#{WebSphereConstants.cell}",
         }
         MANIFEST
-        @result = WebSphereHelper.agent_execute(@manifest)
+        @result = runner.execute_agent_on(@agent, @manifest)
         expect(@result.exit_code).to eq 2
       end
 
