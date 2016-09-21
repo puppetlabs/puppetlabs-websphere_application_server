@@ -1,12 +1,14 @@
+ENV['WEBSPHERE_NODES_REQUIRED'] = 'master ihs'
+
 require 'spec_helper_acceptance'
 require 'installer_constants'
 
 describe 'jdbc layer is setup and working' do
-  include_context "with a websphere class"
-  include_context "with a websphere dmgr"
-
   before(:all) do
-    hostname = WebSphereHelper.get_master
+    @agent = WebSphereHelper.get_ihs_server
+    WebSphereInstance.install(@agent)
+    WebSphereDmgr.install(@agent)
+    hostname = @agent.hostname
 
     @manifest = <<-MANIFEST
     websphere_jdbc_provider { '#{JDBCProviderConstants.jdbc_provider}':
@@ -43,7 +45,8 @@ describe 'jdbc layer is setup and working' do
     }
 
     MANIFEST
-    @result = WebSphereHelper.agent_execute(@manifest)
+    runner = BeakerAgentRunner.new
+    @result = runner.execute_agent_on(@manifest)
   end
 
   it 'should run successfully' do

@@ -1,13 +1,14 @@
+ENV['WEBSPHERE_NODES_REQUIRED'] = 'master ihs'
+
 require 'spec_helper_acceptance'
 require 'installer_constants'
 
-describe 'Create the IHS instance' do
-  include_context "with a websphere class"
-  include_context "with a websphere dmgr"
-
+describe 'IHS instance' do
   before(:all) do
-    @ihs_server   = WebSphereHelper.get_ihs_server
-    @ihs_host     = @ihs_server.hostname
+    @agent = WebSphereHelper.get_ihs_server
+    WebSphereInstance.install(@agent)
+    WebSphereDmgr.install(@agent)
+    @ihs_host     = @agent.hostname
     @listen_port  = 10080
 
     #create appserver profile manifest:
@@ -54,7 +55,8 @@ describe 'Create the IHS instance' do
         require     => Ibm_pkg['Plugins'],
       }
     MANIFEST
-    @result = WebSphereHelper.agent_execute(@manifest)
+    runner = BeakerAgentRunner.new
+    @result = runner.execute_agent_on(@agent, @manifest)
   end
 
   it 'should run without errors' do
@@ -63,25 +65,25 @@ describe 'Create the IHS instance' do
 
   it_behaves_like 'an idempotent resource'
 
-  it 'should start an ihs server process' do
-    ports_ihs_listening = on(@ihs_server, "lsof -ti :#{@listen_port}").stdout.split
+  it 'shall start an ihs server process' do
+    ports_ihs_listening = on(@agent, "lsof -ti :#{@listen_port}").stdout.split
     ihs_server_process = []
     ports_ihs_listening.each do |port|
-      proc_result = on(@ihs_server, "ps -elf | egrep \"#{port}(\ )+1 \"", :acceptable_exit_codes => [0,1])
+      proc_result = on(@agent, "ps -elf | egrep \"#{port}(\ )+1 \"", :acceptable_exit_codes => [0,1])
       ihs_server_process.push(proc_result.stdout) unless proc_result.stdout.empty?
     end
 
     expect(ihs_server_process.length).to be 1
-    expect(ihs_server_process[0]).to match(/(.*)\/HTTPServer\/bin\/httpd(.*)+/) # GH: use our Constants!
+    expect(ihs_server_process[0]).to match(/(.*)\/HTTPServer\/bin\/httpd(.*)+/)
   end
 
-  it 'should be listening on the correct port' do
-    ports_ihs_listening = on(@ihs_server, "lsof -ti :#{@listen_port}").stdout.split
+  it 'shall be listening on the correct port' do
+    ports_ihs_listening = on(@agent, "lsof -ti :#{@listen_port}").stdout.split
     expect(ports_ihs_listening.size).to eq 2
   end
 
-  it 'should respond to http queries' do
-    on(@ihs_server, "curl -s -w '%{http_code}' http://#{@ihs_host}:#{@listen_port} | egrep \"<title>|200\"",:acceptable_exit_codes => [0,1]) do |response|
+  it 'shall respond to http queries' do
+    on(@agent, "curl -s -w '%{http_code}' http://#{@agent}:#{@listen_port} | egrep \"<title>|200\"",:acceptable_exit_codes => [0,1]) do |response|
       response_lines = response.stdout.split( /\r?\n/ )
       expect(response_lines.length).to eq 2
       expect(response_lines[0]).to match(/^<title>IBM HTTP Server(.*)+<\/title>$/)
@@ -91,11 +93,17 @@ describe 'Create the IHS instance' do
 
   context 'shall stop the IHS server' do
     before(:all) do
-      @ihs_server   = WebSphereHelper.get_ihs_server
-      @ihs_host     = @ihs_server.hostname
+      @agent        = WebSphereHelper.get_ihs_server
+      @ihs_host     = @agent.hostname
       @listen_port  = 10080
 
       @manifest = <<-MANIFEST
+        class { 'websphere_application_server':
+          user     => "#{WebSphereConstants.user}",
+          group    => "#{WebSphereConstants.group}",
+          base_dir => "#{WebSphereConstants.base_dir}",
+        }
+
         websphere_application_server::ihs::instance { '#{IhsInstance.ihs_target}':
           target           => "#{WebSphereConstants.base_dir}/#{IhsInstance.ihs_target}",
           package          => "#{IhsInstance.package_ihs}",
@@ -135,15 +143,16 @@ describe 'Create the IHS instance' do
           require     => Ibm_pkg['Plugins'],
         }
       MANIFEST
-      @result = WebSphereHelper.agent_execute(@manifest)
+      runner = BeakerAgentRunner.new
+      @result = runner.execute_agent_on(@agent, @manifest)
     end
 
     it 'should run without errors' do
       expect(@result.exit_code).to eq 2
     end
 
-    it 'should not be listening on the configured port' do
-      ports_ihs_listening = on(@ihs_server, "lsof -ti :#{@listen_port}", :acceptable_exit_codes => [0,1]).stdout
+    it 'shall not have processess listening on the configured port' do
+      ports_ihs_listening = on(@agent, "lsof -ti :#{@listen_port}", :acceptable_exit_codes => [0,1]).stdout
       expect(ports_ihs_listening.empty?).to be true
     end
 

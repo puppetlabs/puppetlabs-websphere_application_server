@@ -1,31 +1,16 @@
 HOSTS:
-  puppet-master:
+  master:
     roles:
       - master
-      - database
       - dashboard
-      - agent
+      - database
     platform: el-6-x86_64
     template: Delivery/Quality Assurance/Templates/vCloud/centos-6-x86_64
     hypervisor: vcloud
-  app-agent:
-    roles:
-      - agent
-      - appserver
-    platform: el-6-x86_64
-    template: Delivery/Quality Assurance/Templates/vCloud/centos-6-x86_64
-    hypervisor: vcloud
-  dmgr-agent:
+  dmgragent:
     roles:
       - agent
       - dmgr
-    platform: el-6-x86_64
-    template: Delivery/Quality Assurance/Templates/vCloud/centos-6-x86_64
-    hypervisor: vcloud
-  ihs-agent:
-    roles:
-      - agent
-      - ihs
     platform: el-6-x86_64
     template: Delivery/Quality Assurance/Templates/vCloud/centos-6-x86_64
     hypervisor: vcloud

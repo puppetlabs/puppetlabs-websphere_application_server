@@ -1,27 +1,32 @@
+ENV['WEBSPHERE_NODES_REQUIRED'] = 'master app'
+
 require 'spec_helper_acceptance'
 require 'installer_constants'
-require 'master_manipulator'
 
 describe 'install multiple instances' do
-  include_context "with a websphere class"
-
   before(:all) do
-    instance_name = 'WebSphere86'
-    fixpack_name  = 'WebSphere_8654_fixpack'
-    instance_base = WebSphereConstants.base_dir + '/' + instance_name + '/AppServer'
-    profile_base  = instance_base + '/profiles'
-    java7_name    = instance_name + '_Java7'
-
-    master = WebSphereHelper.get_master
-
-    local_files_root_path = ENV['FILES'] || File.expand_path(File.join(File.dirname(__FILE__), './fixtures'))
-    manifest_template     = File.join(local_files_root_path, 'websphere_class.erb')
-    @manifest             = ERB.new(File.read(manifest_template)).result(binding)
-
-    @result = WebSphereHelper.agent_execute(@manifest)
+    @agent = WebSphereHelper.get_app_host
+    @second_instance_name = 'WebSphere86'
+    @result = WebSphereInstance.install(@agent)
+    @result = WebSphereInstance.install(@agent, name=@second_instance_name)
+    @second_result = WebSphereInstance.install(@agent, name=@second_instance_name)
   end
 
   it 'should run successfully' do
     expect(@result.exit_code).to eq 2
+  end
+
+  it 'should be idempotent' do
+    expect(@second_result.exit_code).to eq 0
+  end
+
+  it 'shall be installed to the first instance directory' do
+    rc = WebSphereHelper.remote_dir_exists(@agent, WebSphereConstants.base_dir + '/' + WebSphereConstants.instance_name + '/AppServer')
+    expect(rc).to eq 0
+  end
+
+  it 'shall be installed to the second instance directory' do
+    rc = WebSphereHelper.remote_dir_exists(@agent, WebSphereConstants.base_dir + '/' + @second_instance_name + '/AppServer')
+    expect(rc).to eq 0
   end
 end
