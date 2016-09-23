@@ -3,8 +3,6 @@ ENV['WEBSPHERE_NODES_REQUIRED'] = 'master dmgr'
 require 'spec_helper_acceptance'
 require 'installer_constants'
 
-require 'pry'
-
 describe 'Install the websphere dmgr' do
   before(:all) do
     @agent = WebSphereHelper.get_dmgr_host
