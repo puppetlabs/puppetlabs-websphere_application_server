@@ -125,27 +125,29 @@ class WebSphereDmgr
 
   def self.install(agent)
     runner = BeakerAgentRunner.new
-    runner.execute_agent_on(agent, WebSphereInstance.manifest(agent))
+    runner.execute_agent_on(agent, WebSphereDmgr.manifest(agent))
   end
 end
 
 class WebSphereHelper
-  def self.get_dmgr_host
+  def self.get_host_by_role(role)
     dmgr = NilClass
     hosts.each do |host|
-      dmgr = host if host.host_hash[:roles].include?('dmgr')
+      dmgr = host if host.host_hash[:roles].include?(role)
     end
     dmgr
   end
 
+  def self.get_dmgr_host
+    self.get_host_by_role('dmgr')
+  end
+
   def self.get_ihs_host
-    ihs = NilClass
-    hosts.find{ |x| x.host_hash[:roles].include?('ihs') } ? ihs : NilClass
+    self.get_host_by_role('ihs')
   end
 
   def self.get_app_host
-    app = NilClass
-    hosts.find{ |x| x.host_hash[:roles].include?('app') } ? app : NilClass
+    self.get_host_by_role('appserver')
   end
 
   def self.is_master(host)
