@@ -1,5 +1,3 @@
-ENV['WEBSPHERE_NODES_REQUIRED'] = 'master ihs'
-
 require 'spec_helper_acceptance'
 require 'installer_constants'
 
@@ -46,7 +44,7 @@ describe 'jdbc layer is setup and working' do
 
     MANIFEST
     runner = BeakerAgentRunner.new
-    @result = runner.execute_agent_on(@manifest)
+    @result = runner.execute_agent_on(@agent, @manifest)
   end
 
   it 'should run successfully' do

@@ -1,16 +1,19 @@
 HOSTS:
-  master:
+  websphere_master:
     roles:
       - master
-      - dashboard
       - database
+      - dashboard
+      - agent
     platform: el-6-x86_64
     template: Delivery/Quality Assurance/Templates/vCloud/centos-6-x86_64
     hypervisor: vcloud
-  dmgragent:
+  websphere_agent:
     roles:
       - agent
       - dmgr
+      - ihs
+      - appserver
     platform: el-6-x86_64
     template: Delivery/Quality Assurance/Templates/vCloud/centos-6-x86_64
     hypervisor: vcloud
