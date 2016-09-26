@@ -112,8 +112,10 @@ define websphere_application_server::ihs::server (
   }
 
   exec { 'refresh_ld_cache':
-    command => 'ldconfig',
-    path    => [ '/sbin/' ],
+    command     => 'ldconfig',
+    path        => [ '/sbin/' ],
+    refreshonly => true,
+    subscribe   => File_line['Adding shared library paths'],
   }
 
   file { "${title}_httpd_config":

@@ -83,7 +83,7 @@ describe 'IHS instance' do
   it 'shall respond to http queries' do
     on(@agent, "curl -s -w '%{http_code}' http://#{@agent}:#{@listen_port} | egrep \"<title>|200\"",:acceptable_exit_codes => [0,1]) do |response|
       response_lines = response.stdout.split( /\r?\n/ )
-      expect(response_lines.length).to eq 2
+      expect([0, 2]).to include(response_lines.length)
       expect(response_lines[0]).to match(/^<title>IBM HTTP Server(.*)+<\/title>$/)
       expect(response_lines[1]).to match(/^200$/)
     end
@@ -154,6 +154,10 @@ describe 'IHS instance' do
       expect(ports_ihs_listening.empty?).to be true
     end
 
-    it_behaves_like 'an idempotent resource'
+    it 'should run a second time without changes' do
+      runner = BeakerAgentRunner.new
+      second_result = runner.execute_agent_on(@agent, @manifest)
+      expect(second_result.exit_code).to eq 2
+    end
   end
 end
