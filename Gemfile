@@ -12,6 +12,7 @@ end
 
 group :development, :unit_tests do
   gem 'rake',                    :require => false
+  gem 'rototiller', '0.1.0',     :require => false
   gem 'rspec-core',              :require => false
   gem 'rspec-puppet',            :require => false
   gem 'puppetlabs_spec_helper',  :require => false

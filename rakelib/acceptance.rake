@@ -1,5 +1,6 @@
 require 'rake'
 require 'parallel_tests'
+require 'rototiller'
 
 # We clear the Beaker rake tasks from spec_helper as they assume
 # rspec-puppet and a certain filesystem layout
@@ -41,10 +42,27 @@ PE_RELEASES = {
   '2016.1' => 'http://pe-releases.puppetlabs.lan/2016.1/',
 }
 
+rototiller_task :spec_prep do |t|
+  t.add_env({:name => 'BEAKER_PE_DIR',
+             :message => 'Puppet Enterprise source directory',
+             :default => PE_RELEASES['2016.1']})
+
+  t.add_env({:name => 'BEAKER_debug',
+             :message => 'Beaker debug level',
+             :default => 'false'})
+
+  t.add_env({:name => 'BEAKER_set',
+             :message => 'Beaker set. This defines what beaker nodeset will be used for the test',
+             :default => "default"})
+
+  t.add_env({:name => 'BEAKER_keyfile',
+             :message => 'The keyfile is the rsa pem file used to connect to the vm test instances',
+             :default => '~/.ssh/id_rsa-acceptance'})
+end
+
+
 desc "Run acceptance tests"
 RSpec::Core::RakeTask.new(:acceptance => [:spec_prep]) do |t|
-  ENV['BEAKER_PE_DIR'] = ENV['BEAKER_PE_DIR'] || PE_RELEASES['2016.1.0']
-  ENV['BEAKER_set'] = ENV['BEAKER_set']
   t.pattern = 'spec/acceptance'
 end
 
@@ -78,10 +96,6 @@ namespace :acceptance do
         PE_RELEASES.each do |version, pe_dir|
           desc "Run acceptance tests for #{config} on #{ns} with PE #{version}"
           RSpec::Core::RakeTask.new("#{config}_#{version}".to_sym => [:spec_prep]) do |t|
-            ENV['BEAKER_PE_DIR'] = pe_dir
-            ENV['BEAKER_keyfile'] = '~/.ssh/id_rsa-acceptance' if ns == :pooler
-            ENV['BEAKER_debug'] = true if ENV['BEAKER_DEBUG']
-            ENV['BEAKER_set'] = "#{ns}/#{config}"
             t.pattern = 'spec/acceptance'
           end
         end
