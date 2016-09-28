@@ -1,5 +1,3 @@
-ENV['WEBSPHERE_NODES_REQUIRED'] = 'master ihs'
-
 require 'spec_helper_acceptance'
 require 'installer_constants'
 
@@ -8,7 +6,7 @@ describe 'jdbc layer is setup and working' do
     @agent = WebSphereHelper.get_ihs_server
     WebSphereInstance.install(@agent)
     WebSphereDmgr.install(@agent)
-    hostname = @agent.hostname
+    @hostname = @agent.hostname
 
     @manifest = <<-MANIFEST
     websphere_jdbc_provider { '#{JDBCProviderConstants.jdbc_provider}':
@@ -18,7 +16,7 @@ describe 'jdbc layer is setup and working' do
       user           => '#{JDBCProviderConstants.user}',
       scope          => '#{JDBCProviderConstants.scope}',
       cell           => '#{JDBCProviderConstants.cell}',
-      node_name      => '#{hostname}',
+      node_name      => '#{@hostname}',
       server         => '#{JDBCProviderConstants.server}',
       dbtype         => '#{JDBCProviderConstants.dbtype}',
       providertype   => '#{JDBCProviderConstants.providertype}',
@@ -34,7 +32,7 @@ describe 'jdbc layer is setup and working' do
       user                          => '#{JDBCProviderConstants.user}',
       scope                         => '#{JDBCProviderConstants.scope}',
       cell                          => '#{JDBCProviderConstants.cell}',
-      node_name                     => '#{hostname}',
+      node_name                     => '#{@hostname}',
       server                        => '#{JDBCProviderConstants.server}',
       jdbc_provider                 => '#{JDBCDatasourceConstants.jdbc_provider}',
       jndi_name                     => '#{JDBCDatasourceConstants.jndi_name}',
@@ -46,7 +44,7 @@ describe 'jdbc layer is setup and working' do
 
     MANIFEST
     runner = BeakerAgentRunner.new
-    @result = runner.execute_agent_on(@manifest)
+    @result = runner.execute_agent_on(@agent, @manifest)
   end
 
   it 'should run successfully' do
@@ -54,4 +52,13 @@ describe 'jdbc layer is setup and working' do
   end
 
   it_behaves_like 'an idempotent resource'
+
+  it 'should have installed the thin client datasource and provider' do
+    @ws_admin_result = on(@agent, "su - webadmin -c \"#{WebSphereConstants.ws_admin} -lang jython -c \\\"print AdminConfig.list('DataSource',AdminConfig.getid('/Cell:#{JDBCProviderConstants.cell}/Node:#{@hostname}/'))\\\"\"", :acceptable_exit_codes => [0,1,103])
+    results = @ws_admin_result.stdout.split( /\r?\n/ )
+    expect(results.size).to eq 3
+    expect(results[0]).to match(/^WASX.*:.*is: DeploymentManager/)
+    expect(results[1]).to match(/^\"#{JDBCDatasourceConstants.jdbc_provider}.*#{JDBCProviderConstants.cell}\/nodes\/#{@hostname}.*#DataSource_.*/)
+    expect(results[2]).to match(/^OTiSDataSource\(cells\/#{JDBCProviderConstants.cell}\/nodes\/#{@hostname}\|resources.xml#builtin_DataSource_.*/)
+  end
 end

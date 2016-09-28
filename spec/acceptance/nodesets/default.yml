@@ -1,5 +1,5 @@
 HOSTS:
-  puppet-master:
+  websphere_master:
     roles:
       - master
       - database
@@ -8,24 +8,12 @@ HOSTS:
     platform: el-6-x86_64
     template: Delivery/Quality Assurance/Templates/vCloud/centos-6-x86_64
     hypervisor: vcloud
-  app-agent:
-    roles:
-      - agent
-      - appserver
-    platform: el-6-x86_64
-    template: Delivery/Quality Assurance/Templates/vCloud/centos-6-x86_64
-    hypervisor: vcloud
-  dmgr-agent:
+  websphere_agent:
     roles:
       - agent
       - dmgr
-    platform: el-6-x86_64
-    template: Delivery/Quality Assurance/Templates/vCloud/centos-6-x86_64
-    hypervisor: vcloud
-  ihs-agent:
-    roles:
-      - agent
       - ihs
+      - appserver
     platform: el-6-x86_64
     template: Delivery/Quality Assurance/Templates/vCloud/centos-6-x86_64
     hypervisor: vcloud

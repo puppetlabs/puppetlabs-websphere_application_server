@@ -23,17 +23,11 @@ def main
     proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
     c.formatter = :documentation
 
-    if ENV['BEAKER_TESTMODE'] == 'local'
-      puts "Tests are running in local mode"
-      return
-    end
-
     if ENV["BEAKER_provision"] != "no"
       # Configure all nodes in nodeset
-      nodes = WebSphereHelper.nodes
-      install_pe_on(nodes, options)
+      install_pe_on(hosts, options)
       puppet_module_install(:source => proj_root, :module_name => 'websphere_application_server')
-      nodes.each do |host|
+      hosts.each do |host|
         WebSphereHelper.mount_QA_resources(host)
         on host, puppet('module','install','puppet-archive')
         on host, puppet('module','install','puppetlabs-concat')
@@ -125,27 +119,29 @@ class WebSphereDmgr
 
   def self.install(agent)
     runner = BeakerAgentRunner.new
-    runner.execute_agent_on(agent, WebSphereInstance.manifest(agent))
+    runner.execute_agent_on(agent, WebSphereDmgr.manifest(agent))
   end
 end
 
 class WebSphereHelper
-  def self.get_dmgr_host
+  def self.get_host_by_role(role)
     dmgr = NilClass
     hosts.each do |host|
-      dmgr = host if host.host_hash[:roles].include?('dmgr')
+      dmgr = host if host.host_hash[:roles].include?(role)
     end
     dmgr
   end
 
+  def self.get_dmgr_host
+    self.get_host_by_role('dmgr')
+  end
+
   def self.get_ihs_host
-    ihs = NilClass
-    hosts.find{ |x| x.host_hash[:roles].include?('ihs') } ? ihs : NilClass
+    self.get_host_by_role('ihs')
   end
 
   def self.get_app_host
-    app = NilClass
-    hosts.find{ |x| x.host_hash[:roles].include?('app') } ? app : NilClass
+    self.get_host_by_role('appserver')
   end
 
   def self.is_master(host)
@@ -243,19 +239,6 @@ class WebSphereHelper
 
     fail("nfs mount of QA software failed [#{HelperConstants.qa_resource_source}]") unless result.exit_code.to_s =~ /[0,2]/
     fail("nfs mount failed as the software directories are missing") unless self.remote_dir_exists(host, WebSphereConstants.fixpack_installer)
-  end
-
-  def self.nodes
-    nodes = []
-    begin
-      ENV['WEBSPHERE_NODES_REQUIRED'].split.each do |role|
-        nodes.push(hosts.find{ |x| x.host_hash[:roles].include?(role) })
-      end
-    rescue
-      warning("The WEBSPHERE_NODES_REQUIRED env variable was set with roles that dont exist in your nodeset! Falling back to HOSTS!")
-      nodes = hosts
-    end
-    hosts
   end
 end
 
