@@ -84,6 +84,7 @@ define websphere_application_server::cluster::member (
     ensure                           => $ensure,
     user                             => $user,
     dmgr_profile                     => $dmgr_profile,
+    profile                          => $cluster_member_name,
     profile_base                     => $profile_base,
     cluster                          => $cluster,
     node_name                        => $node_name,
@@ -125,6 +126,7 @@ define websphere_application_server::cluster::member (
     websphere_cluster_member_service { $cluster_member_name:
       ensure       => $_service_ensure,
       dmgr_profile => $dmgr_profile,
+      profile      => $cluster_member_name,
       profile_base => $profile_base,
       cell         => $cell,
       node_name    => $node_name,

@@ -69,14 +69,33 @@ class BeakerAgentRunner
     )
   end
 
-  def execute_agent_on(host, manifest, opts = {})
-    print "Manifest [#{manifest}]"
+  def generate_site_pp(agents_hash)
+    # Initialize a blank site.pp
+    site_pp = create_site_pp(master, manifest: "")
+    agents_hash.each do |agent, manifest|
+      # pull out the node specific block for the site.pp
+      node_block = create_site_pp(master, manifest: manifest, node_def_name: agent.hostname)
+      node_block = node_block.split("node #{agent.hostname}")[-1]
+      node_block = "node #{agent.hostname}#{node_block}"
+      site_pp << node_block
+    end
+    site_pp
+  end
+
+  def copy_site_pp(site_pp, opts = {})
     environment_base_path = on(master, puppet('config', 'print', 'environmentpath')).stdout.rstrip
     prod_env_site_pp_path = File.join(environment_base_path, 'production', 'manifests', 'site.pp')
-    site_pp = create_site_pp(master, manifest: manifest, node_def_name: host.hostname)
     site_pp_dir = File.dirname(prod_env_site_pp_path)
     create_remote_file(master, prod_env_site_pp_path, site_pp)
     set_perms_on_remote(master, site_pp_dir, '744', opts)
+    print "site.pp:\n#{site_pp}"
+  end
+
+  def execute_agent_on(host, manifest = nil, opts = {})
+    if manifest
+      site_pp = generate_site_pp({host => manifest})
+      copy_site_pp(site_pp, opts)
+    end
 
     cmd = ['agent', '--test', '--environment production']
     cmd << "--debug" if opts[:debug]
@@ -91,7 +110,7 @@ class BeakerAgentRunner
       environment: opts[:environment] || {},
       acceptable_exit_codes: (0...256)
      )
-    end
+  end
 end
 
 class WebSphereInstance
