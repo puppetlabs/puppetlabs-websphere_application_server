@@ -267,15 +267,15 @@ class WebSphereHelper
   end
 
   def self.nodes
-    nodes = []
-    begin
-      ENV['WEBSPHERE_NODES_REQUIRED'].split.each do |role|
-        nodes.push(hosts.find{ |x| x.host_hash[:roles].include?(role) })
-      end
-    rescue
-      warning("The WEBSPHERE_NODES_REQUIRED env variable was set with roles that dont exist in your nodeset! Falling back to HOSTS!")
-      nodes = hosts
-    end
+    #nodes = []
+    #begin
+    #  ENV['WEBSPHERE_NODES_REQUIRED'].split.each do |role|
+    #    nodes.push(hosts.find{ |x| x.host_hash[:roles].include?(role) })
+    #  end
+    #rescue
+    #  warning("The WEBSPHERE_NODES_REQUIRED env variable was set with roles that dont exist in your nodeset! Falling back to HOSTS!")
+    #  nodes = hosts
+    #end
     hosts
   end
 end
