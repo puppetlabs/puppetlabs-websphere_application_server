@@ -1,0 +1,21 @@
+## Create a AppServer Profile
+<%= WebSphereConstants.class_name %>::profile::appserver { '<%= WebSphereConstants.appserver_title %>':
+  instance_base => '<%= WebSphereConstants.instance_base %>',
+  profile_base  => '<%= JDBCProviderConstants.profile_base %>',
+  cell          => '<%= JDBCProviderConstants.cell %>',
+  template_path => '<%= WebSphereConstants.instance_base %>/profileTemplates/managed',
+  dmgr_host     => '<%= dmgr_hostname %>',
+  node_name     => '<%= agent_hostname %>',
+  user          => '<%= WebSphereConstants.user %>',
+  group         => '<%= WebSphereConstants.group %>',
+}
+->
+## Create and Add Cluster Member
+<%= WebSphereConstants.class_name %>::cluster::member { '<%= WebSphereConstants.appserver_title %>':
+  ensure       => 'present',
+  cluster      => '<%= WebSphereCluster.cluster_name %>',
+  node_name    => '<%= agent_hostname %>',
+  cell         => '<%= WebSphereConstants.cell %>',
+  profile_base => '<%= WebSphereConstants.profile_base %>',
+  dmgr_profile => '<%= WebSphereConstants.dmgr_title %>',
+}

@@ -7,12 +7,11 @@
   user          => '<%= WebSphereConstants.user %>',
   group         => '<%= WebSphereConstants.group %>',
 }
-
+->
 ## Create a cluster
 <%= WebSphereConstants.class_name %>::cluster { '<%= WebSphereCluster.cluster_name %>':
   profile_base => '<%= WebSphereConstants.profile_base %>',
   dmgr_profile => '<%= WebSphereConstants.dmgr_title %>',
   cell         => '<%= WebSphereConstants.cell %>',
   user         => '<%= WebSphereConstants.user %>',
-  require      => Websphere_application_server::Profile::Dmgr['<%= WebSphereConstants.dmgr_title %>'],
 }
