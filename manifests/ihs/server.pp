@@ -127,13 +127,13 @@ define websphere_application_server::ihs::server (
 
   if $status == 'stopped' {
     service { "${title}_httpd_config":
-     ensure    => 'stopped',
-     start     => "su - ${user} -c \"${target}/bin/adminctl start\"",
-     stop      => "su - ${user} -c \"${target}/bin/adminctl stop\"",
-     restart   => "su - ${user} -c \"${target}/bin/adminctl restart\"",
-     hasstatus => false,
-     pattern   => "${target}/bin/httpd.*-f ${target}/conf/admin.conf",
-     provider  => 'base',
+      ensure    => 'stopped',
+      start     => "su - ${user} -c \"${target}/bin/adminctl start\"",
+      stop      => "su - ${user} -c \"${target}/bin/adminctl stop\"",
+      restart   => "su - ${user} -c \"${target}/bin/adminctl restart\"",
+      hasstatus => false,
+      pattern   => "${target}/bin/httpd.*-f ${target}/conf/admin.conf",
+      provider  => 'base',
     }
   }
 
