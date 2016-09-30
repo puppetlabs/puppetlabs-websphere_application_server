@@ -163,6 +163,23 @@ class WebSphereIhs
   end
 end
 
+class WebSphereAppServer
+  def self.manifest(agent, dmgr_agent)
+    fail "agent param must be set to the beaker host of the dmgr agent" unless agent.hostname
+    agent_hostname = agent.hostname
+    dmgr_hostname = dmgr_agent.hostname
+
+    local_files_root_path = ENV['FILES'] || File.expand_path(File.join(File.dirname(__FILE__), 'acceptance/fixtures'))
+    manifest_template     = File.join(local_files_root_path, 'websphere_appserver.erb')
+    ERB.new(File.read(manifest_template)).result(binding)
+  end
+
+  def self.install(agent)
+    runner = BeakerAgentRunner.new
+    runner.execute_agent_on(agent, WebSphereDmgr.manifest(agent))
+  end
+end
+
 class WebSphereHelper
   def self.get_host_by_role(role)
     dmgr = NilClass
