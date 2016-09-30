@@ -1,11 +1,9 @@
-ENV['WEBSPHERE_NODES_REQUIRED'] = 'master app'
-
 require 'spec_helper_acceptance'
 require 'installer_constants'
 
 describe 'install multiple instances' do
   before(:all) do
-    @agent = WebSphereHelper.get_app_host
+    @agent = WebSphereHelper.get_dmgr_host
     @second_instance_name = 'WebSphere86'
     @result = WebSphereInstance.install(@agent)
     @result = WebSphereInstance.install(@agent, name=@second_instance_name)

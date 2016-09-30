@@ -1,5 +1,3 @@
-ENV['WEBSPHERE_NODES_REQUIRED'] = 'master dmgr'
-
 require 'spec_helper_acceptance'
 require 'installer_constants'
 
@@ -15,7 +13,7 @@ describe 'Verify the minimum install' do
     end
 
     it 'class should run successfully' do
-      expect(@result.exit_code).to eq 2
+      expect([0, 2]).to include(@result.exit_code)
     end
 
     it 'class should be idempotent' do
@@ -40,7 +38,7 @@ describe 'Verify the minimum install' do
     end
 
     it 'dmgr should run successfully' do
-      expect(@result.exit_code).to eq 2
+      expect([0, 2]).to include(@result.exit_code)
     end
 
     it 'dmgr is idempotent' do

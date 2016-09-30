@@ -69,14 +69,33 @@ class BeakerAgentRunner
     )
   end
 
-  def execute_agent_on(host, manifest, opts = {})
-    print "Manifest [#{manifest}]"
+  def generate_site_pp(agents_hash)
+    # Initialize a blank site.pp
+    site_pp = create_site_pp(master, manifest: "")
+    agents_hash.each do |agent, manifest|
+      # pull out the node specific block for the site.pp
+      node_block = create_site_pp(master, manifest: manifest, node_def_name: agent.hostname)
+      node_block = node_block.split("node #{agent.hostname}")[-1]
+      node_block = "node #{agent.hostname}#{node_block}"
+      site_pp << node_block
+    end
+    site_pp
+  end
+
+  def copy_site_pp(site_pp, opts = {})
     environment_base_path = on(master, puppet('config', 'print', 'environmentpath')).stdout.rstrip
     prod_env_site_pp_path = File.join(environment_base_path, 'production', 'manifests', 'site.pp')
-    site_pp = create_site_pp(master, manifest: manifest, node_def_name: host.hostname)
     site_pp_dir = File.dirname(prod_env_site_pp_path)
     create_remote_file(master, prod_env_site_pp_path, site_pp)
     set_perms_on_remote(master, site_pp_dir, '744', opts)
+    print "site.pp:\n#{site_pp}"
+  end
+
+  def execute_agent_on(host, manifest = nil, opts = {})
+    if manifest
+      site_pp = generate_site_pp({host => manifest})
+      copy_site_pp(site_pp, opts)
+    end
 
     cmd = ['agent', '--test', '--environment production']
     cmd << "--debug" if opts[:debug]
@@ -91,7 +110,7 @@ class BeakerAgentRunner
       environment: opts[:environment] || {},
       acceptable_exit_codes: (0...256)
      )
-    end
+  end
 end
 
 class WebSphereInstance
@@ -125,27 +144,29 @@ class WebSphereDmgr
 
   def self.install(agent)
     runner = BeakerAgentRunner.new
-    runner.execute_agent_on(agent, WebSphereInstance.manifest(agent))
+    runner.execute_agent_on(agent, WebSphereDmgr.manifest(agent))
   end
 end
 
 class WebSphereHelper
-  def self.get_dmgr_host
+  def self.get_host_by_role(role)
     dmgr = NilClass
     hosts.each do |host|
-      dmgr = host if host.host_hash[:roles].include?('dmgr')
+      dmgr = host if host.host_hash[:roles].include?(role)
     end
     dmgr
   end
 
+  def self.get_dmgr_host
+    self.get_host_by_role('dmgr')
+  end
+
   def self.get_ihs_host
-    ihs = NilClass
-    hosts.find{ |x| x.host_hash[:roles].include?('ihs') } ? ihs : NilClass
+    self.get_host_by_role('ihs')
   end
 
   def self.get_app_host
-    app = NilClass
-    hosts.find{ |x| x.host_hash[:roles].include?('app') } ? app : NilClass
+    self.get_host_by_role('appserver')
   end
 
   def self.is_master(host)
@@ -246,15 +267,15 @@ class WebSphereHelper
   end
 
   def self.nodes
-    nodes = []
-    begin
-      ENV['WEBSPHERE_NODES_REQUIRED'].split.each do |role|
-        nodes.push(hosts.find{ |x| x.host_hash[:roles].include?(role) })
-      end
-    rescue
-      warning("The WEBSPHERE_NODES_REQUIRED env variable was set with roles that dont exist in your nodeset! Falling back to HOSTS!")
-      nodes = hosts
-    end
+    #nodes = []
+    #begin
+    #  ENV['WEBSPHERE_NODES_REQUIRED'].split.each do |role|
+    #    nodes.push(hosts.find{ |x| x.host_hash[:roles].include?(role) })
+    #  end
+    #rescue
+    #  warning("The WEBSPHERE_NODES_REQUIRED env variable was set with roles that dont exist in your nodeset! Falling back to HOSTS!")
+    #  nodes = hosts
+    #end
     hosts
   end
 end

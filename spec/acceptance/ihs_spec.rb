@@ -1,5 +1,3 @@
-ENV['WEBSPHERE_NODES_REQUIRED'] = 'master ihs'
-
 require 'spec_helper_acceptance'
 require 'installer_constants'
 
