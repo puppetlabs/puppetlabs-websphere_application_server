@@ -9,50 +9,7 @@ describe 'IHS instance' do
     @ihs_host     = @agent.hostname
     @listen_port  = 10080
 
-    #create appserver profile manifest:
-    @manifest = <<-MANIFEST
-      class { 'websphere_application_server':
-        user     => "#{WebSphereConstants.user}",
-        group    => "#{WebSphereConstants.group}",
-        base_dir => "#{WebSphereConstants.base_dir}",
-      }
-
-      websphere_application_server::ihs::instance { '#{IhsInstance.ihs_target}':
-        target           => "#{WebSphereConstants.base_dir}/#{IhsInstance.ihs_target}",
-        package          => "#{IhsInstance.package_ihs}",
-        version          => "#{WebSphereConstants.package_version}",
-        repository       => '/opt/QA_resources/ibm_websphere/ihs_ilan/repository.config',
-        install_options  => '-properties user.ihs.httpPort=80',
-        manage_user      => false,
-        manage_group     => false,
-        log_dir          => '/opt/log/websphere/httpserver',
-        admin_username   => 'httpadmin',
-        admin_password   => 'password',
-        webroot          => '/opt/web',
-      }
-
-      ibm_pkg { 'Plugins':
-        ensure     => 'present',
-        target     => "#{WebSphereConstants.base_dir}/Plugins",
-        repository => '/opt/QA_resources/ibm_websphere/plg_ilan/repository.config',
-        package    => "#{IhsInstance.package_plugin}",
-        version    => "#{WebSphereConstants.package_version}",
-        require    => Websphere_application_server::Ihs::Instance['#{IhsInstance.ihs_target}'],
-      }
-
-      websphere_application_server::ihs::server { 'ihs_server':
-        target      => "#{WebSphereConstants.base_dir}/#{IhsInstance.ihs_target}",
-        log_dir     => '/opt/log/websphere/httpserver',
-        plugin_base => "#{WebSphereConstants.base_dir}/Plugins",
-        dmgr_host    => #{IhsInstance.dmgr_host},
-        cell        => "#{WebSphereConstants.cell}",
-        httpd_config => "#{WebSphereConstants.base_dir}/#{IhsInstance.ihs_target}/conf/httpd_test.conf",
-        access_log  => '/opt/log/websphere/httpserver/access_log',
-        error_log   => '/opt/log/websphere/httpserver/error_log',
-        listen_port => "#{@listen_port}",
-        require     => Ibm_pkg['Plugins'],
-      }
-    MANIFEST
+    @manifest = WebSphereIhs.manifest(@agent, @listen_port)
     runner = BeakerAgentRunner.new
     @result = runner.execute_agent_on(@agent, @manifest)
   end
@@ -95,52 +52,7 @@ describe 'IHS instance' do
       @ihs_host     = @agent.hostname
       @listen_port  = 10080
 
-      @manifest = <<-MANIFEST
-        class { 'websphere_application_server':
-          user     => "#{WebSphereConstants.user}",
-          group    => "#{WebSphereConstants.group}",
-          base_dir => "#{WebSphereConstants.base_dir}",
-        }
-
-        websphere_application_server::ihs::instance { '#{IhsInstance.ihs_target}':
-          target           => "#{WebSphereConstants.base_dir}/#{IhsInstance.ihs_target}",
-          package          => "#{IhsInstance.package_ihs}",
-          version          => "#{WebSphereConstants.package_version}",
-          repository       => '/opt/QA_resources/ibm_websphere/ihs_ilan/repository.config',
-          install_options  => '-properties user.ihs.httpPort=80',
-          user             => "#{WebSphereConstants.user}",
-          group            => "#{WebSphereConstants.group}",
-          manage_user      => false,
-          manage_group     => false,
-          log_dir          => '/opt/log/websphere/httpserver',
-          admin_username   => 'httpadmin',
-          admin_password   => 'password',
-          webroot          => '/opt/web',
-        }
-
-        ibm_pkg { 'Plugins':
-          ensure     => 'present',
-          target     => "#{WebSphereConstants.base_dir}/Plugins",
-          repository => '/opt/QA_resources/ibm_websphere/plg_ilan/repository.config',
-          package    => "#{IhsInstance.package_plugin}",
-          version    => "#{WebSphereConstants.package_version}",
-          require    => Websphere_application_server::Ihs::Instance['#{IhsInstance.ihs_target}'],
-        }
-
-        websphere_application_server::ihs::server { 'ihs_server':
-          status      => 'stopped',
-          target      => "#{WebSphereConstants.base_dir}/#{IhsInstance.ihs_target}",
-          log_dir     => '/opt/log/websphere/httpserver',
-          plugin_base => "#{WebSphereConstants.base_dir}/Plugins",
-          dmgr_host    => #{IhsInstance.dmgr_host},
-          cell        => "#{WebSphereConstants.cell}",
-          httpd_config => "#{WebSphereConstants.base_dir}/#{IhsInstance.ihs_target}/conf/httpd_test.conf",
-          access_log  => '/opt/log/websphere/httpserver/access_log',
-          error_log   => '/opt/log/websphere/httpserver/error_log',
-          listen_port => "#{@listen_port}",
-          require     => Ibm_pkg['Plugins'],
-        }
-      MANIFEST
+      @manifest = WebSphereIhs.manifest(@agent, @listen_port, status='stopped')
       runner = BeakerAgentRunner.new
       @result = runner.execute_agent_on(@agent, @manifest)
     end
