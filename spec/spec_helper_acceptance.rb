@@ -30,10 +30,9 @@ def main
 
     if ENV["BEAKER_provision"] != "no"
       # Configure all nodes in nodeset
-      nodes = WebSphereHelper.nodes
-      install_pe_on(nodes, options)
+      install_pe_on(hosts, options)
       puppet_module_install(:source => proj_root, :module_name => 'websphere_application_server')
-      nodes.each do |host|
+      hosts.each do |host|
         WebSphereHelper.mount_QA_resources(host)
         on host, puppet('module','install','puppet-archive')
         on host, puppet('module','install','puppetlabs-concat')
@@ -128,7 +127,7 @@ class WebSphereInstance
 
   def self.install(agent, instance=WebSphereConstants.instance_name)
     runner = BeakerAgentRunner.new
-    runner.execute_agent_on(agent, WebSphereInstance.manifest(instance=instance))
+    runner.execute_agent_on(agent, self.manifest(instance=instance))
   end
 end
 
@@ -144,7 +143,23 @@ class WebSphereDmgr
 
   def self.install(agent)
     runner = BeakerAgentRunner.new
-    runner.execute_agent_on(agent, WebSphereDmgr.manifest(agent))
+    runner.execute_agent_on(agent, self.manifest(agent))
+  end
+end
+
+class WebSphereIhs
+  def self.manifest(agent, listen_port, status='running')
+    fail "agent param must be set to the beaker host of the ihs agent" unless agent.hostname
+    agent_hostname = agent.hostname
+    ihs_status = status
+    local_files_root_path = ENV['FILES'] || File.expand_path(File.join(File.dirname(__FILE__), 'acceptance/fixtures'))
+    manifest_template     = File.join(local_files_root_path, 'websphere_ihs.erb')
+    ERB.new(File.read(manifest_template)).result(binding)
+  end
+
+  def self.install(agent)
+    runner = BeakerAgentRunner.new
+    runner.execute_agent_on(agent, self.manifest(agent))
   end
 end
 
@@ -264,19 +279,6 @@ class WebSphereHelper
 
     fail("nfs mount of QA software failed [#{HelperConstants.qa_resource_source}]") unless result.exit_code.to_s =~ /[0,2]/
     fail("nfs mount failed as the software directories are missing") unless self.remote_dir_exists(host, WebSphereConstants.fixpack_installer)
-  end
-
-  def self.nodes
-    #nodes = []
-    #begin
-    #  ENV['WEBSPHERE_NODES_REQUIRED'].split.each do |role|
-    #    nodes.push(hosts.find{ |x| x.host_hash[:roles].include?(role) })
-    #  end
-    #rescue
-    #  warning("The WEBSPHERE_NODES_REQUIRED env variable was set with roles that dont exist in your nodeset! Falling back to HOSTS!")
-    #  nodes = hosts
-    #end
-    hosts
   end
 end
 
