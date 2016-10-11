@@ -2559,6 +2559,10 @@ Required. The name of the DMGR profile to create this application server under.
 
 Examples: `PROFILE_DMGR_01` or `dmgrProfile01`.
 
+##### `node_name`
+
+Required. The node wehere this SDK is managed.
+
 ##### `profile_base`
 
 Required. The full path to the profiles directory where the `dmgr_profile` can be found. The IBM default is `/opt/IBM/WebSphere/AppServer/profiles`.

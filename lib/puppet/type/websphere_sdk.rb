@@ -45,6 +45,12 @@ Puppet::Type.newtype(:websphere_sdk) do
     EOT
   end
 
+  newparam(:node_name) do
+    desc <<-EOT
+      Required: The node name this sdk is to be managed on.
+    EOT
+  end
+
   newparam(:dmgr_profile) do
     desc <<-EOT
       Optional: The dmgr_profile to use as base profile. Will use profile if unset.
