@@ -104,6 +104,7 @@ define websphere_application_server::profile::appserver (
       websphere_sdk { "${title}_${sdk_name}":
         profile_base        => $profile_base,
         profile             => $profile_name,
+        node_name           => $node_name,
         server              => 'all',
         sdkname             => $sdk_name,
         instance_base       => $instance_base,

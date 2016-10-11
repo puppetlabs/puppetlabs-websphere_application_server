@@ -11,7 +11,7 @@ Puppet::Type.type(:websphere_jvm_log).provide(:wsadmin, :parent => Puppet::Provi
     file = "#{resource[:profile_base]}/#{resource[:profile]}"
 
     case resource[:scope]
-    when :node_name
+    when :node
       query = "/Cell:#{resource[:cell]}/Node:#{resource[:node_name]}/Server:nodeagent"
       mod = "cells/#{resource[:cell]}/nodes/#{resource[:node_name]}"
       file << "/config/cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/nodeagent/server.xml"
