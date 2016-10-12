@@ -63,9 +63,11 @@ define websphere_application_server::profile::appserver (
   exec { "was_profile_app_${title}":
     command => "${instance_base}/bin/manageprofiles.sh ${_options} && test -d ${profile_base}/${profile_name}",
     creates => "${profile_base}/${profile_name}",
+    cwd     => $instance_base,
     path    => '/bin:/usr/bin:/sbin:/usr/sbin',
     user    => $user,
     timeout => 900,
+    returns => [0, 2],
   }
 
   # Ensure ownership of profile directory is correct
