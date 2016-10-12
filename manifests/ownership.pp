@@ -36,5 +36,6 @@ define websphere_application_server::ownership (
     command => "chown -R ${user}:${group} ${path}",
     unless  => "find ${path} ! -type l \\( ! -user ${user} -type f \\) -o \\( ! -group ${group} \\) -a \\( -type f \\)| wc -l | awk '{print \$1}' | grep -qE '^0'",
     path    => [ '/bin', '/usr/bin' ],
+    returns => [0, 2]
   }
 }
