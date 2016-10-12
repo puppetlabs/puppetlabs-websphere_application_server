@@ -21,6 +21,7 @@ describe 'IHS instance' do
   it_behaves_like 'an idempotent resource'
 
   it 'shall start an ihs server process' do
+    sleep(10)
     ports_ihs_listening = on(@agent, "lsof -ti :#{@listen_port}").stdout.split
     ihs_server_process = []
     ports_ihs_listening.each do |port|
@@ -33,6 +34,7 @@ describe 'IHS instance' do
   end
 
   it 'shall be listening on the correct port' do
+    sleep(10)
     ports_ihs_listening = on(@agent, "lsof -ti :#{@listen_port}").stdout.split
     expect(ports_ihs_listening.size).to eq 2
   end
@@ -62,6 +64,7 @@ describe 'IHS instance' do
     end
 
     it 'shall not have processess listening on the configured port' do
+      sleep(10)
       ports_ihs_listening = on(@agent, "lsof -ti :#{@listen_port}", :acceptable_exit_codes => [0,1]).stdout
       expect(ports_ihs_listening.empty?).to be true
     end
