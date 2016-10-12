@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-websphere_application_server",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "author": "puppetlabs",
   "summary": "Manages IBM WebSphere Application Server",
   "license": "PuppetLabs-Enterprise",
@@ -27,6 +27,13 @@
       "operatingsystemrelease": [
         "6",
         "7"
+      ]
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "14.04",
+        "16.04"
       ]
     }
   ],
