@@ -4,14 +4,16 @@ CONTRIBUTING.md:
 
 .gitignore:
   paths:
-    - examples/client_ffdc/
-    - client_ffdc
+    - 'examples/client_ffdc/'
+    - 'client_ffdc'
 
 Gemfile:
   optional:
     ':development':
-      - gem: rototiller
+      - gem: 'rototiller'
         version: '0.1.0'
+    ':system_tests':
+      - gem: 'beaker-testmode_switcher'
 
 LICENSE:
   unmanaged: true

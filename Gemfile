@@ -60,6 +60,7 @@ group :system_tests do
   gem 'beaker-puppet_install_helper',                                            :require => false
   gem 'master_manipulator',                                                      :require => false
   gem 'beaker-hostgenerator', *location_for(ENV['BEAKER_HOSTGENERATOR_VERSION'])
+  gem 'beaker-testmode_switcher',                                                :require => false
 end
 
 gem 'puppet', *location_for(ENV['PUPPET_GEM_VERSION'])
