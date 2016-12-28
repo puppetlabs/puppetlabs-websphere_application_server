@@ -10,8 +10,23 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
   ## profile-specific), the name of the profile, and credentials, if provided.
   ## Can we use the 'commands' method for this?
   def wascmd(file=nil)
-    profile_name = resource[:profile] || resource[:dmgr_profile]
-    wsadmin_cmd = "#{resource[:profile_base]}/#{profile_name}/bin/wsadmin.sh -lang jython"
+    wsadmin_failure_message = "Unable to find wsadmin.sh."
+
+    if resource[:profile]
+      wsadmin_file = "#{resource[:profile_base]}/#{resource[:profile]}/bin/wsadmin.sh"
+      wsadmin_failure_message += " File doesn't exist at '#{wsadmin_file}'."
+    end
+
+    if resource[:profile].nil? || !File.exists?(wsadmin_file)
+      wsadmin_file = "#{resource[:profile_base]}/#{resource[:dmgr_profile]}/bin/wsadmin.sh"
+      wsadmin_failure_message += " File doesn't exist at '#{wsadmin_file}'."
+    end
+
+    # File.exists? is a double check if resource[:profile] is set but at
+    # least you will know for sure
+    raise Puppet::Error, "#{wsadmin_failure_message}. Please ensure the script exists at a proper location." if !File.exists?(wsadmin_file)
+
+    wsadmin_cmd = "#{wsadmin_file} -lang jython"
 
     if resource[:wsadmin_user] && resource[:wsadmin_pass]
       wsadmin_cmd << " -username '#{resource[:wsadmin_user]}'"
