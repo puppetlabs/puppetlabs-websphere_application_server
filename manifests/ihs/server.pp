@@ -174,6 +174,7 @@ define websphere_application_server::ihs::server (
     validate_bool($propagate_keyring)
 
     @@websphere_node { "ihs_${title}_${node_hostname}":
+      ensure    => present,
       node_name => $node_name,
       os        => $_node_os,
       hostname  => $node_hostname,
@@ -183,6 +184,7 @@ define websphere_application_server::ihs::server (
 
     if $export_server {
       @@websphere_web_server { "web_${title}_${node_hostname}":
+        ensure            => present,
         name              => $title,
         node_name         => $node_name,
         cell              => $cell,
