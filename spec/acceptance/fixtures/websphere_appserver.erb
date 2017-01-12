@@ -9,9 +9,9 @@
   user          => '<%= WebSphereConstants.user %>',
   group         => '<%= WebSphereConstants.group %>',
 }
-->
-## Create and Add Cluster Member
-<%= WebSphereConstants.class_name %>::cluster::member { '<%= WebSphereConstants.appserver_title %>':
+
+## Export Cluster Member
+@@<%= WebSphereConstants.class_name %>::cluster::member { '<%= WebSphereConstants.appserver_title %>':
   ensure       => 'present',
   cluster      => '<%= WebSphereCluster.cluster_name %>',
   node_name    => '<%= agent_hostname %>',
