@@ -95,12 +95,28 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
   ## value.  Ideally, we could have this query any arbitrary xml value with
   ## any depth.  It's rigid and stuck at three levels deep for now.
   def get_xml_val(section,element,attribute,server_xml=nil)
-    profile_name = resource[:profile] || resource[:dmgr_profile]
     unless server_xml
-      server_xml = resource[:profile_base] + '/' \
-        + profile_name + '/config/cells/' \
-        + resource[:cell] + '/nodes/' + resource[:node_name] \
-        + '/servers/' + resource[:server] + '/server.xml'
+      serverxml_failure_message = "Unable to find server xml file."
+
+      if resource[:profile]
+        server_xml = resource[:profile_base] + '/' \
+          + resource[:profile] + '/config/cells/' \
+          + resource[:cell] + '/nodes/' + resource[:node_name] \
+          + '/servers/' + resource[:server] + '/server.xml'
+        serverxml_failure_message += " File doesn't exist at '#{server_xml}'."
+      end
+
+      if resource[:profile].nil? || !File.exists?(server_xml)
+        server_xml = resource[:profile_base] + '/' \
+          + resource[:dmgr_profile] + '/config/cells/' \
+          + resource[:cell] + '/nodes/' + resource[:node_name] \
+          + '/servers/' + resource[:server] + '/server.xml'
+        serverxml_failure_message += " File doesn't exist at '#{server_xml}'."
+      end
+
+      # File.exists? is a double check if resource[:profile] is set but at
+      # least you will know for sure
+      raise Puppet::Error, "#{serverxml_failure_message}. Please ensure the script exists at a proper location." if !File.exists?(server_xml)
     end
 
     unless File.exists?(server_xml)
