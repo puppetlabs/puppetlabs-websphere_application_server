@@ -1,4 +1,7 @@
 ---
+appveyor.yml:
+  delete: true
+
 CONTRIBUTING.md:
   unmanaged: true
 
@@ -16,7 +19,7 @@ Gemfile:
       - gem: 'beaker-testmode_switcher'
 
 LICENSE:
-  unmanaged: true
+  license_type: 'puppetpe'
 
 Rakefile:
   unmanaged: true
