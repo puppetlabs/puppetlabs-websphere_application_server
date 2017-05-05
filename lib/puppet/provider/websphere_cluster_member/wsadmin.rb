@@ -94,7 +94,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, :parent => Puppet
 
   def umask
     value = get_xml_val('processDefinitions','execution', 'umask')
-    ## WAS returns an empty string if the umask is set to 022. Yeah, no shit.
+    ## WAS returns an empty string if the umask is set to 022.
     value = '022' if value.nil? or value == ''
     value
   end

@@ -79,10 +79,9 @@ Puppet::Type.type(:websphere_sdk).provide(:managesdk, :parent => Puppet::Provide
         pattern = /(PROFILE_COMMAND_SDK = )/
       end
 
-      ## This is garbage.  If any of the returned versions don't match, just
-      ## return one of the non-compliant versions.
+      ## If any of the returned versions don't match, return one of the non-compliant versions.
       if line =~ /#{pattern}/
-        ## IBM... Even when modifying "all", nodeagent doesn't seem to update
+        ## Even when modifying "all", nodeagent doesn't seem to update
         next if line =~ /nodeagent SDK name:/
         version = line[/#{pattern}(.*)(\s+)?$/,2].strip
         self.debug "sdk Version #{version} found"
@@ -93,7 +92,7 @@ Puppet::Type.type(:websphere_sdk).provide(:managesdk, :parent => Puppet::Provide
 
     end
 
-    ## This is, too. Otherwise, just return that we matched. Assuming none of
+    ## Return that we matched. Assuming none of
     ## the output versions above were incorrect.
     return resource[:sdkname]
 

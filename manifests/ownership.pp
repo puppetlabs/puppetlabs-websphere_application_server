@@ -1,7 +1,7 @@
 # Defined type to manage ownership for a specified path.
 #
-# This is hacky, yes.  We provide this for a couple of reasons:
-#  - IBM software basically wants to be installed as root.  It's possible to
+# We provide this for a couple of reasons:
+#  - IBM software wants to be installed as root.  It's possible to
 #    install as a different user, but the Installation Manager (the package
 #    manager) data won't know about that installation.  To keep things
 #    centralized so that we can reliably query it, we install as root.

@@ -1,8 +1,8 @@
 # Provider to modify WebSphere JVM Logging Properties
 #
-# This is pretty ugly.  We execute their stupid 'wsadmin' tool to query and
-# make changes.  That interprets Jython, which is whitespace sensitive.
-# That means we have a bunch of heredocs to provide our commands for it.
+# We execute the 'wsadmin' tool to query and make changes, which interprets
+# Jython. This means we need to use heredocs to satisfy whitespace sensitivity.
+#
 require_relative '../websphere_helper'
 
 Puppet::Type.type(:websphere_jvm_log).provide(:wsadmin, :parent => Puppet::Provider::Websphere_Helper) do
