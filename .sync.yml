@@ -2,9 +2,6 @@
 appveyor.yml:
   delete: true
 
-CONTRIBUTING.md:
-  unmanaged: true
-
 .gitignore:
   paths:
     - 'examples/client_ffdc/'
