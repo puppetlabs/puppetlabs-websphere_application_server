@@ -9,9 +9,6 @@
 ##   websphere_$profile_$cell_soap
 ##     The SOAP port for a profile cell.  Needed for federation.
 ##
-## TODO: clean this up.  Someone that's better with Ruby than me needs to
-## look at it.
-##
 require 'rexml/document'
 require 'yaml'
 include REXML
@@ -34,10 +31,8 @@ end
 
 
 ## Iterate over each instance that's listed in the "facts.d" fact to determine
-## its version.  This is hacky, but we're relying on arbitrary user-provided
-## install locations.  That's recorded in that 'facts.d' fact during
-## installation time, and I can't think of a more accurate way of obtaining
-## that - again - it's user-provided and arbitrary.
+## its version.  We're doing it this way because we're relying on arbitrary user-provided
+## install locations (stored in facts.d).
 ## We want the version and package name.  We'll be able to use this for
 ## installing IBM "fix packs"
 ##
@@ -100,8 +95,6 @@ profiles_path.each do |key,aprofile|
         serverindex = REXML::Document.new(File.read("#{aprofile}/#{profile}/config/cells/#{cell}/nodes/#{cell_node}/serverindex.xml"))
         soap = XPath.first(serverindex, '//serverEntries/specialEndpoints[@endPointName="SOAP_CONNECTOR_ADDRESS"]/endPoint/@port')
 
-        ## Not sure how we want to present this. Was originally a structured
-        ## fact - a big-ass hash.
         if soap
           Facter.add("websphere_#{profile}_#{cell}_#{cell_node}_soap") do
             setcode do

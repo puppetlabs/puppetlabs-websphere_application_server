@@ -43,10 +43,10 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
   end
 
   ## Method to make changes to the WAS configuration. Pass:
-  ## :command => 'some jython stuff'
+  ## :command => 'some jython'
   ##   The value will be sent to 'wsadmin' with the '-c' argument - evaluating
   ##   the code on the command line.
-  ## :file => 'some jython stuff'
+  ## :file => 'some jython'
   ##   The value will be written to a temporary file and read in by wsadmin
   ##   using the '-f' argument.  This is for more complicated jython that
   ##   doesn't take kindly to being fed in on the command-line.
@@ -93,7 +93,7 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
 
   ## Helper method to query the 'server.xml' file for an attribute.
   ## value.  Ideally, we could have this query any arbitrary xml value with
-  ## any depth.  It's rigid and stuck at three levels deep for now.
+  ## any depth.  It's rigid and fixed at three levels deep for now.
   def get_xml_val(section,element,attribute,server_xml=nil)
     unless server_xml
       serverxml_failure_message = "Unable to find server xml file."
@@ -114,8 +114,7 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider
         serverxml_failure_message += " File doesn't exist at '#{server_xml}'."
       end
 
-      # File.exists? is a double check if resource[:profile] is set but at
-      # least you will know for sure
+      # File.exists? is a double check if resource[:profile] is set
       raise Puppet::Error, "#{serverxml_failure_message}. Please ensure the script exists at a proper location." if !File.exists?(server_xml)
     end
 
