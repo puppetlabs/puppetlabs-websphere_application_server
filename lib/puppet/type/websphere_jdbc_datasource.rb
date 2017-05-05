@@ -13,10 +13,11 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
   ensurable
 
   validate do
-    [:dmgr_profile, :name, :user, :node_name].each do |value|
-      raise ArgumentError, "Invalid #{value.to_s} #{self[:value]}" unless value =~ /^[-0-9A-Za-z._]+$/
+    [:dmgr_profile, :name, :user, :node_name, :cell].each do |value|
+      raise ArgumentError, "Invalid #{value.to_s} #{self[value]}" unless value =~ /^[-0-9A-Za-z._]+$/
     end
 
+    raise ArgumentError, "cell is a required attribute" if self[:cell].nil?
     fail("Invalid profile_base #{self[:profile_base]}") unless Pathname.new(self[:profile_base]).absolute?
     raise ArgumentError 'Invalid scope, must be "node", "server", "cell", or "cluster"' unless self[:scope] =~ /^(node|server|cell|cluster)$/
   end
@@ -112,7 +113,7 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
   newparam(:component_managed_auth_alias) do
     desc <<-EOT
     The alias used for database authentication at run time.
-    This alias is only used when the application resource 
+    This alias is only used when the application resource
     reference is using res-auth=Application.
 
     String: Optional

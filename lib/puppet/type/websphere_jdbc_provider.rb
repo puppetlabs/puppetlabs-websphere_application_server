@@ -15,10 +15,11 @@ Puppet::Type.newtype(:websphere_jdbc_provider) do
   ensurable
 
   validate do
-    [:dmgr_profile, :name, :user].each do |value|
+    [:dmgr_profile, :name, :user, :cell].each do |value|
       raise ArgumentError, "Invalid #{value.to_s} #{self[:value]}" unless value =~ /^[-0-9A-Za-z._]+$/
     end
 
+    raise ArgumentError, "cell is a required attribute" if self[:cell].nil?
     fail("Invalid profile_base #{self[:profile_base]}") unless Pathname.new(self[:profile_base]).absolute?
     raise ArgumentError 'Invalid scope, must be "node", "server", "cell", or "cluster"' unless self[:scope] =~ /^(node|server|cell|cluster)$/
   end
