@@ -1,4 +1,14 @@
-## Supported Release 1.0.0
+## Supported Release [1.0.1]
+### Summary
+This is a bugfix release that also features several modulesync updates.
+
+#### Fixed
+- `cell` parameter for jdbc resources is now validated by Puppet (FM-6126)
+- Find wsadmin script in profile with backup (FM-5980)
+- IHS exported resources (FM-5946)
+- Adds check in get_xml_val to verify that server_xml exists (FM-6002)
+
+## Supported Release [1.0.0]
 ### Summary
 This is the first supported release of websphere_application_server on the forge. This release features support for Ubuntu, in addition to many bugfixes and a full acceptance test suite.
 
@@ -20,6 +30,11 @@ This is the first supported release of websphere_application_server on the forge
 - The `node` parameter in all defined and custom types have been renamed to `node_name` to workaround an issue with puppet-lint.
 
 
-## Release 0.2.0
+## Release [0.2.0]
 ### Summary
 This is the initial release of websphere_application_server on the forge. This module has the capability to install and configure websphere application servers, deployment managers, and websphere ihs via the IBM Installation Manager. This module does not support Liberty profiles.
+
+
+[1.0.1]:https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/1.0.0...1.0.1
+[1.0.0]:https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/0.2.0...1.0.0
+[0.2.0]:https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/829cca4209d870355980f7cba40c9ce1db2c4573...0.2.0
