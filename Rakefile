@@ -14,7 +14,7 @@ task :metadata do
 end
 
 # Repeat the override of the metadata linting metadata_lint task.
-Rake::Task[:metadata_lint].clear
+Rake::Task[:metadata_lint].clear if Rake::Task.task_defined?('metadata_lint')
 desc "Check metadata is valid JSON"
 task :metadata_lint do
   sh "bundle exec metadata-json-lint metadata.json --no-strict-license"
