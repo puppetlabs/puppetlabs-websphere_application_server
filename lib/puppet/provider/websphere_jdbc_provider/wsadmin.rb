@@ -35,7 +35,7 @@ Puppet::Type.type(:websphere_jdbc_provider).provide(:wsadmin, :parent => Puppet:
   def params_string
     params_list =  "-name \"#{resource[:name]}\" "
     params_list << "-scope #{scope('mod')} "
-    params_list << "-databaseType #{resource[:dbtype]} "
+    params_list << "-databaseType \"#{resource[:dbtype]}\" "
     params_list << "-providerType \"#{resource[:providertype]}\" "
     params_list << "-implementationType \"#{resource[:implementation]}\" "
     params_list << "-description \"#{resource[:description]}\" " if resource[:description]
