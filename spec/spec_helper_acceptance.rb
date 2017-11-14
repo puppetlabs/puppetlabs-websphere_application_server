@@ -36,7 +36,7 @@ def main
         WebSphereHelper.mount_QA_resources(host)
         on host, puppet('module','install','puppet-archive')
         on host, puppet('module','install','puppetlabs-concat')
-        on host, puppet('module','install', '--ignore-dependencies','--module-repository', 'https://api-module-staging.puppetlabs.com','puppetlabs-ibm_installation_manager')
+        on host, puppet('module','install', '--ignore-dependencies','--module_repository', 'https://api-module-staging.puppetlabs.com','puppetlabs-ibm_installation_manager')
 
         if host['platform'] =~ /^el/
           on(host, 'yum install -y lsof')
