@@ -12,7 +12,7 @@ define websphere_application_server::instance (
   $manage_user               = false,
   $manage_group              = false,
   $user                      = $::websphere_application_server::user,
-  $group                     = $::websphere_application_server::group,
+  $group                     = 'root',
   $user_home                 = undef,
 ) {
 
