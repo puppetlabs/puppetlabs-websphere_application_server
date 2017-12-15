@@ -26,15 +26,21 @@ Puppet::Type.type(:websphere_federate).provide(:wsadmin) do
 
     data_file = "#{resource[:profile_base]}/#{resource[:profile]}"  + '/dmgr_' + resource[:dmgr_host].downcase + '_' + resource[:cell].downcase + '.yaml'
 
+    puts "DATA_FILE: #{data_file}"
+
     if File.exists?(data_file)
+      puts "DATA_FILE exists!"
       yaml = YAML.load_file(data_file)
 
       soap_port = yaml['dmgr_soap']
+      puts "SOAP: #{soap_port}" unless soap_port.nil?
       dmgr_host = yaml['dmgr_fqdn']
+      puts "DMGR HOST: #{dmgr_host}" unless dmgr_host.nil?
 
       self.debug "#{data_file} found."
       self.debug "soap_port: #{soap_port} / dmgr_host: #{dmgr_host}"
     else
+      puts "DATA FILE DOESn'T EXIST"
       self.debug "#{data_file} does not exist."
       soap_port = resource[:soap_port]
       dmgr_host = resource[:dmgr_host]

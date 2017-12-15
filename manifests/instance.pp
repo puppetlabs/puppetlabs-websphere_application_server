@@ -1,19 +1,19 @@
 #
 define websphere_application_server::instance (
-  $base_dir                  = undef,
-  $target                    = undef,
-  $package                   = undef,
-  $version                   = undef,
-  $repository                = undef,
-  $response_file             = undef,
-  $install_options           = undef,
-  $imcl_path                 = undef,
-  $profile_base              = undef,
-  $manage_user               = false,
-  $manage_group              = false,
-  $user                      = $::websphere_application_server::user,
-  $group                     = 'root',
-  $user_home                 = undef,
+  $base_dir          = undef,
+  $target            = undef,
+  $package           = undef,
+  $version           = undef,
+  $repository        = undef,
+  $response_file     = undef,
+  $install_options   = undef,
+  $imcl_path         = undef,
+  $profile_base      = undef,
+  $manage_user       = false,
+  $manage_group      = false,
+  $user              = $::websphere_application_server::user,
+  $group             = $::websphere_application_server::group,
+  $user_home         = undef,
 ) {
 
   if $target and $base_dir {

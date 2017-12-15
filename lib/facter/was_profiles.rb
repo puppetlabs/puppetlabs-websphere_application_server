@@ -29,6 +29,23 @@ else
   instances = []
 end
 
+# finds the IIM installed.xml file in /opt or /home/*/var. This method was added
+# because this file is no longer guaranteed to live at '/var/ibm/InstallationManager/installed.xml'
+#
+# @returns String installed_xml_path path to the first installed.xml file found
+#   (there should only be one on the system)
+def find_installed_xml
+  require 'find'
+  glob = Dir.glob('/home/*/var/').join(',')
+
+  installed_xml_path = ""
+  begin
+    Find.find("/opt/", glob) { |path| installed_xml_path = path if path =~ /InstallationManager\/installed.xml/ }
+  rescue Errno::ENOENT => e
+    raise("There was a problem finding installed.xml: #{e}")
+  end
+  installed_xml_path
+end
 
 ## Iterate over each instance that's listed in the "facts.d" fact to determine
 ## its version.  We're doing it this way because we're relying on arbitrary user-provided
@@ -40,11 +57,13 @@ end
 ## different install paths.  If that's the case, this just isn't going to work
 ## as expected.
 instances.each do |key,instance|
-  im_file = '/var/ibm/InstallationManager/installed.xml'
+  im_file = find_installed_xml
   target = Facter.value("#{instance}_target")
 
   version = nil
   package = nil
+
+  puts "CHECKING TO SEE IF #{im_file} EXISTS"
 
   if File.exists?(im_file)
     Facter.debug "Found #{im_file}"

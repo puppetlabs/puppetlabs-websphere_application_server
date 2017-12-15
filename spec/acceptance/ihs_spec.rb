@@ -3,15 +3,15 @@ require 'installer_constants'
 
 describe 'IHS instance' do
   before(:all) do
-    @agent = WebSphereHelper.get_ihs_server
-    WebSphereInstance.install(@agent)
-    WebSphereDmgr.install(@agent)
+    @agent = WebSphereHelper.get_ihs_server # gets beaker host with role 'ihs'
+    WebSphereInstance.install(@agent) # run rendered websphere_class.erb with puppet agent
+    WebSphereDmgr.install(@agent) # run rendered websphere_dmgr.erb with puppet agent
     @ihs_host     = @agent.hostname
     @listen_port  = 10080
 
     @manifest = WebSphereIhs.manifest(@agent, @listen_port)
     runner = BeakerAgentRunner.new
-    @result = runner.execute_agent_on(@agent, @manifest)
+    @result = runner.execute_agent_on(@agent, @manifest) # run puppet agent on IHS host with rendered websphere_ihs.erb
   end
 
   it 'should run without errors' do

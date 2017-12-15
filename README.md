@@ -225,6 +225,7 @@ websphere_application_server::cluster { 'MyCluster01':
 }
 ```
 
+
 In this example, a cluster called `MyCluster01` will be created. Provide the `profile_base` and `dmgr_profile` to specify where to create this cluster. Additionally, use the `require` metaparameter to set a relationship between the profile and the cluster. Ensure that the profile is managed before attempting to manage the cluster.
 
 #### Adding cluster members:
@@ -487,6 +488,7 @@ websphere_application_server::ihs::server { 'test':
 ```
 
 ### Accessing the DMGR Console
+
 
 After Websphere is installed and DMGR is configured, you can access the DMGR console via a web browser at a URL such as:
 

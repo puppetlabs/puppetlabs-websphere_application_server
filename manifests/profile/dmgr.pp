@@ -47,6 +47,7 @@ define websphere_application_server::profile::dmgr (
   } else {
     $_options = $options
   }
+
   validate_string($_options)
 
   # Create the DMGR profile
