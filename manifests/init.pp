@@ -1,11 +1,27 @@
+# websphere_application_server
 #
+# @summary
+#   base class for the module that sets up dirs and users
+#
+# @param base_dir
+#   base directory where all IBM software will be installed
+# @param user
+#   The user name that owns and executes the WebSphere installation. Valid options: a string containing a valid user name. Default: `webadmin`.
+# @param group
+#   The permissions group for the WebSphere installation. Valid options: a string containing a valid group name. Default: `webadmins`.
+# @param user_home
+#   Specifies the home directory for the specified user if `manage_user` is `true`. Valid options: an absolute path to a directory. Default: `/opt/IBM`.
+# @param manage_user
+#   Specifies whether the class manages the user specified in `user`. Valid options: boolean. Default: true.
+# @param manage_group
+#   Specifies whether the class manages the group specified in `group`. Valid options: boolean. Default: true.
 class websphere_application_server (
-  $base_dir     = '/opt/IBM',
-  $user         = 'websphere',
-  $group        = 'websphere',
-  $user_home    = '/opt/IBM',
-  $manage_user  = true,
-  $manage_group = true,
+  $base_dir          = '/opt/IBM',
+  $user              = 'websphere',
+  $group             = 'websphere',
+  $user_home         = '/opt/IBM',
+  $manage_user       = true,
+  $manage_group      = true,
 ) {
 
   validate_string($user, $group)
@@ -14,9 +30,9 @@ class websphere_application_server (
 
   if $manage_user {
     user { $user:
-      ensure => 'present',
-      home   => $user_home,
-      gid    => $group,
+      ensure     => 'present',
+      home       => $user_home,
+      gid        => $group,
     }
   }
 

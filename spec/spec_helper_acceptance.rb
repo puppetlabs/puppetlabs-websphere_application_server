@@ -18,10 +18,11 @@ def beaker_opts
 end
 
 def main
-
   RSpec.configure do |c|
     proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
     c.formatter = :documentation
+
+    c.fail_fast = 0
 
     if ENV['BEAKER_TESTMODE'] == 'local'
       puts "Tests are running in local mode"
@@ -30,13 +31,15 @@ def main
 
     if ENV["BEAKER_provision"] != "no"
       # Configure all nodes in nodeset
-      install_pe_on(hosts, options)
+      better_hosts = hosts.select { |host| host.host_hash[:roles].include?("dmgr") || host.host_hash[:roles].include?("master") }
+      install_pe_on(better_hosts, options)
       puppet_module_install(:source => proj_root, :module_name => 'websphere_application_server')
-      hosts.each do |host|
+      puppet_module_install(source: "/Users/eric.putnam/src/puppetlabs-ibm_installation_manager", module_name: 'ibm_installation_manager')
+      better_hosts.each do |host|
         WebSphereHelper.mount_QA_resources(host)
         on host, puppet('module','install','puppet-archive')
         on host, puppet('module','install','puppetlabs-concat')
-        on host, puppet('module','install', '--ignore-dependencies','puppetlabs-ibm_installation_manager')
+        # on host, puppet('module','install', '--ignore-dependencies','--module_repository', 'https://api-module-staging.puppetlabs.com','puppetlabs-ibm_installation_manager')
 
         if host['platform'] =~ /^el/
           on(host, 'yum install -y lsof')
@@ -45,7 +48,7 @@ def main
         else
           fail("Acceptance tests cannot run as OS package [lsof] cannot be installed")
         end
-        WebSphereHelper.install_ibm_manager(host)
+
       end
     end
   end
@@ -54,6 +57,7 @@ end
 class BeakerAgentRunner
   include MasterManipulator::Site
 
+  # this method isn't used anywhere
   def execute_apply_on(host, manifest, opts = {})
     apply_manifest_on(
       host,
@@ -113,11 +117,21 @@ class BeakerAgentRunner
 end
 
 class WebSphereInstance
-  def self.manifest(instance=WebSphereConstants.instance_name)
+  # Renders the test manifest for the class from spec/acceptance/fixtures/websphere_class.erb
+  #
+  # @param [String] instance
+  # @param [String] base_dir
+  # @param [String] user
+  # @param [String] group
+  # @param [String] installation_mode
+  def self.manifest(instance: WebSphereConstants.instance_name,
+                    base_dir: WebSphereConstants.base_dir,
+                    user: WebSphereConstants.user,
+                    group: WebSphereConstants.group)
     instance_name = instance
     fixpack_name  = FixpackConstants.name
-    instance_base = WebSphereConstants.base_dir + '/' + instance_name + '/AppServer'
-    profile_base  = instance_base + '/profiles'
+    instance_base = base_dir + '/' + instance_name + '/AppServer'
+    profile_base  = base_dir + '/profiles'
     java7_name    = instance_name + '_Java7'
 
     local_files_root_path = ENV['FILES'] || File.expand_path(File.join(File.dirname(__FILE__), 'acceptance/fixtures'))
@@ -125,9 +139,14 @@ class WebSphereInstance
     ERB.new(File.read(manifest_template)).result(binding)
   end
 
-  def self.install(agent, instance=WebSphereConstants.instance_name)
+  # Executes manifest via puppet agent -t on target agent
+  #
+  # @param agent
+  # @param [String] instance
+  # @param [String] installation_mode
+  def self.install(agent, instance=WebSphereConstants.instance_name, installation_mode)
     runner = BeakerAgentRunner.new
-    runner.execute_agent_on(agent, self.manifest(instance=instance))
+    runner.execute_agent_on(agent, self.manifest(instance: instance))
   end
 end
 
@@ -247,18 +266,80 @@ class WebSphereHelper
     fail("Failed to transfer the file [#{source}] to the remote") unless remote_file_exists(host, target)
   end
 
-  def self.install_ibm_manager(host)
-    ibm_install_pp = <<-MANIFEST
-    class { 'ibm_installation_manager':
-      deploy_source => true,
-      source        => '/opt/QA_resources/ibm_installation_manager/1.8.3/agent.installer.linux.gtk.x86_64_1.8.3000.20150606_0047.zip',
-      target        => '/opt/IBM/InstallationManager',
-    }
-    MANIFEST
+  def self.install_ibm_manager(host, installation_mode = 'administrator')
+    case installation_mode
+    when 'administrator'
+      ibm_install_pp = <<-MANIFEST
+      group { 'webadmins':
+        ensure => present,
+      }
+      user { 'webadmin':
+        ensure     => present,
+        managehome => true,
+        home       => '/home/webadmin/',
+        gid        => 'webadmins',
+      }
+      class { 'ibm_installation_manager':
+        deploy_source => true,
+        source        => '/opt/QA_resources/ibm_installation_manager/1.8.3/agent.installer.linux.gtk.x86_64_1.8.3000.20150606_0047.zip',
+        target        => '/opt/IBM/InstallationManager',
+      }
+      MANIFEST
+    when 'nonadministrator'
+      ibm_install_pp = <<-MANIFEST
+      group { 'webadmins':
+        ensure => present,
+      }
+      user { 'webadmin':
+        ensure     => present,
+        managehome => true,
+        home       => '/home/webadmin/',
+        gid        => 'webadmins',
+      }
+      file { '/home/webadmin/IBM':
+        ensure => 'directory',
+        owner  => 'webadmin',
+        group  => 'webadmins',
+      }
+      class { 'ibm_installation_manager':
+        deploy_source     => true,
+        user              => '#{WebSphereConstants.user}',
+        user_home         => '/home/#{WebSphereConstants.user}',
+        installation_mode => 'nonadministrator',
+        group             => '#{WebSphereConstants.group}',
+        source_dir        => '/home/#{WebSphereConstants.user}/tmp/IBM/InstallationManager',
+        source            => '#{HelperConstants.qa_resources}/ibm_installation_manager/1.8.3/agent.installer.linux.gtk.x86_64_1.8.3000.20150606_0047.zip',
+      }
+      MANIFEST
+    when 'group'
+      ibm_install_pp = <<-MANIFEST
+      group { 'webadmins':
+        ensure => present,
+      }
+      user { 'webadmin':
+        ensure     => present,
+        managehome => true,
+        gid        => 'webadmins',
+      }
+      file { '/home/webadmin/IBM':
+        ensure => 'directory',
+        owner  => 'webadmin',
+      }
+      class { 'ibm_installation_manager':
+        deploy_source     => true,
+        user              => '#{WebSphereConstants.user}',
+        user_home         => '/home/#{WebSphereConstants.user}',
+        installation_mode => 'group',
+        group             => '#{WebSphereConstants.group}',
+        source_dir        => '/home/#{WebSphereConstants.user}/tmp/IBM/InstallationManager',
+        source            => '#{HelperConstants.qa_resources}/ibm_installation_manager/1.8.3/agent.installer.linux.gtk.x86_64_1.8.3000.20150606_0047.zip',
+      }
+      MANIFEST
+    end
     runner = BeakerAgentRunner.new
     result = runner.execute_agent_on(host, ibm_install_pp)
     fail("IBM manager failed to install on [#{host}]") unless result.exit_code.to_s =~ /[0,2]/
-    fail("IBM manager install failed as IBM directories have failed to be created") unless self.remote_dir_exists(host, '/opt/IBM/InstallationManager')
+    fail("IBM manager install failed as IBM directories have failed to be created") unless self.remote_dir_exists(host, "/home/#{WebSphereConstants.user}/IBM/InstallationManager")
   end
 
   def self.mount_QA_resources(host)

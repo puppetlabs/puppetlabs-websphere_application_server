@@ -25,7 +25,8 @@ describe 'add cluster members' do
   end
 
   it "installs dmgr" do
-    expect(@dmgr_result.exit_code).to eq 2
+    require 'pry'; binding.pry
+    expect(@dmgr_result.exit_code).to eq 0
   end
 
   it "installs dmgr a second time" do

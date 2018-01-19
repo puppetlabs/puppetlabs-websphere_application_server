@@ -87,6 +87,7 @@ define websphere_application_server::ihs::instance (
     imcl_path        => $imcl_path,
     package_owner    => $user,
     package_group    => $group,
+    user             => $user
   }
 
   file { $_webroot:

@@ -10,7 +10,8 @@ module HelperConstants
 end
 
 module WebSphereConstants
-  @base_dir               = '/opt/IBM'
+  @base_dir               = '/home/webadmin/IBM'
+  @user_home              = '/home/webadmin/'
   @user                   = 'webadmin'
   @group                  = 'webadmins'
   @instance_base          = @base_dir + '/WebSphere85/AppServer'
@@ -41,9 +42,9 @@ module WebSphereConstants
   @ws_admin              = @profile_base + '/' + @dmgr_title + '/bin/wsadmin.sh'
 
   class << self
-    attr_reader :base_dir, :instance_base, :profile_base, :was_installer, :instance_name,
+    attr_reader :base_dir, :user_home, :instance_base, :profile_base, :was_installer, :instance_name,
                 :package_name,:package_version, :update_package_version, :repository, :class_name, :fixpack_installer,
-                :java_installer, :java_package, :java_version, :cell, :appserver_title,
+                :java_installer, :java_package, :java_version, :cell, :appserver_title, :installation_mode,
                 :dmgr_title, :cluster_title, :cluster_member, :user, :group, :dmgr_status, :ws_admin
   end
 end
