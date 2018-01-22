@@ -50,7 +50,7 @@ define websphere_application_server::profile::dmgr (
   validate_string($_options)
 
   # Create the DMGR profile
-  # IBM's crap almost always exits 0, so we test that the profile directory
+  # IBM's stuff almost always exits 0, so we test that the profile directory
   # at leasts exists before saying success.
   exec { "was_profile_dmgr_${title}":
     command => "${instance_base}/bin/manageprofiles.sh ${_options} && test -d ${_profile_base}/${profile_name}",

@@ -1,3 +1,17 @@
+# @summary Manage setup for WebSphere installation and management
+#
+# @param base_dir
+#  The base directory containing IBM Software. Valid options: an absolute path to a directory.
+# @param user
+#  The user name that owns and executes the WebSphere installation. Valid options: a string containing a valid user name.
+# @param group
+#  The permissions group for the WebSphere installation. Valid options: a string containing a valid group name.
+# @param user_home
+#  Specifies the home directory for the specified user if `manage_user` is `true`. Valid options: an absolute path to a directory.
+# @param manage_user
+#  Specifies whether the class manages the user specified in `user`. Valid options: boolean.
+# @param manage_group
+#  Specifies whether the class manages the group specified in `group`. Valid options: boolean.
 #
 class websphere_application_server (
   $base_dir     = '/opt/IBM',

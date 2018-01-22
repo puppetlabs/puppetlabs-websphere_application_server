@@ -4,14 +4,20 @@ require 'installer_constants'
 describe 'IHS instance' do
   before(:all) do
     @agent = WebSphereHelper.get_ihs_server
-    WebSphereInstance.install(@agent)
-    WebSphereDmgr.install(@agent)
+    @ws_manifest = WebSphereInstance.manifest(user: 'webadmin',
+                                              group: 'webadmins')
+    @dmgr_manifest = WebSphereDmgr.manifest(target_agent: @agent)
     @ihs_host     = @agent.hostname
     @listen_port  = 10080
 
-    @manifest = WebSphereIhs.manifest(@agent, @listen_port)
+    @ihs_manifest = WebSphereIhs.manifest(user: 'webadmin',
+                                          group: 'webadmins',
+                                          target_agent: @agent,
+                                          listen_port: @listen_port)
     runner = BeakerAgentRunner.new
-    @result = runner.execute_agent_on(@agent, @manifest)
+    runner.execute_agent_on(@agent, @ws_manifest)
+    runner.execute_agent_on(@agent, @dmgr_manifest)
+    @result = runner.execute_agent_on(@agent, @ihs_manifest)
   end
 
   it 'should run without errors' do
@@ -54,9 +60,13 @@ describe 'IHS instance' do
       @ihs_host     = @agent.hostname
       @listen_port  = 10080
 
-      @manifest = WebSphereIhs.manifest(@agent, @listen_port, status='stopped')
+      @ihs_manifest = WebSphereIhs.manifest(user: 'webadmin',
+                                            group: 'webadmins',
+                                            target_agent: @agent,
+                                            listen_port: @listen_port,
+                                            status: 'stopped')
       runner = BeakerAgentRunner.new
-      @result = runner.execute_agent_on(@agent, @manifest)
+      @result = runner.execute_agent_on(@agent, @ihs_manifest)
     end
 
     it 'should run without errors' do
@@ -71,7 +81,7 @@ describe 'IHS instance' do
 
     it 'should run a second time without changes' do
       runner = BeakerAgentRunner.new
-      second_result = runner.execute_agent_on(@agent, @manifest)
+      second_result = runner.execute_agent_on(@agent, @ihs_manifest)
       expect(second_result.exit_code).to eq 2
     end
   end

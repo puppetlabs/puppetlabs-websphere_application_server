@@ -1,17 +1,17 @@
 ## Create a DMGR Profile
 <%= WebSphereConstants.class_name %>::profile::dmgr { '<%= WebSphereConstants.dmgr_title %>':
-  instance_base => '<%= WebSphereConstants.instance_base %>',
-  profile_base  => '<%= JDBCProviderConstants.profile_base %>',
+instance_base => '<%= instance_base %>',
+  profile_base  => '<%= profile_base %>',
   cell          => '<%= JDBCProviderConstants.cell %>',
   node_name     => '<%= agent_hostname %>',
-  user          => '<%= WebSphereConstants.user %>',
-  group         => '<%= WebSphereConstants.group %>',
+  user          => '<%= user %>',
+  group         => '<%= group %>',
 }
 ->
 ## Create a cluster
 <%= WebSphereConstants.class_name %>::cluster { '<%= WebSphereCluster.cluster_name %>':
-  profile_base => '<%= WebSphereConstants.profile_base %>',
+  profile_base => '<%= profile_base %>',
   dmgr_profile => '<%= WebSphereConstants.dmgr_title %>',
   cell         => '<%= WebSphereConstants.cell %>',
-  user         => '<%= WebSphereConstants.user %>',
+  user         => '<%= user %>',
 }

@@ -1,4 +1,4 @@
-#CONSTANTS
+
 module HelperConstants
   @unsupported_platforms    = ['Suse','windows','AIX','Solaris']
   @websphere_source_dir     = '/opt/sources/ibm_websphere'
@@ -12,7 +12,9 @@ end
 module WebSphereConstants
   @base_dir               = '/opt/IBM'
   @user                   = 'webadmin'
+  @user_home              = '/'
   @group                  = 'webadmins'
+  @installation_mode      = 'administrator'
   @instance_base          = @base_dir + '/WebSphere85/AppServer'
   @profile_base           = @instance_base + '/profiles'
 
@@ -43,7 +45,7 @@ module WebSphereConstants
   class << self
     attr_reader :base_dir, :instance_base, :profile_base, :was_installer, :instance_name,
                 :package_name,:package_version, :update_package_version, :repository, :class_name, :fixpack_installer,
-                :java_installer, :java_package, :java_version, :cell, :appserver_title,
+                :java_installer, :java_package, :java_version, :cell, :appserver_title, :user_home, :installation_mode,
                 :dmgr_title, :cluster_title, :cluster_member, :user, :group, :dmgr_status, :ws_admin
   end
 end

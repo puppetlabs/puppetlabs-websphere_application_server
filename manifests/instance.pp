@@ -107,6 +107,7 @@ define websphere_application_server::instance (
     manage_ownership => true,
     package_owner    => $user,
     package_group    => $group,
+    user             => $user,
   }
 
   file { $_profile_base:

@@ -45,7 +45,10 @@ def main
         else
           fail("Acceptance tests cannot run as OS package [lsof] cannot be installed")
         end
-        WebSphereHelper.install_ibm_manager(host)
+        WebSphereHelper.install_ibm_manager(host: host)
+        WebSphereHelper.install_ibm_manager(host: host,
+                                            imode: 'nonadministrator',
+                                            user_home: '/home/webadmin')
       end
     end
   end
@@ -113,10 +116,13 @@ class BeakerAgentRunner
 end
 
 class WebSphereInstance
-  def self.manifest(instance=WebSphereConstants.instance_name)
+  def self.manifest(instance: WebSphereConstants.instance_name,
+                    base_dir: WebSphereConstants.base_dir,
+                    user: WebSphereConstants.user,
+                    group: WebSphereConstants.group)
     instance_name = instance
     fixpack_name  = FixpackConstants.name
-    instance_base = WebSphereConstants.base_dir + '/' + instance_name + '/AppServer'
+    instance_base = base_dir + '/' + instance_name + '/AppServer'
     profile_base  = instance_base + '/profiles'
     java7_name    = instance_name + '_Java7'
 
@@ -127,14 +133,21 @@ class WebSphereInstance
 
   def self.install(agent, instance=WebSphereConstants.instance_name)
     runner = BeakerAgentRunner.new
-    runner.execute_agent_on(agent, self.manifest(instance=instance))
+    runner.execute_agent_on(agent, self.manifest(instance: instance))
   end
 end
 
 class WebSphereDmgr
-  def self.manifest(agent)
-    fail "agent param must be set to the beaker host of the dmgr agent" unless agent.hostname
-    agent_hostname = agent.hostname
+  def self.manifest(target_agent: ,
+                    instance: WebSphereConstants.instance_name,
+                    base_dir: WebSphereConstants.base_dir,
+                    user: WebSphereConstants.user,
+                    group: WebSphereConstants.group)
+    fail "agent param must be set to the beaker host of the dmgr agent" unless target_agent.hostname
+    agent_hostname = target_agent.hostname
+    instance_name = instance
+    instance_base = base_dir + '/' + instance_name + '/AppServer'
+    profile_base  = instance_base + '/profiles'
 
     local_files_root_path = ENV['FILES'] || File.expand_path(File.join(File.dirname(__FILE__), 'acceptance/fixtures'))
     manifest_template     = File.join(local_files_root_path, 'websphere_dmgr.erb')
@@ -143,14 +156,19 @@ class WebSphereDmgr
 
   def self.install(agent)
     runner = BeakerAgentRunner.new
-    runner.execute_agent_on(agent, self.manifest(agent))
+    runner.execute_agent_on(agent, self.manifest(target_agent: agent))
   end
 end
 
 class WebSphereIhs
-  def self.manifest(agent, listen_port, status='running')
-    fail "agent param must be set to the beaker host of the ihs agent" unless agent.hostname
-    agent_hostname = agent.hostname
+  def self.manifest(target_agent: ,
+                    listen_port: ,
+                    status: 'running',
+                    user: WebSphereConstants.user,
+                    group: WebSphereConstants.group,
+                    base_dir: WebSphereConstants.base_dir)
+    fail "agent param must be set to the beaker host of the ihs agent" unless target_agent.hostname
+    agent_hostname = target_agent.hostname
     ihs_status = status
     local_files_root_path = ENV['FILES'] || File.expand_path(File.join(File.dirname(__FILE__), 'acceptance/fixtures'))
     manifest_template     = File.join(local_files_root_path, 'websphere_ihs.erb')
@@ -159,7 +177,7 @@ class WebSphereIhs
 
   def self.install(agent)
     runner = BeakerAgentRunner.new
-    runner.execute_agent_on(agent, self.manifest(agent))
+    runner.execute_agent_on(agent, self.manifest(target_agent: agent))
   end
 end
 
@@ -181,6 +199,16 @@ class WebSphereAppServer
 end
 
 class WebSphereHelper
+  def self.stop_server(server_name: sname,
+                       user: usr,
+                       profile_base: pb,
+                       profile_name: pn)
+
+    local_files_root_path = ENV['FILES'] || File.expand_path(File.join(File.dirname(__FILE__), 'acceptance/fixtures'))
+    manifest_template     = File.join(local_files_root_path, 'websphere_stop_server.erb')
+    ERB.new(File.read(manifest_template), nil, '-').result(binding)
+  end
+
   def self.get_host_by_role(role)
     dmgr = NilClass
     hosts.each do |host|
@@ -247,18 +275,46 @@ class WebSphereHelper
     fail("Failed to transfer the file [#{source}] to the remote") unless remote_file_exists(host, target)
   end
 
-  def self.install_ibm_manager(host)
-    ibm_install_pp = <<-MANIFEST
-    class { 'ibm_installation_manager':
-      deploy_source => true,
-      source        => '/opt/QA_resources/ibm_installation_manager/1.8.3/agent.installer.linux.gtk.x86_64_1.8.3000.20150606_0047.zip',
-      target        => '/opt/IBM/InstallationManager',
-    }
-    MANIFEST
+  def self.install_ibm_manager(host: install_host,
+                               user: WebSphereConstants.user,
+                               group: WebSphereConstants.group,
+                               imode: WebSphereConstants.installation_mode,
+                               user_home: WebSphereConstants.user_home)
+    ibm_install_pp = if imode == 'nonadministrator'
+<<-MANIFEST
+group { '#{group}':
+  ensure => present,
+}
+
+user { '#{user}':
+  managehome => true,
+  home       => '#{user_home}',
+  gid        => '#{group}',
+}
+
+class { 'ibm_installation_manager':
+  deploy_source     => true,
+  source            => '/opt/QA_resources/ibm_installation_manager/1.8.3/agent.installer.linux.gtk.x86_64_1.8.3000.20150606_0047.zip',
+  installation_mode => '#{imode}',
+  user              => '#{user}',
+  group             => '#{group}',
+  user_home         => '#{user_home}',
+}
+MANIFEST
+                     elsif imode == 'administrator'
+                       <<-MANIFEST
+class { 'ibm_installation_manager':
+  deploy_source     => true,
+  source            => '/opt/QA_resources/ibm_installation_manager/1.8.3/agent.installer.linux.gtk.x86_64_1.8.3000.20150606_0047.zip',
+  installation_mode => 'administrator',
+}
+MANIFEST
+
+                     end
     runner = BeakerAgentRunner.new
     result = runner.execute_agent_on(host, ibm_install_pp)
     fail("IBM manager failed to install on [#{host}]") unless result.exit_code.to_s =~ /[0,2]/
-    fail("IBM manager install failed as IBM directories have failed to be created") unless self.remote_dir_exists(host, '/opt/IBM/InstallationManager')
+    fail("IBM manager install failed as IBM directories have failed to be created") unless self.remote_dir_exists(host, '/home/webadmin/IBM/InstallationManager')
   end
 
   def self.mount_QA_resources(host)

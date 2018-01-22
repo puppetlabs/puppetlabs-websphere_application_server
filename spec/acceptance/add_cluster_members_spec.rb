@@ -3,11 +3,16 @@ require 'installer_constants'
 
 describe 'add cluster members' do
   before(:all) do
+    runner = BeakerAgentRunner.new
+
     @dmgragent = WebSphereHelper.get_dmgr_host
     @appagent = WebSphereHelper.get_app_host
-    WebSphereInstance.install(@dmgragent)
-    WebSphereInstance.install(@appagent)
-    @dmgrmanifest = WebSphereDmgr.manifest(@dmgragent)
+    @webspheremanifest = WebSphereInstance.manifest
+    [@dmgragent, @appagent].each do |agent|
+      runner.execute_agent_on(agent, @webspheremanifest)
+    end
+
+    @dmgrmanifest = WebSphereDmgr.manifest(target_agent: @dmgragent)
     @appmanifest = WebSphereAppServer.manifest(@appagent, @dmgragent)
 
     @member1 = WebSphereHelper.get_fresh_node('redhat-7-x86_64')
@@ -15,7 +20,6 @@ describe 'add cluster members' do
     @member3 = WebSphereHelper.get_fresh_node('centos-6-x86_64')
 
     @execute_hash = { @dmgragent => @dmgrmanifest, @appagent => @appmanifest }
-    runner = BeakerAgentRunner.new
     @site_pp = runner.generate_site_pp(@execute_hash)
     runner.copy_site_pp(@site_pp)
     @dmgr_result = runner.execute_agent_on(@dmgragent)

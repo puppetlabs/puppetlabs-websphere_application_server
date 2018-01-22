@@ -1,0 +1,8 @@
+exec { 'stop server':
+  user => 'root',
+<% if user == 'root' -%>
+  command => "<%= profile_base %>/<%= profile_name %>/bin/stopServer.sh <%= server_name %> -profileName <%= profile_name %>",
+<% else -%>
+  command => "/bin/su - <%= user %> -c '<%= profile_base %>/<%= profile_name %>/bin/stopServer.sh <%= server_name %> -profileName <%= profile_name %> '",
+<% end -%>
+}

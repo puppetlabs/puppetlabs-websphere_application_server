@@ -1,11 +1,13 @@
 class { 'websphere_application_server':
-  user     => "<%= WebSphereConstants.user %>",
-  group    => "<%= WebSphereConstants.group %>",
-  base_dir => "<%= WebSphereConstants.base_dir %>",
+  user         => "<%= user %>",
+  group        => "<%= group %>",
+  base_dir     => "<%= base_dir %>",
+  manage_user  => false,
+  manage_group => false,
 }
 
 websphere_application_server::ihs::instance { '<%= IhsInstance.ihs_target %>':
-  target           => "<%= WebSphereConstants.base_dir %>/<%= IhsInstance.ihs_target %>",
+  target           => "<%= base_dir %>/<%= IhsInstance.ihs_target %>",
   package          => "<%= IhsInstance.package_ihs %>",
   version          => "<%= WebSphereConstants.package_version %>",
   repository       => '/opt/QA_resources/ibm_websphere/ihs_ilan/repository.config',
@@ -20,7 +22,7 @@ websphere_application_server::ihs::instance { '<%= IhsInstance.ihs_target %>':
 
 ibm_pkg { 'Plugins':
   ensure     => 'present',
-  target     => "<%= WebSphereConstants.base_dir %>/Plugins",
+  target     => "<%= base_dir %>/Plugins",
   repository => '/opt/QA_resources/ibm_websphere/plg_ilan/repository.config',
   package    => "<%= IhsInstance.package_plugin %>",
   version    => "<%= WebSphereConstants.package_version %>",
@@ -29,12 +31,12 @@ ibm_pkg { 'Plugins':
 
 websphere_application_server::ihs::server { 'ihs_server':
   status      => '<%= ihs_status %>',
-  target      => "<%= WebSphereConstants.base_dir %>/<%= IhsInstance.ihs_target %>",
+  target      => "<%= base_dir %>/<%= IhsInstance.ihs_target %>",
   log_dir     => '/opt/log/websphere/httpserver',
-  plugin_base => "<%= WebSphereConstants.base_dir %>/Plugins",
+  plugin_base => "<%= base_dir %>/Plugins",
   dmgr_host    => <%= IhsInstance.dmgr_host %>,
   cell        => "<%= WebSphereConstants.cell %>",
-  httpd_config => "<%= WebSphereConstants.base_dir %>/<%= IhsInstance.ihs_target %>/conf/httpd_test.conf",
+  httpd_config => "<%= base_dir %>/<%= IhsInstance.ihs_target %>/conf/httpd_test.conf",
   access_log  => '/opt/log/websphere/httpserver/access_log',
   error_log   => '/opt/log/websphere/httpserver/error_log',
   listen_port => "<%= listen_port %>",
