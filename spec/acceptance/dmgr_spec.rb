@@ -13,7 +13,7 @@ describe 'Install the websphere dmgr' do
       expect(WebSphereHelper.remote_file_exists(@agent, WebSphereConstants.ws_admin))
   end
 
-  it_behaves_like 'a running dmgr'
+  it_behaves_like 'a running dmgr', WebSphereConstants.profile_base, WebSphereConstants.dmgr_title
 
   context 'should stop the dmgr service' do
     before(:all) do
@@ -34,7 +34,7 @@ describe 'Install the websphere dmgr' do
     end
 
     it_behaves_like 'an idempotent resource'
-    it_behaves_like 'a stopped dmgr'
+    it_behaves_like 'a stopped dmgr', WebSphereConstants.profile_base, WebSphereConstants.dmgr_title
   end
 
   context 'should start the dmgr service' do
@@ -56,6 +56,6 @@ describe 'Install the websphere dmgr' do
     end
 
     it_behaves_like 'an idempotent resource'
-    it_behaves_like 'a running dmgr'
+    it_behaves_like 'a running dmgr', WebSphereConstants.profile_base, WebSphereConstants.dmgr_title
   end
 end

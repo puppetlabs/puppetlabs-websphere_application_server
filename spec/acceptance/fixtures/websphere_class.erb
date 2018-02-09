@@ -1,4 +1,3 @@
-
 # Inputs : instance_name, fixpack_name, instance_base, profile_base, java7_name
 # The rest are loaded from the WebSphereConstants.
 
@@ -8,19 +7,25 @@ file { [
   '/opt/log/websphere/appserverlogs',
   '/opt/log/websphere/applogs',
   '/opt/log/websphere/wasmgmtlogs',
+  '/home/webadmin/log',
+  '/home/webadmin/log/websphere',
+  '/home/webadmin/log/websphere/appserverlogs',
+  '/home/webadmin/log/websphere/applogs',
+  '/home/webadmin/log/websphere/wasmgmtlogs',
 ]:
   ensure => 'directory',
-  owner  => '<%= WebSphereConstants.user %>',
-  group  => '<%= WebSphereConstants.group %>',
+  owner  => '<%= user %>',
+  group  => '<%= group %>',
 }
-
 # Base stuff for WebSphere.  Specify a common user/group and the base
 # directory to where we want things to live.  Make sure the
 # InstallationManager is managed before we do this.
 class { '<%= WebSphereConstants.class_name %>':
-  user     => '<%= WebSphereConstants.user %>',
-  group    => '<%= WebSphereConstants.group %>',
-  base_dir => '<%= WebSphereConstants.base_dir %>',
+  user     => '<%= user %>',
+  group    => '<%= group %>',
+  base_dir => '<%= base_dir %>',
+  manage_user => false,
+  manage_group => false,
 }
 
 <%= WebSphereConstants.class_name %>::instance { '<%= instance_name %>':
@@ -29,8 +34,8 @@ class { '<%= WebSphereConstants.class_name %>':
   version      => '<%= WebSphereConstants.package_version %>',
   profile_base => '<%= profile_base %>',
   repository   => "<%= WebSphereConstants.repository %>",
-  user         => '<%= WebSphereConstants.user %>',
-  group        => '<%= WebSphereConstants.group %>',
+  user         => '<%= user %>',
+  group        => '<%= group %>',
 }
 
 ibm_pkg { '<%= fixpack_name %>':
@@ -39,8 +44,9 @@ ibm_pkg { '<%= fixpack_name %>':
   version       => '<%= FixpackConstants.version %>',
   repository    => '<%= FixpackConstants.repository %>',
   target        => '<%= instance_base %>',
-  package_owner => '<%= WebSphereConstants.user %>',
-  package_group => '<%= WebSphereConstants.group %>',
+  package_owner => '<%= user %>',
+  package_group => '<%= group %>',
+  user          => '<%= user %>',
   require       => Websphere_application_server::Instance['<%= instance_name %>'],
 }
 
@@ -50,7 +56,8 @@ ibm_pkg { '<%= java7_name %>':
   version       => '<%= JavaInstallerConstants.java7_version %>',
   repository    => "<%= JavaInstallerConstants.java7_installer %>/repository.config",
   target        => '<%= instance_base %>',
-  package_owner => '<%= WebSphereConstants.user %>',
-  package_group => '<%= WebSphereConstants.group %>',
+  package_owner => '<%= user %>',
+  package_group => '<%= group %>',
+  user          => '<%= user %>',
   require       => Ibm_pkg['<%= fixpack_name %>'],
 }

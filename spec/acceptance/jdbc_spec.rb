@@ -4,8 +4,11 @@ require 'installer_constants'
 describe 'jdbc layer is setup and working' do
   before(:all) do
     @agent = WebSphereHelper.get_ihs_server
-    WebSphereInstance.install(@agent)
-    WebSphereDmgr.install(@agent)
+    @was_manifest = WebSphereInstance.manifest(user: 'webadmin',
+                                               group: 'webadmins')
+    @dmgr_manifest = WebSphereDmgr.manifest(target_agent: @agent,
+                                            user: 'webadmin',
+                                            group: 'webadmins')
     @hostname = @agent.hostname
 
     @manifest = <<-MANIFEST
@@ -44,6 +47,8 @@ describe 'jdbc layer is setup and working' do
 
     MANIFEST
     runner = BeakerAgentRunner.new
+    runner.execute_agent_on(@agent, @was_manifest)
+    runner.execute_agent_on(@agent, @dmgr_manifest)
     @result = runner.execute_agent_on(@agent, @manifest)
   end
 

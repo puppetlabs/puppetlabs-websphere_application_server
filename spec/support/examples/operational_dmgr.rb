@@ -1,8 +1,8 @@
 
-shared_examples 'a running dmgr' do
+shared_examples 'a running dmgr' do |profile_base, dmgr_title|
   before(:all) do
-    @dmgr_result     = on(@agent, "#{WebSphereConstants.dmgr_status} -all -profileName #{WebSphereConstants.dmgr_title} |  grep 'The Deployment Manager'", :acceptable_exit_codes => [0,1])
-    @ws_admin_result = on(@agent, "#{WebSphereConstants.ws_admin} -lang jython -c \"AdminConfig.getid('/ServerCluster: #{WebSphereConstants.cluster_member}/')\"", :acceptable_exit_codes => [0,1,103])
+    @dmgr_result     = on(@agent, "#{profile_base}/#{dmgr_title}/bin/serverStatus.sh -all -profileName #{dmgr_title} |  grep 'The Deployment Manager'", :acceptable_exit_codes => [0,1])
+    @ws_admin_result = on(@agent, "#{profile_base}/#{dmgr_title}/bin/wsadmin.sh -lang jython -c \"AdminConfig.getid('/ServerCluster: #{WebSphereConstants.cluster_member}/')\"", :acceptable_exit_codes => [0,1,103])
   end
 
   it 'should be contactable' do
@@ -16,10 +16,10 @@ shared_examples 'a running dmgr' do
   end
 end
 
-shared_examples 'a stopped dmgr' do
+shared_examples 'a stopped dmgr' do |profile_base, dmgr_title|
   before(:all) do
-    @dmgr_result     = on(@agent, "#{WebSphereConstants.dmgr_status} -all -profileName #{WebSphereConstants.dmgr_title} |  grep 'The Deployment Manager'", :acceptable_exit_codes => [0,1])
-    @ws_admin_result = on(@agent, "#{WebSphereConstants.ws_admin} -lang jython -c \"AdminConfig.getid('/ServerCluster: #{WebSphereConstants.cluster_member}/')\"", :acceptable_exit_codes => [0,1,103])
+    @dmgr_result     = on(@agent, "#{profile_base}/#{dmgr_title}/bin/serverStatus.sh -all -profileName #{WebSphereConstants.dmgr_title} |  grep 'The Deployment Manager'", :acceptable_exit_codes => [0,1])
+    @ws_admin_result = on(@agent, "#{profile_base}/#{dmgr_title}/bin/wsadmin.sh -lang jython -c \"AdminConfig.getid('/ServerCluster: #{WebSphereConstants.cluster_member}/')\"", :acceptable_exit_codes => [0,1,103])
   end
 
   it 'should not be contactable' do

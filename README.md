@@ -701,8 +701,7 @@ A typical use case is specifying the user via the base class `websphere`. If thi
 
 ##### `manage_group`
 
-Boolean. Specifies whether this instance should manage the group specififed
-by the `group` parameter.
+Boolean. Specifies whether this instance should manage the group specififed by the `group` parameter.
 
 Defaults to `false`.
 
