@@ -1,3 +1,10 @@
+## Supported Release [1.1.0]
+### Summary
+This is a 'small' feature release, allowing the user to install WAS as a non-root user
+
+#### Added
+- passing of $user to `ibm_pkg` resource in `websphere_application_server::instance` ([MODULES-4903](https://tickets.puppetlabs.com/browse/MODULES-4903))
+
 ## Supported Release [1.0.1]
 ### Summary
 This is a bugfix release that also features several modulesync updates.
@@ -35,6 +42,7 @@ This is the first supported release of websphere_application_server on the forge
 This is the initial release of websphere_application_server on the forge. This module has the capability to install and configure websphere application servers, deployment managers, and websphere ihs via the IBM Installation Manager. This module does not support Liberty profiles.
 
 
+[1.1.0]:https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/1.0.1...1.1.0
 [1.0.1]:https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/1.0.0...1.0.1
 [1.0.0]:https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/0.2.0...1.0.0
 [0.2.0]:https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/829cca4209d870355980f7cba40c9ce1db2c4573...0.2.0

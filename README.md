@@ -41,11 +41,25 @@ Manages the deployment and configuration of [IBM WebSphere Application Server](h
 
 To get started, declare the base class on any server that will use this module: DMGR, App Servers, or IHS.
 
+#### As root user (default)
+
 ```puppet
 class { 'websphere_application_server':
   user     => 'webadmin',
   group    => 'webadmins',
   base_dir => '/opt/IBM',
+}
+```
+
+#### As non-root user
+
+The primary difference here being the `base_dir`. Set this to a dir your user has write permission to and IBM Installation Manager takes care of the rest.
+
+```puppet
+class { 'websphere_application_server':
+  user     => 'webadmin',
+  group    => 'webadmins',
+  base_dir => '/home/webadmin/IBM',
 }
 ```
 
@@ -701,7 +715,7 @@ A typical use case is specifying the user via the base class `websphere`. If thi
 
 ##### `manage_group`
 
-Boolean. Specifies whether this instance should manage the group specififed by the `group` parameter.
+Boolean. Specifies whether this instance should manage the group specified by the `group` parameter.
 
 Defaults to `false`.
 
