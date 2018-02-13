@@ -1,7 +1,6 @@
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_jdbc_datasource) do
-
   autorequire(:user) do
     self[:user]
   end
@@ -14,17 +13,17 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
 
   validate do
     [:dmgr_profile, :name, :user, :node_name, :cell].each do |value|
-      raise ArgumentError, "Invalid #{value.to_s} #{self[value]}" unless value =~ /^[-0-9A-Za-z._]+$/
+      raise ArgumentError, "Invalid #{value} #{self[value]}" unless value =~ %r{^[-0-9A-Za-z._]+$}
     end
 
-    raise ArgumentError, "cell is a required attribute" if self[:cell].nil?
-    fail("Invalid profile_base #{self[:profile_base]}") unless Pathname.new(self[:profile_base]).absolute?
-    raise ArgumentError 'Invalid scope, must be "node", "server", "cell", or "cluster"' unless self[:scope] =~ /^(node|server|cell|cluster)$/
+    raise ArgumentError, 'cell is a required attribute' if self[:cell].nil?
+    raise("Invalid profile_base #{self[:profile_base]}") unless Pathname.new(self[:profile_base]).absolute?
+    raise ArgumentError 'Invalid scope, must be "node", "server", "cell", or "cluster"' unless self[:scope] =~ %r{^(node|server|cell|cluster)$}
   end
 
   newparam(:name) do
     isnamevar
-    desc "The name of the datasource"
+    desc 'The name of the datasource'
   end
 
   newparam(:dmgr_profile) do
@@ -56,19 +55,19 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
   end
 
   newparam(:node_name) do
-    desc "The name of the node to create this application server on"
+    desc 'The name of the node to create this application server on'
   end
 
   newparam(:server) do
-    desc "The name of the server to create this application server on"
+    desc 'The name of the server to create this application server on'
   end
 
   newparam(:cluster) do
-    desc "The name of the cluster to create this application server on"
+    desc 'The name of the cluster to create this application server on'
   end
 
   newparam(:cell) do
-    desc "The name of the cell to create this application server on"
+    desc 'The name of the cell to create this application server on'
   end
 
   newparam(:scope) do
@@ -91,7 +90,6 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
 
     Example: 'jdbc/foo'
     EOT
-
   end
 
   newparam(:data_store_helper_class) do
@@ -177,10 +175,10 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
   end
 
   newparam(:wsadmin_user) do
-    desc "The username for wsadmin authentication"
+    desc 'The username for wsadmin authentication'
   end
 
   newparam(:wsadmin_pass) do
-    desc "The password for wsadmin authentication"
+    desc 'The password for wsadmin authentication'
   end
 end

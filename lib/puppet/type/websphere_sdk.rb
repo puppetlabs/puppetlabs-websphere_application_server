@@ -1,38 +1,37 @@
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_sdk) do
-
-  @doc = "This manages WebSphere SDK/JDK versions"
+  @doc = 'This manages WebSphere SDK/JDK versions'
 
   autorequire(:user) do
     self[:user]
   end
 
   def self.title_patterns
-    identity = lambda {|x| x}
+    identity = ->(x) { x }
     [
       [
-      /^(.*)_(.*)$/,
+        %r{^(.*)_(.*)$},
         [
-          [:profile, identity ],
-          [:sdkname, identity ],
-        ]
+          [:profile, identity],
+          [:sdkname, identity],
+        ],
       ],
       [
-      /^(.*)$/,
+        %r{^(.*)$},
         [
-          [:sdkname, identity ]
-        ]
-      ]
+          [:sdkname, identity],
+        ],
+      ],
     ]
   end
 
   validate do
     [:server, :profile, :user].each do |value|
-      raise ArgumentError, "Invalid #{value.to_s} #{self[:value]}" unless value =~ /^[-0-9A-Za-z._]+$/
+      raise ArgumentError, "Invalid #{value} #{self[:value]}" unless value =~ %r{^[-0-9A-Za-z._]+$}
     end
 
-    raise ArgumentError, "Name of the SDK to modify is required." unless self[:sdkname]
+    raise ArgumentError, 'Name of the SDK to modify is required.' unless self[:sdkname]
     raise ArgumentError, "Invalid instance_base #{self[:instance_base]}" unless Pathname.new(self[:instance_base]).absolute?
   end
 
@@ -75,7 +74,7 @@ Puppet::Type.newtype(:websphere_sdk) do
   end
 
   newproperty(:sdkname) do
-    desc "The name of the SDK to modify. Example: 1.7.1_64"
+    desc 'The name of the SDK to modify. Example: 1.7.1_64'
   end
 
   newparam(:instance_base) do
@@ -109,11 +108,11 @@ Puppet::Type.newtype(:websphere_sdk) do
   end
 
   newparam(:wsadmin_user) do
-    desc "The username for authentication if security is enabled."
+    desc 'The username for authentication if security is enabled.'
   end
 
   newparam(:wsadmin_pass) do
-    desc "The username for authentication if security is enabled."
+    desc 'The username for authentication if security is enabled.'
   end
 
   newparam(:username) do

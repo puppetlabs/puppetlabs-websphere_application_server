@@ -1,7 +1,6 @@
 require_relative '../websphere_helper'
 
-Puppet::Type.type(:websphere_jdbc_datasource).provide(:wsadmin, :parent => Puppet::Provider::Websphere_Helper) do
-
+Puppet::Type.type(:websphere_jdbc_datasource).provide(:wsadmin, parent: Puppet::Provider::Websphere_Helper) do
   def scope(what)
     case resource[:scope]
     when 'cell'
@@ -49,7 +48,7 @@ Puppet::Type.type(:websphere_jdbc_datasource).provide(:wsadmin, :parent => Puppe
       raise Puppet::Error, "Can't deal with #{resource[:data_store_helper_class]}"
     end
 
-    return configprop
+    configprop
   end
 
   def params_string
@@ -66,44 +65,42 @@ Puppet::Type.type(:websphere_jdbc_datasource).provide(:wsadmin, :parent => Puppe
   end
 
   def create
-    cmd = <<-EOS
-provider = AdminConfig.getid('/#{scope('get')}/JDBCProvider:#{resource[:jdbc_provider]}/')
-AdminTask.createDatasource(provider, '[#{params_string}]')
-AdminConfig.save()
-EOS
+    cmd = <<-EOS.unindent
+    provider = AdminConfig.getid('/#{scope('get')}/JDBCProvider:#{resource[:jdbc_provider]}/')
+    AdminTask.createDatasource(provider, '[#{params_string}]')
+    AdminConfig.save()
+    EOS
 
-
-    self.debug "Creating JDBC Datasource with:\n#{cmd}"
-    result = wsadmin(:file => cmd, :user => resource[:user])
-    self.debug "Result:\n#{result}"
-
+    debug "Creating JDBC Datasource with:\n#{cmd}"
+    result = wsadmin(file: cmd, user: resource[:user])
+    debug "Result:\n#{result}"
   end
 
   def exists?
     cmd = "\"print AdminConfig.list('DataSource', AdminConfig.getid( '/"
     cmd << "#{scope('get')}/'))\""
 
-    self.debug "Querying JDBC Datasource with #{cmd}"
-    result = wsadmin(:command => cmd, :user => resource[:user])
-    self.debug "Result: #{result}"
+    debug "Querying JDBC Datasource with #{cmd}"
+    result = wsadmin(command: cmd, user: resource[:user])
+    debug "Result: #{result}"
 
-    if result =~ /^"?#{resource[:name]}\(#{scope('path')}\|/
-      self.debug "Found match for #{resource[:name]}"
+    if result =~ %r{^"?#{resource[:name]}\(#{scope('path')}\|}
+      debug "Found match for #{resource[:name]}"
       return true
     end
 
-    self.debug "Datasource #{resource[:name]} doesn't seem to exist in #{scope('path')}"
-    return false
+    debug "Datasource #{resource[:name]} doesn't seem to exist in #{scope('path')}"
+    false
   end
 
   def destroy
     # AdminTask.deleteJDBCProvider('(cells/CELL_01|resources.xml#JDBCProvider_1422560538842)')
-    Puppet.warning("Removal of JDBC Providers is not yet implemented")
+    Puppet.warning('Removal of JDBC Providers is not yet implemented')
   end
 
   def flush
     case resource[:scope]
-    when /(server|node)/
+    when %r{(server|node)}
       sync_node
     end
   end

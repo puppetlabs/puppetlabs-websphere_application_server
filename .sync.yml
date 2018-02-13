@@ -47,3 +47,6 @@ spec/spec_helper.rb:
 
 .travis.yml:
   docker_sets: []
+  extras:
+    - rvm: 2.1.9
+      script: bundle exec rake rubocop

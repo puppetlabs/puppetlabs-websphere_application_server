@@ -7,8 +7,7 @@
 #   - Maybe make this take a hash instead of a million parameters?
 #
 Puppet::Type.newtype(:websphere_cluster_member) do
-
-  @doc = "Manages members of a WebSphere server cluster."
+  @doc = 'Manages members of a WebSphere server cluster.'
 
   autorequire(:websphere_cluster) do
     self[:name]
@@ -25,32 +24,32 @@ Puppet::Type.newtype(:websphere_cluster_member) do
   ensurable
 
   newparam(:cell) do
-    desc "The name of the cell the cluster member belongs to"
+    desc 'The name of the cell the cluster member belongs to'
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid cell #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid cell #{value}")
       end
     end
   end
 
   newproperty(:client_inactivity_timeout) do
-    desc "Manages the clientInactivityTimeout for the TransactionService"
+    desc 'Manages the clientInactivityTimeout for the TransactionService'
   end
 
   newparam(:cluster) do
-    desc "The name of the cluster"
+    desc 'The name of the cluster'
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid cluster #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid cluster #{value}")
       end
     end
   end
 
   newparam(:dmgr_profile) do
-    desc "The name of the DMGR profile to manage. E.g. PROFILE_DMGR_01"
+    desc 'The name of the DMGR profile to manage. E.g. PROFILE_DMGR_01'
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid dmgr_profile #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid dmgr_profile #{value}")
       end
     end
   end
@@ -67,7 +66,7 @@ Puppet::Type.newtype(:websphere_cluster_member) do
     munge do |value|
       value.to_s
     end
-    desc "Specifies whether the genUniquePorts when adding a cluster member"
+    desc 'Specifies whether the genUniquePorts when adding a cluster member'
   end
 
   newproperty(:jvm_maximum_heap_size) do
@@ -143,27 +142,27 @@ Puppet::Type.newtype(:websphere_cluster_member) do
   end
 
   newparam(:server) do
-    desc "The server to add to the cluster"
+    desc 'The server to add to the cluster'
     isnamevar
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid server #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid server #{value}")
       end
     end
   end
 
   newparam(:node_name) do
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid node_name #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid node_name #{value}")
       end
     end
   end
 
   newparam(:profile_base) do
-    desc "The absolute path to the profile base directory. E.g. /opt/IBM/WebSphere/AppServer/profiles"
+    desc 'The absolute path to the profile base directory. E.g. /opt/IBM/WebSphere/AppServer/profiles'
     validate do |value|
-      fail("Invalid profile_base #{value}") unless Pathname.new(value).absolute?
+      raise("Invalid profile_base #{value}") unless Pathname.new(value).absolute?
     end
   end
 
@@ -172,36 +171,36 @@ Puppet::Type.newtype(:websphere_cluster_member) do
   end
 
   newproperty(:runas_group) do
-    desc "Manages the runAsGroup for a cluster member"
+    desc 'Manages the runAsGroup for a cluster member'
   end
 
   newproperty(:runas_user) do
-    desc "Manages the runAsUser for a cluster member"
+    desc 'Manages the runAsUser for a cluster member'
   end
 
   newproperty(:total_transaction_timeout) do
-    desc "Manages the totalTranLifetimeTimeout for the ApplicationServer"
+    desc 'Manages the totalTranLifetimeTimeout for the ApplicationServer'
   end
 
   newproperty(:threadpool_webcontainer_min_size) do
-    desc "Manages the minimumSize setting for the WebContainer ThreadPool"
+    desc 'Manages the minimumSize setting for the WebContainer ThreadPool'
   end
 
   newproperty(:threadpool_webcontainer_max_size) do
-    desc "Manages the maximumSize setting for the WebContainer ThreadPool"
+    desc 'Manages the maximumSize setting for the WebContainer ThreadPool'
   end
 
   newproperty(:umask) do
     defaultto '022'
-    desc "Manages the ProcessExecution umask for a cluster member"
+    desc 'Manages the ProcessExecution umask for a cluster member'
   end
 
   newparam(:user) do
     desc "The user to run 'wsadmin' with"
     defaultto 'root'
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid user #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid user #{value}")
       end
     end
   end
@@ -225,7 +224,6 @@ Puppet::Type.newtype(:websphere_cluster_member) do
 
   newparam(:weight) do
     defaultto '2'
-    desc "Manages the cluster member weight (memberWeight) when adding a cluster member"
+    desc 'Manages the cluster member weight (memberWeight) when adding a cluster member'
   end
-
 end

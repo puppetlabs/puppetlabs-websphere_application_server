@@ -1,7 +1,6 @@
 require_relative '../websphere_helper'
 
-Puppet::Type.type(:websphere_jdbc_provider).provide(:wsadmin, :parent => Puppet::Provider::Websphere_Helper) do
-
+Puppet::Type.type(:websphere_jdbc_provider).provide(:wsadmin, parent: Puppet::Provider::Websphere_Helper) do
   def scope(what)
     case resource[:scope]
     when 'cell'
@@ -48,38 +47,36 @@ Puppet::Type.type(:websphere_jdbc_provider).provide(:wsadmin, :parent => Puppet:
   def create
     cmd = "AdminTask.createJDBCProvider('[#{params_string}]'); AdminConfig.save()"
 
-    self.debug "Creating JDBC Provider with #{cmd}"
-    result = wsadmin(:file => cmd, :user => resource[:user])
-    self.debug "Result: #{result}"
-
+    debug "Creating JDBC Provider with #{cmd}"
+    result = wsadmin(file: cmd, user: resource[:user])
+    debug "Result: #{result}"
   end
 
   def exists?
     cmd = "\"print AdminConfig.list('JDBCProvider', AdminConfig.getid( '/"
     cmd << "#{scope('get')}/'))\""
 
-    self.debug "Querying JDBC Provider with #{cmd}"
-    result = wsadmin(:command => cmd, :user => resource[:user])
-    self.debug "Result: #{result}"
+    debug "Querying JDBC Provider with #{cmd}"
+    result = wsadmin(command: cmd, user: resource[:user])
+    debug "Result: #{result}"
 
-    if result =~ /^"?#{resource[:name]}\(#{scope('path')}\|/
-      self.debug "Found match for #{resource[:name]}"
+    if result =~ %r{^"?#{resource[:name]}\(#{scope('path')}\|}
+      debug "Found match for #{resource[:name]}"
       return true
     end
 
-    self.debug "#{resource[:name]} doesn't seem to exist."
-    return false
-
+    debug "#{resource[:name]} doesn't seem to exist."
+    false
   end
 
   def destroy
     # AdminTask.deleteJDBCProvider('(cells/CELL_01|resources.xml#JDBCProvider_1422560538842)')
-    Puppet.warning("Removal of JDBC Providers is not yet implemented")
+    Puppet.warning('Removal of JDBC Providers is not yet implemented')
   end
 
   def flush
     case resource[:scope]
-    when /(server|node)/
+    when %r{(server|node)}
       sync_node
     end
   end

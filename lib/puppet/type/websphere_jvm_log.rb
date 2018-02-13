@@ -1,8 +1,7 @@
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_jvm_log) do
-
-  @doc = "This manages a WebSphere JVM Logging Properties"
+  @doc = 'This manages a WebSphere JVM Logging Properties'
 
   autorequire(:user) do
     self[:user]
@@ -10,63 +9,63 @@ Puppet::Type.newtype(:websphere_jvm_log) do
 
   validate do
     raise ArgumentError, 'scope is required' if self[:scope].nil?
-    raise ArgumentError, 'server is required' if self[:server].nil? and self[:scope].to_s =~ /^server$/i
+    raise ArgumentError, 'server is required' if self[:server].nil? && self[:scope].to_s =~ %r{^server$}i
     raise ArgumentError, 'cell is required' if self[:cell].nil?
     raise ArgumentError, 'node_name is required' if self[:node_name].nil?
     raise ArgumentError, 'profile is required' if self[:profile].nil?
   end
 
-    def self.title_patterns
-      identity = lambda {|x| x}
+  def self.title_patterns
+    identity = ->(x) { x }
+    [
       [
+        %r{^(.*):(.*):(.*):(.*)$},
         [
-        /^(.*):(.*):(.*):(.*)$/,
-          [
-            [:cell, identity ],
-            [:node_name, identity ],
-            [:scope, identity ],
-            [:server, identity ]
-          ]
+          [:cell, identity],
+          [:node_name, identity],
+          [:scope, identity],
+          [:server, identity],
         ],
+      ],
+      [
+        %r{^(.*):(.*):(.*)$},
         [
-        /^(.*):(.*):(.*)$/,
-          [
-            [:cell, identity ],
-            [:node_name, identity ],
-            [:scope, identity ],
-          ]
+          [:cell, identity],
+          [:node_name, identity],
+          [:scope, identity],
         ],
+      ],
+      [
+        %r{^(.*):(.*)$},
         [
-        /^(.*):(.*)$/,
-          [
-            [:cell, identity ],
-            [:node_name, identity ]
-          ]
+          [:cell, identity],
+          [:node_name, identity],
         ],
+      ],
+      [
+        %r{^(.*)$},
         [
-        /^(.*)$/,
-          [
-            [:cell, identity ]
-          ]
-        ]
-      ]
-    end
+          [:cell, identity],
+        ],
+      ],
+    ]
+  end
 
   newparam(:scope) do
-    desc "The scope for the variable. Valid values: node or server"
+    desc 'The scope for the variable. Valid values: node or server'
     newvalues(:node, :NODE, :server, :SERVER)
   end
 
   newproperty(:out_filename) do
-    desc "The file System.out filename. Can include WebSphere variables"
+    desc 'The file System.out filename. Can include WebSphere variables'
   end
 
   newproperty(:err_filename) do
-    desc "The file System.err filename. Can include WebSphere variables"
+    desc 'The file System.err filename. Can include WebSphere variables'
   end
 
   newproperty(:out_rollover_type) do
-    desc "Type of log rotation to enable. Must be size, time, or both"
+    desc 'Type of log rotation to enable. Must be size, time, or both'
     newvalues(:size, :SIZE, :time, :TIME, :both, :BOTH)
     munge do |value|
       value.upcase
@@ -74,7 +73,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
   end
 
   newproperty(:err_rollover_type) do
-    desc "Type of log rotation to enable. Must be size, time, or both"
+    desc 'Type of log rotation to enable. Must be size, time, or both'
     newvalues(:size, :SIZE, :time, :TIME, :both, :BOTH)
     munge do |value|
       value.upcase
@@ -82,72 +81,72 @@ Puppet::Type.newtype(:websphere_jvm_log) do
   end
 
   newproperty(:out_rollover_size) do
-    desc "Filesize in MB for log rotation"
+    desc 'Filesize in MB for log rotation'
     validate do |value|
-      unless value.to_s =~ /^\d+/
+      unless value.to_s =~ %r{^\d+}
         raise ArgumentError, "Invalid out_rollover_size: #{value}. Must be integer."
       end
     end
   end
 
   newproperty(:err_rollover_size) do
-    desc "Filesize in MB for log rotation"
+    desc 'Filesize in MB for log rotation'
     validate do |value|
-      unless value.to_s =~ /^\d+/
+      unless value.to_s =~ %r{^\d+}
         raise ArgumentError, "Invalid err_rollover_size: #{value}. Must be integer."
       end
     end
   end
 
   newproperty(:out_maxnum) do
-    desc "Maximum number of historical log files. 1-200"
+    desc 'Maximum number of historical log files. 1-200'
     validate do |value|
-      unless value.to_s =~ /^\d+/ and value.to_i.between?(1, 200)
+      unless value.to_s =~ %r{^\d+} && value.to_i.between?(1, 200)
         raise ArgumentError, "Invalid out_maxnum: #{value}. Must be an integer between 1-200."
       end
     end
   end
 
   newproperty(:err_maxnum) do
-    desc "Maximum number of historical log files. 1-200"
+    desc 'Maximum number of historical log files. 1-200'
     validate do |value|
-      unless value.to_s =~ /^\d+/ and value.to_i.between?(1, 200)
+      unless value.to_s =~ %r{^\d+} && value.to_i.between?(1, 200)
         raise ArgumentError, "Invalid err_maxnum: #{value}. Must be an integer between 1-200."
       end
     end
   end
 
   newproperty(:out_start_hour) do
-    desc "Start time for time-based log rotation. 1-24"
+    desc 'Start time for time-based log rotation. 1-24'
     validate do |value|
-      unless value.to_s =~ /^\d+/ and value.to_i.between?(1, 24)
+      unless value.to_s =~ %r{^\d+} && value.to_i.between?(1, 24)
         raise ArgumentError, "Invalid out_start_hour: #{value}. Must be an integer between 1-24."
       end
     end
   end
 
   newproperty(:err_start_hour) do
-    desc "Start time for time-based log rotation. 1-24"
+    desc 'Start time for time-based log rotation. 1-24'
     validate do |value|
-      unless value.to_s =~ /^\d+/ and value.to_i.between?(1, 24)
+      unless value.to_s =~ %r{^\d+} && value.to_i.between?(1, 24)
         raise ArgumentError, "Invalid err_start_hour: #{value}. Must be an integer between 1-24."
       end
     end
   end
 
   newproperty(:out_rollover_period) do
-    desc "Time period (log repeat time) for time-based log rotation. 1-24"
+    desc 'Time period (log repeat time) for time-based log rotation. 1-24'
     validate do |value|
-      unless value.to_s =~ /^\d+/ and value.to_i.between?(1, 24)
+      unless value.to_s =~ %r{^\d+} && value.to_i.between?(1, 24)
         raise ArgumentError, "Invalid out_rollover_period: #{value}. Must be an integer between 1-24."
       end
     end
   end
 
   newproperty(:err_rollover_period) do
-    desc "Time period (log repeat time) for time-based log rotation. 1-24"
+    desc 'Time period (log repeat time) for time-based log rotation. 1-24'
     validate do |value|
-      unless value.to_s =~ /^\d+/ and value.to_i.between?(1, 24)
+      unless value.to_s =~ %r{^\d+} && value.to_i.between?(1, 24)
         raise ArgumentError, "Invalid err_rollover_period: #{value}. Must be an integer between 1-24."
       end
     end
@@ -156,9 +155,9 @@ Puppet::Type.newtype(:websphere_jvm_log) do
   newparam(:server) do
     isnamevar
 
-    desc "The server in the scope for this variable"
+    desc 'The server in the scope for this variable'
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
         raise ArgumentError, "Invalid server #{value}"
       end
     end
@@ -168,7 +167,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
     isnamevar
 
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
         raise ArgumentError, "Invalid cell: #{value}"
       end
     end
@@ -178,7 +177,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
     isnamevar
 
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
         raise ArgumentError, "Invalid node_name: #{value}"
       end
     end
@@ -192,7 +191,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
     Examples: dmgrProfile01, PROFILE_APP_001
     EOT
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
         raise ArgumentError, "Invalid profile #{value}"
       end
     end
@@ -207,39 +206,38 @@ Puppet::Type.newtype(:websphere_jvm_log) do
     EOT
     defaultto { @resource[:profile] }
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
         raise ArgumentError, "Invalid dmgr_profile #{value}"
       end
     end
   end
 
-
   newparam(:profile_base) do
     desc "The base directory that profiles are stored.
       Example: /opt/IBM/WebSphere/AppServer/profiles"
 
-      validate do |value|
-        unless Pathname.new(value).absolute?
-          raise ArgumentError, "Invalid profile_base #{value}"
-        end
+    validate do |value|
+      unless Pathname.new(value).absolute?
+        raise ArgumentError, "Invalid profile_base #{value}"
       end
+    end
   end
 
   newparam(:user) do
     defaultto 'root'
     desc "The user to run 'wsadmin' with"
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
         raise ArgumentError, "Invalid user #{value}"
       end
     end
   end
 
   newparam(:wsadmin_user) do
-    desc "The username for wsadmin authentication"
+    desc 'The username for wsadmin authentication'
   end
 
   newparam(:wsadmin_pass) do
-    desc "The password for wsadmin authentication"
+    desc 'The password for wsadmin authentication'
   end
 end

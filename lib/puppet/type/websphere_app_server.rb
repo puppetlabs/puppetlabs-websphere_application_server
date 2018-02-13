@@ -1,8 +1,7 @@
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_app_server) do
-
-  @doc = "Manage the existence of WebSphere Application Servers"
+  @doc = 'Manage the existence of WebSphere Application Servers'
 
   ensurable
 
@@ -15,8 +14,8 @@ Puppet::Type.newtype(:websphere_app_server) do
     EOT
 
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid dmgr_profile #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid dmgr_profile #{value}")
       end
     end
   end
@@ -34,8 +33,8 @@ Puppet::Type.newtype(:websphere_app_server) do
     desc 'The name of the application server to create or manage.'
 
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid name #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid name #{value}")
       end
     end
   end
@@ -46,8 +45,8 @@ Puppet::Type.newtype(:websphere_app_server) do
       `websphere_node` type for managing the creation of nodes.
     EOT
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid dmgr_profile #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid dmgr_profile #{value}")
       end
     end
   end
@@ -60,7 +59,7 @@ Puppet::Type.newtype(:websphere_app_server) do
     EOT
 
     validate do |value|
-      fail("Invalid profile_base #{value}") unless Pathname.new(value).absolute?
+      raise("Invalid profile_base #{value}") unless Pathname.new(value).absolute?
     end
   end
 
@@ -71,8 +70,8 @@ Puppet::Type.newtype(:websphere_app_server) do
 
     defaultto 'root'
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid user #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid user #{value}")
       end
     end
   end

@@ -1,7 +1,6 @@
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_federate) do
-
   @doc = <<-EOT
   Manages the federation of WebSphere application servers with a cell.
 
@@ -28,23 +27,23 @@ Puppet::Type.newtype(:websphere_federate) do
   ensurable
 
   newparam(:cell) do
-    desc "Required. The name of the DMGR cell to federate with"
+    desc 'Required. The name of the DMGR cell to federate with'
   end
 
   newparam(:dmgr_host) do
-    desc "Required. The dmgr host to federate with"
+    desc 'Required. The dmgr host to federate with'
   end
 
   newparam(:node_name) do
-    desc "Required. The node name to federate"
+    desc 'Required. The node name to federate'
   end
 
   newparam(:profile) do
     isnamevar
-    desc "Required. The profile to federate"
+    desc 'Required. The profile to federate'
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid profile #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid profile #{value}")
       end
     end
   end
@@ -61,29 +60,29 @@ Puppet::Type.newtype(:websphere_federate) do
       Example: /opt/IBM/WebSphere/AppServer/profiles"
 
     validate do |value|
-      fail("Invalid profile_base #{value}") unless Pathname.new(value).absolute?
+      raise("Invalid profile_base #{value}") unless Pathname.new(value).absolute?
     end
   end
 
   newparam(:soap_port) do
-    desc "The soap port to connect to for federation"
+    desc 'The soap port to connect to for federation'
   end
 
   newparam(:username) do
-    desc "The username for federation (for addNode.sh)"
+    desc 'The username for federation (for addNode.sh)'
   end
 
   newparam(:password) do
-    desc "The password for federation (for addNode.sh)"
+    desc 'The password for federation (for addNode.sh)'
   end
 
   newparam(:options) do
-    desc "Custom options to pass to addNode or removeNode.sh"
+    desc 'Custom options to pass to addNode or removeNode.sh'
   end
 
   newparam(:user) do
     defaultto 'root'
-    desc "User to run the federation commands with"
+    desc 'User to run the federation commands with'
   end
 
   newparam(:wsadmin_user) do
@@ -95,11 +94,10 @@ Puppet::Type.newtype(:websphere_federate) do
   end
 
   autorequire(:file) do
-    "dmgr_" + self[:dmgr_host].to_s.downcase + "_" + self[:cell].to_s.downcase
+    'dmgr_' + self[:dmgr_host].to_s.downcase + '_' + self[:cell].to_s.downcase
   end
 
   autorequire(:user) do
     self[:user] unless self[:user].to_s.nil?
   end
-
 end

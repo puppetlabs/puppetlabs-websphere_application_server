@@ -12,40 +12,38 @@
 require 'yaml'
 
 Puppet::Type.type(:websphere_federate).provide(:wsadmin) do
-
   def exists?
     path = "#{resource[:profile_base]}/#{resource[:profile]}/config/cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers"
-    if File.exists?(path)
-      self.debug "Already federated: " + path + " exists"
+    if File.exist?(path)
+      debug 'Already federated: ' + path + ' exists'
       return true
     end
     false
   end
 
   def create
+    data_file = "#{resource[:profile_base]}/#{resource[:profile]}" + '/dmgr_' + resource[:dmgr_host].downcase + '_' + resource[:cell].downcase + '.yaml'
 
-    data_file = "#{resource[:profile_base]}/#{resource[:profile]}"  + '/dmgr_' + resource[:dmgr_host].downcase + '_' + resource[:cell].downcase + '.yaml'
-
-    if File.exists?(data_file)
+    if File.exist?(data_file)
       yaml = YAML.load_file(data_file)
 
       soap_port = yaml['dmgr_soap']
       dmgr_host = yaml['dmgr_fqdn']
 
-      self.debug "#{data_file} found."
-      self.debug "soap_port: #{soap_port} / dmgr_host: #{dmgr_host}"
+      debug "#{data_file} found."
+      debug "soap_port: #{soap_port} / dmgr_host: #{dmgr_host}"
     else
-      self.debug "#{data_file} does not exist."
+      debug "#{data_file} does not exist."
       soap_port = resource[:soap_port]
       dmgr_host = resource[:dmgr_host]
     end
 
-    if soap_port and dmgr_host
+    if soap_port && dmgr_host
       cmd = resource[:profile_base] + '/' + resource[:profile] + '/bin/'
       cmd += "addNode.sh #{dmgr_host} #{soap_port}"
       cmd += ' -conntype SOAP -noagent'
 
-      if resource[:username] and resource[:password]
+      if resource[:username] && resource[:password]
         cmd += " -username '#{resource[:username]}' -password '#{resource[:password]}'"
       end
 
@@ -53,33 +51,32 @@ Puppet::Type.type(:websphere_federate).provide(:wsadmin) do
         cmd += " #{resource[:options]}"
       end
 
-      self.debug "as user #{resource[:user]} #{cmd}"
+      debug "as user #{resource[:user]} #{cmd}"
 
       result = nil
       Dir.chdir('/tmp') do
-        result = Puppet::Util::Execution.execute(cmd, :uid => resource[:user])
+        result = Puppet::Util::Execution.execute(cmd, uid: resource[:user])
       end
 
-      self.debug "result: #{result}"
+      debug "result: #{result}"
       # Validate the result, regex should account for whitespace and new line inconsistencies in wsadmin.
-      unless result =~ /Node .* has been successfully\s*federated/
+      unless result =~ %r{Node .* has been successfully\s*federated}
         raise Puppet::Error, "#{resource[:node_name]} may not have been successful federating. Run with --debug for details."
-        false
       end
 
     else
       raise Puppet::Error, "Websphere_federate[#{resource[:name]}]: soap_port "\
-                   + "and dmgr_host not present and data file not "\
-                   + "available. Has the DMGR node ran Puppet and exported "\
-                   + "its data? Not federating."
+                   + 'and dmgr_host not present and data file not '\
+                   + 'available. Has the DMGR node ran Puppet and exported '\
+                   + 'its data? Not federating.'
     end
   end
 
   def destroy
     cmd = resource[:profile_base] + '/' + resource[:profile] + '/bin/'
-    cmd += "removeNode.sh"
+    cmd += 'removeNode.sh'
 
-    if resource[:username] and resource[:password]
+    if resource[:username] && resource[:password]
       cmd += " -username '#{resource[:username]}' -password '#{resource[:password]}'"
     end
 
@@ -87,19 +84,15 @@ Puppet::Type.type(:websphere_federate).provide(:wsadmin) do
       cmd += " #{resource[:options]}"
     end
 
-    self.debug "Executing #{cmd}"
+    debug "Executing #{cmd}"
 
     result = nil
     Dir.chdir('/tmp') do
-      result = Puppet::Util::Execution.execute(cmd, :uid => resource[:user])
+      result = Puppet::Util::Execution.execute(cmd, uid: resource[:user])
     end
 
-    self.debug "result: #{result}"
-    unless result =~ /Removal of node .* is complete/
-      raise Puppet::Error, "#{resource[:node_name]} may not have been successful unfederating. Run with --debug for details."
-      false
-    end
+    debug "result: #{result}"
 
+    raise Puppet::Error, "#{resource[:node_name]} may not have been successful unfederating. Run with --debug for details." unless result =~ %r{Removal of node .* is complete}
   end
-
 end
