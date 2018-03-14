@@ -1,0 +1,7 @@
+# Rule disabled for acceptance test's as the format of several of the test's makes it impossible to
+#   satisfy the rule without major changes to the test structure.
+RSpec/InstanceVariable:
+  Enabled: true
+  Exclude:
+      - spec/acceptance/*
+      - spec/support/examples/*

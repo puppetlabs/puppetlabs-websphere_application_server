@@ -6,12 +6,12 @@ test_name 'FM-5068 - C93835 - Declare base class'
 
 # Teardown
 teardown do
-  confine_block(:except, :roles => %w{master dashboard database}) do
+  confine_block(:except, roles: %w[master dashboard database]) do
     agents.each do |agent|
-      #comment out due to FM-5093
-      #remove_websphere('websphere_application_server')
+      # comment out due to FM-5093
+      # remove_websphere('websphere_application_server')
     end
-    on(agent, "rm -rf /opt/log/websphere", :acceptable_exit_codes => [0,127])
+    on(agent, 'rm -rf /opt/log/websphere', acceptable_exit_codes: [0, 127])
   end
 end
 
@@ -40,46 +40,46 @@ pp = <<-MANIFEST
 MANIFEST
 
 step 'Inject "site.pp" on Master'
-site_pp = create_site_pp(master, :manifest => pp)
+site_pp = create_site_pp(master, manifest: pp)
 inject_site_pp(master, get_site_pp_path(master), site_pp)
 
 step 'Run Puppet Agent to declare base class'
-confine_block(:except, :roles => %w{master dashboard database}) do
+confine_block(:except, roles: %w[master dashboard database]) do
   agents.each do |agent|
     if get_agent_platform(agent) == 'aix'
       expect_failure('expected to fail due to FM-5093') do
-        on(agent, puppet('agent -t'), :acceptable_exit_codes => [1,4,6]) do |result|
-          assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
+        on(agent, puppet('agent -t'), acceptable_exit_codes: [1, 4, 6]) do |result|
+          assert_no_match(%r{Error:}, result.stderr, 'Unexpected error was detected!')
         end
         step 'Verify the files/directories are created:'
-        files = ['/opt', '/opt/IBM', 'opt/log', '/opt/log/websphere', '/opt/log/websphere/appserverlogs',
-                 '/opt/log/websphere/applogs','/opt/log/websphere/wasmgmtlogs']
-        #verify_file_exist?(files)
+        # files = ['/opt', '/opt/IBM', 'opt/log', '/opt/log/websphere', '/opt/log/websphere/appserverlogs',
+        #          '/opt/log/websphere/applogs', '/opt/log/websphere/wasmgmtlogs']
+        # verify_file_exist?(files)
 
         step 'Verify if user and group are created:'
-        on(agent,  "cat /etc/passwd | grep webadmin", :acceptable_exit_codes => [1]) do |result|
-          assert_match(/webadmin/, result.stdout, 'Unexpected error was detected!')
+        on(agent, 'cat /etc/passwd | grep webadmin', acceptable_exit_codes: [1]) do |result|
+          assert_match(%r{webadmin}, result.stdout, 'Unexpected error was detected!')
         end
-        on(agent,  "cat /etc/group | grep webadmins", :acceptable_exit_codes => [1]) do |result|
-          assert_match(/webadmins/, result.stdout, 'Unexpected error was detected!')
+        on(agent, 'cat /etc/group | grep webadmins', acceptable_exit_codes: [1]) do |result|
+          assert_match(%r{webadmins}, result.stdout, 'Unexpected error was detected!')
         end
       end
-    else #if not AIX
-      on(agent, puppet('agent -t'), :acceptable_exit_codes => [0,2]) do |result|
-        assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
+    else # if not AIX
+      on(agent, puppet('agent -t'), acceptable_exit_codes: [0, 2]) do |result|
+        assert_no_match(%r{Error:}, result.stderr, 'Unexpected error was detected!')
       end
       step 'Verify the files/directories are created:'
       files = ['/opt', '/opt/log', '/opt/log/websphere', '/opt/log/websphere/appserverlogs',
-               '/opt/log/websphere/applogs','/opt/log/websphere/wasmgmtlogs']
+               '/opt/log/websphere/applogs', '/opt/log/websphere/wasmgmtlogs']
 
       verify_file_exist?(agent, files)
 
       step 'Verify if user and group are created:'
-      on(agent,  "cat /etc/passwd | grep webadmin", :acceptable_exit_codes => [0,2]) do |result|
-        assert_match(/webadmin/, result.stdout, 'Unexpected error was detected!')
+      on(agent, 'cat /etc/passwd | grep webadmin', acceptable_exit_codes: [0, 2]) do |result|
+        assert_match(%r{webadmin}, result.stdout, 'Unexpected error was detected!')
       end
-      on(agent,  "cat /etc/group | grep webadmins", :acceptable_exit_codes => [0,2]) do |result|
-        assert_match(/webadmins/, result.stdout, 'Unexpected error was detected!')
+      on(agent, 'cat /etc/group | grep webadmins', acceptable_exit_codes: [0, 2]) do |result|
+        assert_match(%r{webadmins}, result.stdout, 'Unexpected error was detected!')
       end
     end
   end

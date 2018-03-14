@@ -6,11 +6,11 @@ describe 'Verify the minimum install' do
     let(:base_dir) { '/opt/IBM' }
     let(:instance_base) { "#{base_dir}/#{WebSphereConstants.instance_name}/AppServer" }
     let(:profile_base) { "#{instance_base}/profiles" }
-    let(:dmgr_profile) { "#{profile_base}/#{WebSphereConstants.dmgr_title}"}
+    let(:dmgr_profile) { "#{profile_base}/#{WebSphereConstants.dmgr_title}" }
 
     context 'that the instance installs and is idempotent' do
       before(:all) do
-        @agent = WebSphereHelper.get_dmgr_host
+        @agent = WebSphereHelper.dmgr_host
         @manifest = WebSphereInstance.manifest
 
         runner = BeakerAgentRunner.new
@@ -19,7 +19,8 @@ describe 'Verify the minimum install' do
       end
 
       it 'class should run successfully' do
-        expect([0, 2]).to include(@result.exit_code)
+        expected = [0, 2]
+        expect(expected).to include(@result.exit_code)
       end
 
       it 'class should be idempotent' do
@@ -33,8 +34,8 @@ describe 'Verify the minimum install' do
     end
     context 'that the dmgr installs and is idempotent' do
       before(:all) do
-        @agent = WebSphereHelper.get_dmgr_host
-        fail "@agent MUST be set for the websphere class to install" unless @agent.hostname
+        @agent = WebSphereHelper.dmgr_host
+        raise '@agent MUST be set for the websphere class to install' unless @agent.hostname
         @manifest = WebSphereDmgr.manifest(target_agent: @agent)
 
         runner = BeakerAgentRunner.new
@@ -43,7 +44,8 @@ describe 'Verify the minimum install' do
       end
 
       it 'dmgr should run successfully' do
-        expect([0, 2]).to include(@result.exit_code)
+        expected = [0, 2]
+        expect(expected).to include(@result.exit_code)
       end
 
       it 'dmgr is idempotent' do
@@ -55,10 +57,10 @@ describe 'Verify the minimum install' do
         expect(rc).to eq 0
       end
 
-      it "profile binaries are present" do
+      it 'profile binaries are present' do
         ["#{dmgr_profile}/bin/startServer.sh",
-        "#{dmgr_profile}/bin/stopServer.sh",
-        "#{dmgr_profile}/bin/manageprofiles.sh"].each do |bin|
+         "#{dmgr_profile}/bin/stopServer.sh",
+         "#{dmgr_profile}/bin/manageprofiles.sh"].each do |bin|
           expect(WebSphereHelper.remote_file_exists(@agent, bin)).to eq 0
         end
       end
@@ -72,7 +74,7 @@ describe 'Verify the minimum install' do
         runner.execute_agent_on(@agent, manifest)
       end
 
-      it_behaves_like 'a running dmgr', "/opt/IBM/WebSphere85/AppServer/profiles", WebSphereConstants.dmgr_title
+      it_behaves_like 'a running dmgr', '/opt/IBM/WebSphere85/AppServer/profiles', WebSphereConstants.dmgr_title
     end
   end
 
@@ -80,12 +82,12 @@ describe 'Verify the minimum install' do
     let(:base_dir) { '/home/webadmin/IBM' }
     let(:instance_base) { "#{base_dir}/#{WebSphereConstants.instance_name}/AppServer" }
     let(:profile_base) { "#{instance_base}/profiles" }
-    let(:dmgr_profile) { "#{profile_base}/#{WebSphereConstants.dmgr_title}"}
+    let(:dmgr_profile) { "#{profile_base}/#{WebSphereConstants.dmgr_title}" }
 
     context 'that the instance installs and is idempotent' do
       before(:all) do
-        @agent = WebSphereHelper.get_dmgr_host
-        @manifest = WebSphereInstance.manifest(base_dir: '/home/webadmin/IBM' )
+        @agent = WebSphereHelper.dmgr_host
+        @manifest = WebSphereInstance.manifest(base_dir: '/home/webadmin/IBM')
 
         runner = BeakerAgentRunner.new
         @result = runner.execute_agent_on(@agent, @manifest)
@@ -93,7 +95,8 @@ describe 'Verify the minimum install' do
       end
 
       it 'class should run successfully' do
-        expect([0, 2]).to include(@result.exit_code)
+        expected = [0, 2]
+        expect(expected).to include(@result.exit_code)
       end
 
       it 'class should be idempotent' do
@@ -107,8 +110,8 @@ describe 'Verify the minimum install' do
     end
     context 'that the dmgr installs and is idempotent' do
       before(:all) do
-        @agent = WebSphereHelper.get_dmgr_host
-        fail "@agent MUST be set for the websphere class to install" unless @agent.hostname
+        @agent = WebSphereHelper.dmgr_host
+        raise '@agent MUST be set for the websphere class to install' unless @agent.hostname
         @manifest = WebSphereDmgr.manifest(target_agent: @agent,
                                            base_dir: '/home/webadmin/IBM')
 
@@ -118,7 +121,8 @@ describe 'Verify the minimum install' do
       end
 
       it 'dmgr should run successfully' do
-        expect([0, 2]).to include(@result.exit_code)
+        expected = [0, 2]
+        expect(expected).to include(@result.exit_code)
       end
 
       it 'dmgr is idempotent' do
@@ -130,15 +134,15 @@ describe 'Verify the minimum install' do
         expect(rc).to eq 0
       end
 
-      it "profile binaries are present" do
+      it 'profile binaries are present' do
         ["#{dmgr_profile}/bin/startServer.sh",
-          "#{dmgr_profile}/bin/stopServer.sh",
-          "#{dmgr_profile}/bin/manageprofiles.sh"].each do |bin|
+         "#{dmgr_profile}/bin/stopServer.sh",
+         "#{dmgr_profile}/bin/manageprofiles.sh"].each do |bin|
           expect(WebSphereHelper.remote_file_exists(@agent, bin)).to eq 0
         end
       end
 
-      it_behaves_like 'a running dmgr', "/home/webadmin/IBM/WebSphere85/AppServer/profiles", WebSphereConstants.dmgr_title
+      it_behaves_like 'a running dmgr', '/home/webadmin/IBM/WebSphere85/AppServer/profiles', WebSphereConstants.dmgr_title
 
       after(:all) do
         manifest = WebSphereHelper.stop_server(server_name: 'dmgr',

@@ -3,14 +3,14 @@ require 'installer_constants'
 
 describe 'Install the websphere dmgr' do
   before(:all) do
-    @agent = WebSphereHelper.get_dmgr_host
+    @agent = WebSphereHelper.dmgr_host
     WebSphereInstance.install(@agent)
     WebSphereDmgr.install(@agent)
   end
 
-  it 'should be installed' do
-      expect(WebSphereHelper.remote_file_exists(@agent, WebSphereConstants.dmgr_status))
-      expect(WebSphereHelper.remote_file_exists(@agent, WebSphereConstants.ws_admin))
+  it 'is installed' do
+    expect(WebSphereHelper.remote_file_exists(@agent, WebSphereConstants.dmgr_status)) # rubocop:disable RSpec/VoidExpect
+    expect(WebSphereHelper.remote_file_exists(@agent, WebSphereConstants.ws_admin)) # rubocop:disable RSpec/VoidExpect
   end
 
   it_behaves_like 'a running dmgr', WebSphereConstants.profile_base, WebSphereConstants.dmgr_title
@@ -29,7 +29,7 @@ describe 'Install the websphere dmgr' do
       @result = runner.execute_agent_on(@agent, @manifest)
     end
 
-    it 'should run without errors' do
+    it 'runs without errors' do
       expect(@result.exit_code).to eq 2
     end
 
@@ -51,7 +51,7 @@ describe 'Install the websphere dmgr' do
       @result = runner.execute_agent_on(@agent, @manifest)
     end
 
-    it 'should run without errors' do
+    it 'runs without errors' do
       expect(@result.exit_code).to eq 2
     end
 

@@ -8,8 +8,7 @@
 # This provider should just handle the creating and removal of clusters.
 require_relative '../websphere_helper'
 
-Puppet::Type.type(:websphere_cluster).provide(:wsadmin, :parent => Puppet::Provider::Websphere_Helper) do
-
+Puppet::Type.type(:websphere_cluster).provide(:wsadmin, parent: Puppet::Provider::Websphere_Helper) do
   def exists?
     # This will output an empty string: '' if there are no clusters.
     # If a cluster is present, it will output:
@@ -18,7 +17,7 @@ Puppet::Type.type(:websphere_cluster).provide(:wsadmin, :parent => Puppet::Provi
 
     cmd = "\"AdminConfig.getid('/ServerCluster: #{resource[:name]}/')\""
 
-    result = wsadmin(:command => cmd, :user => resource[:user])
+    result = wsadmin(command: cmd, user: resource[:user])
 
     return false unless result.include?(resource[:name])
     true
@@ -29,11 +28,11 @@ Puppet::Type.type(:websphere_cluster).provide(:wsadmin, :parent => Puppet::Provi
     # exits 0
     cmd = "\"AdminTask.createCluster('[-clusterConfig [-clusterName #{resource[:name]}]]')\""
 
-    self.debug "wsadmin: Creating cluster via #{cmd}"
+    debug "wsadmin: Creating cluster via #{cmd}"
 
-    result = wsadmin(:command => cmd, :user => resource[:user])
+    result = wsadmin(command: cmd, user: resource[:user])
 
-    self.debug result
+    debug result
   end
 
   def destroy
@@ -44,15 +43,12 @@ Puppet::Type.type(:websphere_cluster).provide(:wsadmin, :parent => Puppet::Provi
     cmd += resource[:name]
     cmd += "]')\""
 
-    self.debug "Deleting cluster via #{wascmd}#{cmd}"
+    debug "Deleting cluster via #{wascmd}#{cmd}"
 
-    result = wsadmin(:command => cmd, :user => resource[:user])
+    result = wsadmin(command: cmd, user: resource[:user])
 
-    self.debug result
+    debug result
   end
 
-  def flush
-
-  end
-
+  def flush; end
 end

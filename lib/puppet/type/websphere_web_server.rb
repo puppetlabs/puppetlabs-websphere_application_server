@@ -1,7 +1,6 @@
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_web_server) do
-
   @doc = <<-EOT
     Manages WebSphere web servers in a cell.
   EOT
@@ -15,8 +14,8 @@ Puppet::Type.newtype(:websphere_web_server) do
     EOT
 
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z_.]+$/
-        fail("Invalid dmgr_profile #{value}")
+      unless value =~ %r{^[-0-9A-Za-z_.]+$}
+        raise("Invalid dmgr_profile #{value}")
       end
     end
   end
@@ -39,19 +38,19 @@ Puppet::Type.newtype(:websphere_web_server) do
 
   newparam(:name) do
     isnamevar
-    desc "The name of the Web Server"
+    desc 'The name of the Web Server'
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z_.]+$/
-        fail("Invalid name #{value}")
+      unless value =~ %r{^[-0-9A-Za-z_.]+$}
+        raise("Invalid name #{value}")
       end
     end
   end
 
   newparam(:node_name) do
-    desc "The name of the node to create this web server on"
+    desc 'The name of the node to create this web server on'
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid dmgr_profile #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid dmgr_profile #{value}")
       end
     end
   end
@@ -63,7 +62,7 @@ Puppet::Type.newtype(:websphere_web_server) do
   end
 
   newparam(:config_file) do
-    desc "The full path to the HTTP config file"
+    desc 'The full path to the HTTP config file'
   end
 
   newparam(:template) do
@@ -75,12 +74,12 @@ Puppet::Type.newtype(:websphere_web_server) do
 
   ## This could eventually be a property
   newparam(:access_log) do
-    desc "The path for the access log"
+    desc 'The path for the access log'
   end
 
   ## This could eventually be a property
   newparam(:error_log) do
-    desc "The path for the error log"
+    desc 'The path for the error log'
   end
 
   ## This could eventually be a property
@@ -120,11 +119,11 @@ Puppet::Type.newtype(:websphere_web_server) do
   end
 
   newparam(:admin_user) do
-    desc "IBM Administration Server username. Required."
+    desc 'IBM Administration Server username. Required.'
   end
 
   newparam(:admin_pass) do
-    desc "IBM Administration Server password. Required."
+    desc 'IBM Administration Server password. Required.'
   end
 
   newparam(:admin_protocol) do
@@ -139,7 +138,7 @@ Puppet::Type.newtype(:websphere_web_server) do
       Example: /opt/IBM/WebSphere/AppServer/profiles"
 
     validate do |value|
-      fail("Invalid profile_base #{value}") unless Pathname.new(value).absolute?
+      raise("Invalid profile_base #{value}") unless Pathname.new(value).absolute?
     end
   end
 
@@ -147,8 +146,8 @@ Puppet::Type.newtype(:websphere_web_server) do
     defaultto 'root'
     desc "The user to run 'wsadmin' with"
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid user #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid user #{value}")
       end
     end
   end
@@ -163,10 +162,10 @@ Puppet::Type.newtype(:websphere_web_server) do
   end
 
   newparam(:wsadmin_user) do
-    desc "The username for wsadmin authentication"
+    desc 'The username for wsadmin authentication'
   end
 
   newparam(:wsadmin_pass) do
-    desc "The password for wsadmin authentication"
+    desc 'The password for wsadmin authentication'
   end
 end

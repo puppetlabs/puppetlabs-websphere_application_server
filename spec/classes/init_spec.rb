@@ -1,10 +1,9 @@
 require 'spec_helper'
 describe 'websphere_application_server' do
-
   let(:facts) do
     {
-      :concat_basedir => '/dne',
-      :osfamily       => 'Debian',
+      concat_basedir: '/dne',
+      osfamily: 'Debian',
     }
   end
 

@@ -3,7 +3,7 @@ require 'installer_constants'
 
 describe 'jdbc layer is setup and working' do
   before(:all) do
-    @agent = WebSphereHelper.get_ihs_server
+    @agent = WebSphereHelper.ihs_server
     @was_manifest = WebSphereInstance.manifest(user: 'webadmin',
                                                group: 'webadmins')
     @dmgr_manifest = WebSphereDmgr.manifest(target_agent: @agent,
@@ -52,18 +52,18 @@ describe 'jdbc layer is setup and working' do
     @result = runner.execute_agent_on(@agent, @manifest)
   end
 
-  it 'should run successfully' do
+  it 'runs successfully' do
     expect(@result.exit_code).to eq 2
   end
 
   it_behaves_like 'an idempotent resource'
 
-  it 'should have installed the thin client datasource and provider' do
-    @ws_admin_result = on(@agent, "su - webadmin -c \"#{WebSphereConstants.ws_admin} -lang jython -c \\\"print AdminConfig.list('DataSource',AdminConfig.getid('/Cell:#{JDBCProviderConstants.cell}/Node:#{@hostname}/'))\\\"\"", :acceptable_exit_codes => [0,1,103])
-    results = @ws_admin_result.stdout.split( /\r?\n/ )
+  it 'has installed the thin client datasource and provider' do
+    @ws_admin_result = on(@agent, "su - webadmin -c \"#{WebSphereConstants.ws_admin} -lang jython -c \\\"print AdminConfig.list('DataSource',AdminConfig.getid('/Cell:#{JDBCProviderConstants.cell}/Node:#{@hostname}/'))\\\"\"", acceptable_exit_codes: [0, 1, 103]) # rubocop:disable Metrics/LineLength
+    results = @ws_admin_result.stdout.split(%r{\r?\n})
     expect(results.size).to eq 3
-    expect(results[0]).to match(/^WASX.*:.*is: DeploymentManager/)
-    expect(results[1]).to match(/^\"#{JDBCDatasourceConstants.jdbc_provider}.*#{JDBCProviderConstants.cell}\/nodes\/#{@hostname}.*#DataSource_.*/)
-    expect(results[2]).to match(/^OTiSDataSource\(cells\/#{JDBCProviderConstants.cell}\/nodes\/#{@hostname}\|resources.xml#builtin_DataSource_.*/)
+    expect(results[0]).to match(%r{^WASX.*:.*is: DeploymentManager})
+    expect(results[1]).to match(%r{^\"#{JDBCDatasourceConstants.jdbc_provider}.*#{JDBCProviderConstants.cell}\/nodes\/#{@hostname}.*#DataSource_.*})
+    expect(results[2]).to match(%r{^OTiSDataSource\(cells\/#{JDBCProviderConstants.cell}\/nodes\/#{@hostname}\|resources.xml#builtin_DataSource_.*})
   end
 end

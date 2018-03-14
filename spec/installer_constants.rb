@@ -1,6 +1,6 @@
 
 module HelperConstants
-  @unsupported_platforms    = ['Suse','windows','AIX','Solaris']
+  @unsupported_platforms    = %w[Suse windows AIX Solaris]
   @websphere_source_dir     = '/opt/sources/ibm_websphere'
   @qa_resources             = '/opt/QA_resources'
   @qa_resource_source       = 'int-resources.ops.puppetlabs.net:/tank01/resources0/QA_resources'
@@ -40,11 +40,11 @@ module WebSphereConstants
   @cluster_member         = 'AppServer01'
 
   @dmgr_status            = @profile_base + '/' + @dmgr_title + '/bin/serverStatus.sh'
-  @ws_admin              = @profile_base + '/' + @dmgr_title + '/bin/wsadmin.sh'
+  @ws_admin = @profile_base + '/' + @dmgr_title + '/bin/wsadmin.sh'
 
   class << self
     attr_reader :base_dir, :instance_base, :profile_base, :was_installer, :instance_name,
-                :package_name,:package_version, :update_package_version, :repository, :class_name, :fixpack_installer,
+                :package_name, :package_version, :update_package_version, :repository, :class_name, :fixpack_installer,
                 :java_installer, :java_package, :java_version, :cell, :appserver_title, :user_home, :installation_mode,
                 :dmgr_title, :cluster_title, :cluster_member, :user, :group, :dmgr_status, :ws_admin
   end
@@ -82,7 +82,7 @@ module JDBCProviderConstants
 
   class << self
     attr_reader :jdbc_provider, :dmgr_profile, :profile_base, :user, :scope, :cell, :node_name, :server, :dbtype,
-    :providertype, :implementation, :description, :jdbc_driver, :classpath, :oracle_driver_target, :jdbc_driver
+                :providertype, :implementation, :description, :jdbc_driver, :classpath, :oracle_driver_target, :jdbc_driver
   end
 end
 
@@ -111,7 +111,7 @@ module JavaInstallerConstants
 end
 
 module WebSphereCluster
-  @cluster_name                 = WebSphereConstants.cluster_title
+  @cluster_name = WebSphereConstants.cluster_title
 
   class << self
     attr_reader :cluster_name

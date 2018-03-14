@@ -6,7 +6,6 @@
 #   - Better documentation for params?
 #
 Puppet::Type.newtype(:websphere_cluster_member_service) do
-
   @doc = "Manages the a WebSphere cluster member's service."
 
   autorequire(:websphere_cluster) do
@@ -24,11 +23,11 @@ Puppet::Type.newtype(:websphere_cluster_member_service) do
       Defaults to `running`.  Specifies whether the service should be running or not.
     EOT
 
-    newvalue(:stopped, :event => :service_stopped) do
+    newvalue(:stopped, event: :service_stopped) do
       provider.stop
     end
 
-    newvalue(:running, :event => :service_started, :invalidate_refreshes => true) do
+    newvalue(:running, event: :service_started, invalidate_refreshes: true) do
       provider.start
     end
 
@@ -47,33 +46,33 @@ Puppet::Type.newtype(:websphere_cluster_member_service) do
     if (@parameters[:ensure] || newattr(:ensure)).retrieve == :running
       provider.restart
     else
-      debug "Skipping restart; service is not running"
+      debug 'Skipping restart; service is not running'
     end
   end
 
   newparam(:cell) do
-    desc "The name of the cell the cluster member belongs to"
+    desc 'The name of the cell the cluster member belongs to'
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid cell #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid cell #{value}")
       end
     end
   end
 
   newparam(:cluster) do
-    desc "Required. The cluster that the cluster member belongs to."
+    desc 'Required. The cluster that the cluster member belongs to.'
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid cluster #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid cluster #{value}")
       end
     end
   end
 
   newparam(:dmgr_profile) do
-    desc "The name of the DMGR profile to manage. E.g. PROFILE_DMGR_01"
+    desc 'The name of the DMGR profile to manage. E.g. PROFILE_DMGR_01'
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid dmgr_profile #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid dmgr_profile #{value}")
       end
     end
   end
@@ -89,8 +88,8 @@ Puppet::Type.newtype(:websphere_cluster_member_service) do
     desc 'The name of the cluster member that this service belongs to.'
     isnamevar
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid name #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid name #{value}")
       end
     end
   end
@@ -101,16 +100,16 @@ Puppet::Type.newtype(:websphere_cluster_member_service) do
       the `websphere_node` type for managing the creation of nodes.
     EOT
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid node_name #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid node_name #{value}")
       end
     end
   end
 
   newparam(:profile_base) do
-    desc "The absolute path to the profile base directory. E.g. /opt/IBM/WebSphere/AppServer/profiles"
+    desc 'The absolute path to the profile base directory. E.g. /opt/IBM/WebSphere/AppServer/profiles'
     validate do |value|
-      fail("Invalid profile_base #{value}") unless Pathname.new(value).absolute?
+      raise("Invalid profile_base #{value}") unless Pathname.new(value).absolute?
     end
   end
 
@@ -125,7 +124,7 @@ Puppet::Type.newtype(:websphere_cluster_member_service) do
 
   newparam(:user) do
     defaultto 'root'
-    desc "Specifies the user to execute wsadmin as"
+    desc 'Specifies the user to execute wsadmin as'
   end
 
   newparam(:wsadmin_user) do
@@ -135,5 +134,4 @@ Puppet::Type.newtype(:websphere_cluster_member_service) do
   newparam(:wsadmin_pass) do
     desc "Specifies the password for using 'wsadmin'"
   end
-
 end

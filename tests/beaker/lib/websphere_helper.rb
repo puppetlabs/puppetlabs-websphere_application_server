@@ -24,26 +24,25 @@ require 'installer_constants'
 #                  'was.repo.8550.ihs.ilan_part1.zip',
 #                  '"/ibminstallers/ibm/ndtrial"',)
 def download_and_uncompress(host, installer_url, cfilename, dest_directory, directory_path)
-
-  #ERB Template
+  # ERB Template
   # installer_url = urllink
   # cfilename = compressed_file
   # dest_directory = uncompress_to
-  #directory_path = dest_directory
-  if cfilename.include? "zip"
+  # directory_path = dest_directory
+  if cfilename.include? 'zip'
     compress_type = 'zip'
-  elsif cfilename.include? "tar.gz"
+  elsif cfilename.include? 'tar.gz'
     compress_type = 'tar.gz'
   else
-    fail_test "only zip or tar.gz are is valid compressed file "
+    fail_test 'only zip or tar.gz are is valid compressed file '
   end
 
-  local_files_root_path = ENV['FILES'] || "tests/files"
+  local_files_root_path = ENV['FILES'] || 'tests/files'
   manifest_template     = File.join(local_files_root_path, 'download_uncompress_manifest.erb')
   manifest_erb          = ERB.new(File.read(manifest_template)).result(binding)
 
-  on(host, puppet('apply'), :stdin => manifest_erb, :exceptable_exit_codes => [0,2]) do |result|
-    assert_no_match(/Error/, result.output, 'Failed to download and/or uncompress')
+  on(host, puppet('apply'), stdin: manifest_erb, exceptable_exit_codes: [0, 2]) do |result|
+    assert_no_match(%r{Error}, result.output, 'Failed to download and/or uncompress')
   end
 end
 
@@ -71,19 +70,13 @@ end
 def verify_im_installed?(installed_directory)
   step "Verify IBM Installation Manager is installed into directory: #{installed_directory}"
   step 'Verify 1/3: IBM Installation Manager Launcher'
-  if agent.file_exist?("#{installed_directory}/eclipse/launcher") == nil
-    fail_test "Launcher has not been found in: #{installed_directory}/eclipse"
-  end
+  fail_test "Launcher has not been found in: #{installed_directory}/eclipse" if agent.file_exist?("#{installed_directory}/eclipse/launcher").nil?
 
   step 'Verify 2/3: IBM Installation Manager License File'
-  if agent.file_exist?("#{installed_directory}/license/es/license.txt") == nil
-    fail_test "License file has not been found in: #{installed_directory}/license"
-  end
+  fail_test "License file has not been found in: #{installed_directory}/license" if agent.file_exist?("#{installed_directory}/license/es/license.txt").nil?
 
   step 'Verify 3/3: IBM Installation Manager Version'
-  if agent.file_exist?("#{installed_directory}/properties/version/IBM_Installation_Manager.*") == nil
-    fail_test "Version has not been found in: #{installed_directory}/properties/version"
-  end
+  fail_test "Version has not been found in: #{installed_directory}/properties/version" if agent.file_exist?("#{installed_directory}/properties/version/IBM_Installation_Manager.*").nil?
 end
 
 # Verify if files/directories are created:
@@ -133,13 +126,13 @@ end
 # remove_websphere('websphere_application_server')
 #
 def remove_websphere(class_name)
-pp = <<-MANIFEST
+  pp = <<-MANIFEST
   class { "#{class_name}":
     ensure => absent,
   }
 MANIFEST
-  create_remote_file(agent, "/root/remove_websphere.pp", pp)
-  on(agent, "/opt/puppetlabs/puppet/bin/puppet apply /root/remove_websphere.pp")
+  create_remote_file(agent, '/root/remove_websphere.pp', pp)
+  on(agent, '/opt/puppetlabs/puppet/bin/puppet apply /root/remove_websphere.pp')
 end
 
 # Verify if websphere instance is created:
@@ -163,16 +156,16 @@ end
 # verify_websphere_created?(agent, 'WebSphere85')
 #
 def verify_websphere_created?(host, ws_instance_name)
-  #getting command line:
-  if (host['platform'] =~ /aix/)
+  # getting command line:
+  if host['platform'] =~ %r{aix}
     command = "/usr/bin/ps -elf | grep -i #{ws_instance_name}"
-  elsif (host['platform'] =~ /centos|fedora|debian|oracle|redhat|scientific|sles|ubuntu|el/)
+  elsif host['platform'] =~ %r{centos|fedora|debian|oracle|redhat|scientific|sles|ubuntu|el}
     command = "ps -ef | grep -i #{ws_instance_name}"
   else
     fail_test("#{host['platform']} platform is not supported")
   end
 
-  on(host, command, :acceptable_exit_codes => 0)
+  on(host, command, acceptable_exit_codes: 0)
 end
 
 # remove websphere instance:
@@ -198,12 +191,10 @@ def remove_websphere_instance(host, instance_name, remove_directories)
   websphere_application_server::instance { '#{instance_name}':
     ensure => absent,
   MANIFEST
-  create_remote_file(host, "/tmp/remove_websphere_instance.pp", pp)
-  on(host, "/opt/puppetlabs/puppet/bin/puppet apply /tmp/remove_websphere_instance.pp", :acceptable_exit_codes => [0,2])
+  create_remote_file(host, '/tmp/remove_websphere_instance.pp', pp)
+  on(host, '/opt/puppetlabs/puppet/bin/puppet apply /tmp/remove_websphere_instance.pp', acceptable_exit_codes: [0, 2])
 
-  if remove_directories
-    on(agent, "rm -rf #{remove_directories}", :acceptable_exit_codes => [0,127])
-  end
+  on(agent, "rm -rf #{remove_directories}", acceptable_exit_codes: [0, 127]) if remove_directories
 end
 
 # Verify if the correct version is installed:
@@ -231,7 +222,7 @@ end
 # verify_websphere(agent, "/opt/ibm/WebSphere85/AppServer/bin/versionInfo.sh", "8.5.5004.20141119_1746")
 #
 def verify_websphere(host, command, verify_str)
-  #getting full command line:
+  # getting full command line:
   full_command = "#{command} | grep #{verify_str}"
   on(host, full_command)
 end
@@ -256,10 +247,10 @@ end
 #
 def get_fresh_node(str)
   system("curl -d --url vcloud.delivery.puppetlabs.net/vm/#{str} > create_node.txt")
-  system("cat create_node.txt")
+  system('cat create_node.txt')
   File.readlines('create_node.txt').each do |line|
-    if line =~/hostname/
-      hostname = line.scan(/(:\s+")(.*)(")/)[0][1]
+    if line =~ %r{hostname}
+      hostname = line.scan(%r{(:\s+")(.*)(")})[0][1]
       return hostname
     end
   end
@@ -312,15 +303,15 @@ end
 #
 # Verify if a cluster member exists
 # verify_cluster(agent, 'MyCluster01', 'AppServer01')
-def verify_cluster(host, cluster_name, cluster_member=nil)
+def verify_cluster(host, cluster_name, cluster_member = nil)
   instance_base = WebSphereConstants.instance_base
   path          = "#{instance_base}/scriptLibraries/server/V70/AdminClusterManagement"
 
-  if cluster_member #verify if a cluster member exists
-    command = "#{path}.listClusterMembers(\"#{cluster_name}\") | grep \"#{cluster_member}\""
-  else #verify if a cluster exists
-    command = "#{path}.checkIfClusterExists(\"#{cluster_name}\")"
-  end
+  command = if cluster_member # verify if a cluster member exists
+              "#{path}.listClusterMembers(\"#{cluster_name}\") | grep \"#{cluster_member}\""
+            else # verify if a cluster exists
+              "#{path}.checkIfClusterExists(\"#{cluster_name}\")"
+            end
   on(host, command)
 end
 
@@ -374,11 +365,11 @@ end
 # get_agent_platform(agent)
 #
 def get_agent_platform(host)
-  #getting platform:
-  if (host['platform'] =~ /aix/)
-    return 'aix'
-  elsif (host['platform'] =~ /centos|fedora|debian|oracle|redhat|scientific|sles|ubuntu|el/)
-    return 'linux'
+  # getting platform:
+  if host['platform'] =~ %r{aix}
+    'aix'
+  elsif host['platform'] =~ %r{centos|fedora|debian|oracle|redhat|scientific|sles|ubuntu|el}
+    'linux'
   else
     fail_test("#{host['platform']} platform is not supported")
   end

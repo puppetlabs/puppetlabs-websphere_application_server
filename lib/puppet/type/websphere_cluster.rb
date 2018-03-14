@@ -1,8 +1,7 @@
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_cluster) do
-
-  @doc = "Manages the creation or removal of WebSphere server clusters."
+  @doc = 'Manages the creation or removal of WebSphere server clusters.'
 
   ensurable
 
@@ -15,8 +14,8 @@ Puppet::Type.newtype(:websphere_cluster) do
     EOT
 
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid dmgr_profile #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid dmgr_profile #{value}")
       end
     end
   end
@@ -31,11 +30,11 @@ Puppet::Type.newtype(:websphere_cluster) do
   newparam(:name) do
     isnamevar
 
-    desc "The name of the cluster to manage."
+    desc 'The name of the cluster to manage.'
 
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid name #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid name #{value}")
       end
     end
   end
@@ -48,7 +47,7 @@ Puppet::Type.newtype(:websphere_cluster) do
     EOT
 
     validate do |value|
-      fail("Invalid profile_base #{value}") unless Pathname.new(value).absolute?
+      raise("Invalid profile_base #{value}") unless Pathname.new(value).absolute?
     end
   end
 
@@ -60,8 +59,8 @@ Puppet::Type.newtype(:websphere_cluster) do
     EOT
 
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid user #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid user #{value}")
       end
     end
   end
@@ -79,5 +78,4 @@ Puppet::Type.newtype(:websphere_cluster) do
       enabled.
     EOT
   end
-
 end

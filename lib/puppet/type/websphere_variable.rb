@@ -1,65 +1,61 @@
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_variable) do
-
-  @doc = "This manages a WebSphere environment variable"
+  @doc = 'This manages a WebSphere environment variable'
 
   ensurable
 
   def self.title_patterns
-    identity = lambda {|x| x}
+    identity = ->(x) { x }
     [
       [
-      /^(.*):(.*):(.*):(.*)$/,
+        %r{^(.*):(.*):(.*):(.*)$},
         [
-          [:cell, identity ],
+          [:cell, identity],
           [:scope, identity],
           [:node_name, identity],
           [:server, identity],
-        ]
+        ],
       ],
       [
-      /^(.*):(.*):(.*)$/,
+        %r{^(.*):(.*):(.*)$},
         [
-          [:cell, identity ],
+          [:cell, identity],
           [:scope, identity],
           [:node_name, identity],
-        ]
+        ],
       ],
       [
-      /^(.*):(.*)$/,
+        %r{^(.*):(.*)$},
         [
-          [:cell, identity ],
+          [:cell, identity],
           [:scope, identity],
-        ]
+        ],
       ],
       [
-      /^(.*)$/,
+        %r{^(.*)$},
         [
-          [:cell, identity ],
-        ]
-      ]
+          [:cell, identity],
+        ],
+      ],
     ]
   end
 
   validate do
-    raise ArgumentError, "Invalid scope #{self[:scope]}: Must be cell, cluster, node, or server" unless self[:scope] =~ /^(cell|cluster|node|server)$/
-    raise ArgumentError, 'server is required when scope is server' if self[:server].nil? and self[:scope] == 'server'
+    raise ArgumentError, "Invalid scope #{self[:scope]}: Must be cell, cluster, node, or server" unless self[:scope] =~ %r{^(cell|cluster|node|server)$}
+    raise ArgumentError, 'server is required when scope is server' if self[:server].nil? && self[:scope] == 'server'
     raise ArgumentError, 'cell is required' if self[:cell].nil?
-    raise ArgumentError, 'node_name is required when scope is server, cell, or node' if self[:node_name].nil? and self[:scope] =~ /(server|cell|node)/
-    raise ArgumentError, 'cluster is required when scope is cluster' if self[:cluster].nil? and self[:scope] =~ /^cluster$/
+    raise ArgumentError, 'node_name is required when scope is server, cell, or node' if self[:node_name].nil? && self[:scope] =~ %r{(server|cell|node)}
+    raise ArgumentError, 'cluster is required when scope is cluster' if self[:cluster].nil? && self[:scope] =~ %r{^cluster$}
     raise ArgumentError, "Invalid profile_base #{self[:profile_base]}" unless Pathname.new(self[:profile_base]).absolute?
 
     if self[:profile].nil?
-      if self[:dmgr_profile]
-        self[:profile] = self[:dmgr_profile]
-      else
-        raise ArgumentError, 'profile is required'
-      end
+      raise ArgumentError, 'profile is required' unless self[:dmgr_profile]
+      self[:profile] = self[:dmgr_profile]
     end
 
     [:variable, :server, :cell, :node_name, :cluster, :profile, :user].each do |value|
-      raise ArgumentError, "Invalid #{value.to_s} #{self[:value]}" unless value =~ /^[-0-9A-Za-z._]+$/
+      raise ArgumentError, "Invalid #{value} #{self[:value]}" unless value =~ %r{^[-0-9A-Za-z._]+$}
     end
   end
 
@@ -78,28 +74,28 @@ Puppet::Type.newtype(:websphere_variable) do
   end
 
   newproperty(:value) do
-    desc "The value the variable should be set to."
+    desc 'The value the variable should be set to.'
   end
 
   newproperty(:description) do
-    desc "A description for the variable"
+    desc 'A description for the variable'
     defaultto 'Managed by Puppet'
   end
 
   newparam(:server) do
-    desc "The server in the scope for this variable"
+    desc 'The server in the scope for this variable'
   end
 
   newparam(:cell) do
-    desc "The cell that this variable should be set in"
+    desc 'The cell that this variable should be set in'
   end
 
   newparam(:node_name) do
-    desc "The node that this variable should be set under"
+    desc 'The node that this variable should be set under'
   end
 
   newparam(:cluster) do
-    desc "The cluster that a variable should be set in"
+    desc 'The cluster that a variable should be set in'
   end
 
   newparam(:profile) do
@@ -129,10 +125,10 @@ Puppet::Type.newtype(:websphere_variable) do
   end
 
   newparam(:wsadmin_user) do
-    desc "The username for wsadmin authentication"
+    desc 'The username for wsadmin authentication'
   end
 
   newparam(:wsadmin_pass) do
-    desc "The password for wsadmin authentication"
+    desc 'The password for wsadmin authentication'
   end
 end

@@ -1,7 +1,6 @@
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_node) do
-
   @doc = <<-EOT
     Manages the an "unmanaged" WebSphere node in a cell.  For example, adding an
     IHS server to a cell.
@@ -47,8 +46,8 @@ Puppet::Type.newtype(:websphere_node) do
       Example: dmgrProfile01"
 
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid dmgr_profile #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid dmgr_profile #{value}")
       end
     end
   end
@@ -63,10 +62,10 @@ Puppet::Type.newtype(:websphere_node) do
   ## We could make this a property later, but we'll need to ask for more
   ## parameters to do so.
   newparam(:hostname) do
-    desc "The hostname for the unmanaged node."
+    desc 'The hostname for the unmanaged node.'
     validate do |value|
       unless value
-        fail("You must provide a hostname")
+        raise('You must provide a hostname')
       end
     end
   end
@@ -78,8 +77,8 @@ Puppet::Type.newtype(:websphere_node) do
     EOT
 
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid node name: #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid node name: #{value}")
       end
     end
   end
@@ -91,8 +90,8 @@ Puppet::Type.newtype(:websphere_node) do
     EOT
     defaultto 'linux'
     validate do |value|
-      unless value =~ /(linux|aix)/
-        fail("OS #{value} not supported. Must be 'linux' or 'aix'")
+      unless value =~ %r{(linux|aix)}
+        raise("OS #{value} not supported. Must be 'linux' or 'aix'")
       end
     end
     munge do |value|
@@ -117,7 +116,7 @@ Puppet::Type.newtype(:websphere_node) do
     EOT
 
     validate do |value|
-      fail("Invalid profile_base #{value}") unless Pathname.new(value).absolute?
+      raise("Invalid profile_base #{value}") unless Pathname.new(value).absolute?
     end
   end
 
@@ -125,8 +124,8 @@ Puppet::Type.newtype(:websphere_node) do
     defaultto 'root'
     desc "The user to run 'wsadmin' with"
     validate do |value|
-      unless value =~ /^[-0-9A-Za-z._]+$/
-        fail("Invalid user #{value}")
+      unless value =~ %r{^[-0-9A-Za-z._]+$}
+        raise("Invalid user #{value}")
       end
     end
   end
@@ -141,10 +140,10 @@ Puppet::Type.newtype(:websphere_node) do
   end
 
   newparam(:wsadmin_user) do
-    desc "The username for wsadmin authentication"
+    desc 'The username for wsadmin authentication'
   end
 
   newparam(:wsadmin_pass) do
-    desc "The password for wsadmin authentication"
+    desc 'The password for wsadmin authentication'
   end
 end

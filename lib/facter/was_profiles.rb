@@ -15,20 +15,18 @@ include REXML
 # TODO: see if this can be configurable based on settings::vardir
 was_file = '/etc/puppetlabs/facter/facts.d/websphere.yaml'
 
-
 if File.exist?(was_file)
   Facter.debug "Found #{was_file}"
   was_facts = YAML.load_file(was_file)
 
   ## Get each profile base dir from the facts.d file
-  profiles_path = was_facts.select { |k,v| k.to_s.match(/.*_profile_base.*/) }
-  instances = was_facts.select { |k,v| k.to_s.match(/.*_name.*/) }
+  profiles_path = was_facts.select { |k, _v| k.to_s.match(%r{.*_profile_base.*}) }
+  instances = was_facts.select { |k, _v| k.to_s.match(%r{.*_name.*}) }
 else
   Facter.debug "Could not find #{was_file}"
   profiles_path = []
   instances = []
 end
-
 
 ## Iterate over each instance that's listed in the "facts.d" fact to determine
 ## its version.  We're doing it this way because we're relying on arbitrary user-provided
@@ -39,14 +37,14 @@ end
 ## There is a chance that they'll have two instances with the same name, but
 ## different install paths.  If that's the case, this just isn't going to work
 ## as expected.
-instances.each do |key,instance|
+instances.each do |_key, instance|
   im_file = '/var/ibm/InstallationManager/installed.xml'
   target = Facter.value("#{instance}_target")
 
   version = nil
   package = nil
 
-  if File.exists?(im_file)
+  if File.exist?(im_file)
     Facter.debug "Found #{im_file}"
     imdata = REXML::Document.new(File.read(im_file))
     path = XPath.first(imdata, "//installInfo/location[@path='#{target}']/package[starts-with(@name, 'IBM WebSphere Application Server')]")
@@ -56,7 +54,7 @@ instances.each do |key,instance|
     end
   else
     Facter.debug "Could not find #{im_file}"
-    version = "unknown"
+    version = 'unknown'
   end
 
   Facter.add("#{instance}_version") do
@@ -72,12 +70,11 @@ instances.each do |key,instance|
   end
 end
 
-
 ## We'll build an array for a list of JUST the profiles and return that as its
 ## own fact
 profiles_arr = []
 
-profiles_path.each do |key,aprofile|
+profiles_path.each do |_key, aprofile|
   ## Build a hash of profiles.
   ## This will include the cells in a profile and the nodes in that cell.
   Dir["#{aprofile}/*/"].map { |a| File.basename(a) }.each do |profile|
@@ -85,24 +82,18 @@ profiles_path.each do |key,aprofile|
 
     ## List of cells
     Dir["#{aprofile}/#{profile}/config/cells/*/"].map { |a| File.basename(a) }.each do |cell|
-
       ## List of nodes in a cell
-      Dir["#{aprofile}/#{profile}/config/cells/#{cell}/nodes/*/"].map { |a|
-        File.basename(a)
-      }.each do |cell_node|
-
+      Dir["#{aprofile}/#{profile}/config/cells/#{cell}/nodes/*/"].map { |a| File.basename(a) }.each do |cell_node|
         ## Ports in a cell
         serverindex = REXML::Document.new(File.read("#{aprofile}/#{profile}/config/cells/#{cell}/nodes/#{cell_node}/serverindex.xml"))
         soap = XPath.first(serverindex, '//serverEntries/specialEndpoints[@endPointName="SOAP_CONNECTOR_ADDRESS"]/endPoint/@port')
 
-        if soap
-          Facter.add("websphere_#{profile}_#{cell}_#{cell_node}_soap") do
-            setcode do
-              soap.to_s
-            end
+        next unless soap
+        Facter.add("websphere_#{profile}_#{cell}_#{cell_node}_soap") do
+          setcode do
+            soap.to_s
           end
         end
-
       end
     end
   end
