@@ -1,3 +1,4 @@
+# IHS
 class websphere_profile::ihs { # lint:ignore:autoloader_layout
   ## Simply install the 'base' websphere
   $ibm_base_dir     = '/opt/IBM'

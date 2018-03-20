@@ -1,3 +1,4 @@
+# dmgr
 class websphere_role::dmgr { # lint:ignore:autoloader_layout
   include websphere_profile::nfs_mount
   include websphere_profile::base
@@ -6,6 +7,7 @@ class websphere_role::dmgr { # lint:ignore:autoloader_layout
   Class['websphere_profile::nfs_mount'] -> Class['websphere_profile::base'] -> Class['websphere_profile::dmgr']
 }
 
+# appserver
 class websphere_role::appserver { # lint:ignore:autoloader_layout
   include websphere_profile::nfs_mount
   include websphere_profile::base
