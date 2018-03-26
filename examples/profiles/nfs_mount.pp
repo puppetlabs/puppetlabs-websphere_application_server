@@ -1,3 +1,4 @@
+# NFS Mount
 class websphere_profile::nfs_mount { # lint:ignore:autoloader_layout
   file { '/opt/QA_resources':
     ensure => 'directory',
