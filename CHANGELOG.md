@@ -1,3 +1,13 @@
+## Supported Release [1.2.0]
+### Summary
+This is a 'minor' feature release, that implements a variety of changes across websphere to ensure that it complies with the set rubocop rules and that it works with the pdk tool.
+
+#### Added
+- Code has been changed to work with the PDK tool. ([MODULES-6461](https://tickets.puppetlabs.com/browse/MODULES-6461))
+
+#### Fixed
+- Code has been updated to comply with the set Rubocop rules. ([MODULES-6518](https://tickets.puppetlabs.com/browse/MODULES-6518))
+
 ## Supported Release [1.1.0]
 ### Summary
 This is a 'small' feature release, allowing the user to install WAS as a non-root user
@@ -42,6 +52,7 @@ This is the first supported release of websphere_application_server on the forge
 This is the initial release of websphere_application_server on the forge. This module has the capability to install and configure websphere application servers, deployment managers, and websphere ihs via the IBM Installation Manager. This module does not support Liberty profiles.
 
 
+[1.2.0]:https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/1.1.0...1.2.0
 [1.1.0]:https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/1.0.1...1.1.0
 [1.0.1]:https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/1.0.0...1.0.1
 [1.0.0]:https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/0.2.0...1.0.0
