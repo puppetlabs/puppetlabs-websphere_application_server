@@ -1,17 +1,19 @@
-# Provider for federating websphere nodes to a cell
-#
-# This is not the most robust of things - but it's hard to predict what
-# messages or exit code (if any) the IBM tools will provide.
-#
-# This will search for a 'data' file in the profile dir that contains
-# information for federating a node (port, hostname).  It's assumed that this
-# file will be exported by the dmgr host and collected on the server
-# that's declaring this resource.
-# Optionally, a port and host can be passed as parameters to this resource.
-#
 require 'yaml'
 
 Puppet::Type.type(:websphere_federate).provide(:wsadmin) do
+  desc <<-DESC
+    Provider for `websphere_federate`
+
+    This is not the most robust of things - but it's hard to predict what
+    messages or exit code (if any) the IBM tools will provide.
+
+    This will search for a 'data' file in the profile dir that contains
+    information for federating a node (port, hostname).  It's assumed that this
+    file will be exported by the dmgr host and collected on the server
+    that's declaring this resource.
+    Optionally, a port and host can be passed as parameters to this resource.
+
+    DESC
   def exists?
     path = "#{resource[:profile_base]}/#{resource[:profile]}/config/cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers"
     if File.exist?(path)

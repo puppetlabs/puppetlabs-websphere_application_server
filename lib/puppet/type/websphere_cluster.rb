@@ -1,7 +1,9 @@
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_cluster) do
-  @doc = 'Manages the creation or removal of WebSphere server clusters.'
+  @doc = <<-DOC
+    @summary Manages the creation or removal of WebSphere server clusters.
+    DOC
 
   ensurable
 

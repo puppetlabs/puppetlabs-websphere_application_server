@@ -1,7 +1,9 @@
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_sdk) do
-  @doc = 'This manages WebSphere SDK/JDK versions'
+  @doc = <<-DOC
+    @summary This manages WebSphere SDK/JDK versions'
+    DOC
 
   autorequire(:user) do
     self[:user]

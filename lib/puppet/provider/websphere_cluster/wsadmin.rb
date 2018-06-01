@@ -9,6 +9,8 @@
 require_relative '../websphere_helper'
 
 Puppet::Type.type(:websphere_cluster).provide(:wsadmin, parent: Puppet::Provider::Websphere_Helper) do
+  desc 'wsadmin provider for `websphere_cluster`'
+
   def exists?
     # This will output an empty string: '' if there are no clusters.
     # If a cluster is present, it will output:

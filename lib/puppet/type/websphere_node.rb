@@ -1,43 +1,40 @@
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_node) do
-  @doc = <<-EOT
-    Manages the an "unmanaged" WebSphere node in a cell.  For example, adding an
-    IHS server to a cell.
+  @doc = <<-DOC
+    @summary Manages the an "unmanaged" WebSphere node in a cell.
 
     In `wsadmin` terms using _jython_, this basically translates to the
     `AdminTask.createUnmanagedNode` task.
 
-    #### Example
+    @example Add an IHS Server node to CELL_01
+      websphere_node { 'IHS Server':
+        node_name    => 'ihsServer01',
+        os           => 'linux',
+        hostname     => 'ihs01.example.com',
+        cell         => 'CELL_01',
+        dmgr_profile => 'PROFILE_DMGR_01',
+        profile_base => '/opt/IBM/WebSphere/AppServer/profiles',
+        user         => 'webadmins',
+      }
 
-    websphere_node { 'IHS Server':
-      node_name    => 'ihsServer01',
-      os           => 'linux',
-      hostname     => 'ihs01.example.com',
-      cell         => 'CELL_01',
-      dmgr_profile => 'PROFILE_DMGR_01',
-      profile_base => '/opt/IBM/WebSphere/AppServer/profiles',
-      user         => 'webadmins',
-    }
+    @example Exported resource
+      An IHS server can export a resource:
 
-    Exported resource example
+      @@websphere_node { $::fqdn:
+        node_name => $::fqdn,
+        os        => 'linux',
+        hostname  => $::fqdn,
+        cell      => 'CELL_01',
 
-    An IHS server can export a resource:
+      A DMGR can collect it and append its profile information to it:
 
-    @@websphere_node { $::fqdn:
-      node_name => $::fqdn,
-      os        => 'linux',
-      hostname  => $::fqdn,
-      cell      => 'CELL_01',
-
-    A DMGR can collect it and append its profile information to it:
-
-    Websphere_node <<| cell == 'CELL_01' |>> {
-      dmgr_profile => 'PROFILE_DMGR_01',
-      profile_base => '/opt/IBM/Websphere/AppServer/profiles',
-      user         => 'webadmins',
-    }
-  EOT
+      Websphere_node <<| cell == 'CELL_01' |>> {
+        dmgr_profile => 'PROFILE_DMGR_01',
+        profile_base => '/opt/IBM/Websphere/AppServer/profiles',
+        user         => 'webadmins',
+      }
+  DOC
 
   ensurable
 

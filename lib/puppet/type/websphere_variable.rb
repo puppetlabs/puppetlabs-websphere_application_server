@@ -1,7 +1,9 @@
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_variable) do
-  @doc = 'This manages a WebSphere environment variable'
+  @doc = <<-DOC
+    @summary This manages a WebSphere environment variable
+  DOC
 
   ensurable
 

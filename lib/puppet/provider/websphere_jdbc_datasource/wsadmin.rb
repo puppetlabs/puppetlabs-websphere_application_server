@@ -1,6 +1,8 @@
 require_relative '../websphere_helper'
 
 Puppet::Type.type(:websphere_jdbc_datasource).provide(:wsadmin, parent: Puppet::Provider::Websphere_Helper) do
+  desc 'wsadmin provider for `websphere_jdbc_datasource`'
+
   def scope(what)
     case resource[:scope]
     when 'cell'

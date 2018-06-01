@@ -6,6 +6,8 @@
 require_relative '../websphere_helper'
 
 Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::Provider::Websphere_Helper) do
+  desc 'wsadmin provider for `websphere_cluster_member`'
+
   def exists?
     cmd = "\"AdminConfig.getid('/ServerCluster:"
     cmd += "#{resource[:cluster]}/ClusterMember:#{resource[:name]}"

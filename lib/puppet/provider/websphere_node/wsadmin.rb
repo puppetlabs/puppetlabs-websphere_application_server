@@ -1,6 +1,7 @@
 require_relative '../websphere_helper'
-
 Puppet::Type.type(:websphere_node).provide(:wsadmin, parent: Puppet::Provider::Websphere_Helper) do
+  desc 'wsadmin provider for `websphere_node`'
+
   def create
     cmd = "\"AdminTask.createUnmanagedNode('[-nodeName #{resource[:node_name]} "
     cmd += "-hostName #{resource[:hostname]} -nodeOperatingSystem "
