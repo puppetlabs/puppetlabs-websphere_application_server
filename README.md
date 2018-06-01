@@ -83,6 +83,21 @@ websphere_application_server::instance { 'WebSphere85':
 }
 ```
 
+Installing WAS 9
+The Java JDK is no longer packaged with WebSphere starting with version 9.0.0 so you need to name the JDK you want to install explicitly. Do this with the $jdk_package_* attributes:
+
+```puppet
+websphere_application_server::instance { 'WebSphere90':
+  target              => '/opt/IBM/WebSphere/AppServer',
+  package             => 'com.ibm.websphere.ND.v90',
+  version             => '9.0.0.20160526_1854',
+  profile_base        => '/opt/IBM/WebSphere/AppServer/profiles',
+  jdk_package_name    => 'com.ibm.websphere.IBMJAVA.v71',
+  jdk_package_version => '7.1.2000.20141116_0823',
+  repository          => '/mnt/myorg/was/repository.config',
+}
+```
+
 To install WebSphere using a response file:
 
 ```puppet

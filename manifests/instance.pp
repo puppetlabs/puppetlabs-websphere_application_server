@@ -9,12 +9,18 @@ define websphere_application_server::instance (
   $install_options           = undef,
   $imcl_path                 = undef,
   $profile_base              = undef,
+  $jdk_package_name          = undef,
+  $jdk_package_version       = undef,
   $manage_user               = false,
   $manage_group              = false,
   $user                      = $::websphere_application_server::user,
   $group                     = $::websphere_application_server::group,
   $user_home                 = undef,
 ) {
+
+  if $version =~ /^9.*/ and !$jdk_package_name {
+    fail('When installing WebSphere AppServer 9, you must specify a JDK')
+  }
 
   if $target and $base_dir {
     fail('Only one of $target and $base_dir can be specified')
@@ -96,18 +102,20 @@ define websphere_application_server::instance (
   }
 
   ibm_pkg { $title:
-    ensure           => 'present',
-    package          => $package,
-    version          => $version,
-    target           => $_target,
-    response         => $response_file,
-    options          => $install_options,
-    repository       => $repository,
-    imcl_path        => $imcl_path,
-    manage_ownership => true,
-    package_owner    => $user,
-    package_group    => $group,
-    user             => $user,
+    ensure              => 'present',
+    package             => $package,
+    version             => $version,
+    target              => $_target,
+    response            => $response_file,
+    options             => $install_options,
+    repository          => $repository,
+    imcl_path           => $imcl_path,
+    manage_ownership    => true,
+    package_owner       => $user,
+    package_group       => $group,
+    jdk_package_name    => $jdk_package_name,
+    jdk_package_version => $jdk_package_version,
+    user                => $user,
   }
 
   file { $_profile_base:
