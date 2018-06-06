@@ -1,6 +1,20 @@
 # @summary
 #   Manage web server (http) instances on IHS
 #
+# @example Set up an IHS Server
+#   websphere_application_server::ihs::server { 'test':
+#     target      => '/opt/IBM/HTTPServer',
+#     log_dir     => '/opt/log/websphere/httpserver',
+#     plugin_dir  => '/opt/IBM/Plugins/config/test',
+#     plugin_base => '/opt/IBM/Plugins',
+#     cell        => 'CELL_01',
+#     config_file => '/opt/IBM/HTTPServer/conf/httpd_test.conf',
+#     access_log  => '/opt/log/websphere/httpserver/access_log',
+#     error_log   => '/opt/log/websphere/httpserver/error_log',
+#     listen_port => '10080',
+#     require     => Ibm_pkg['Plugins'],
+#   }
+#
 # @param target
 #   Required. Specifies the full path to the IHS installation that this server should belong to.  
 #

@@ -1,6 +1,18 @@
 # @summary
 #   Manages WAS application servers.
 #
+# @example Create a basic AppServer profile
+#   websphere_application_server::profile::appserver { 'PROFILE_APP_001':
+#     instance_base  => '/opt/IBM/WebSphere/AppServer',
+#     profile_base   => '/opt/IBM/WebSphere/AppServer/profiles',
+#     cell           => 'CELL_01',
+#     template_path  => '/opt/IBM/WebSphere/AppServer/profileTemplates/managed',
+#     dmgr_host      => 'dmgr.example.com',
+#     node_name      => 'appNode01',
+#     manage_sdk     => true,
+#     sdk_name       => '1.7.1_64',
+#   }
+#
 # @param instance_base
 #   Required. The full path to the installation of WebSphere that this profile should be created under. The IBM default is '/opt/IBM/WebSphere/AppServer'.
 # @param profile_base

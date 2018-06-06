@@ -1,6 +1,14 @@
 # @summary
 #   Manages a DMGR profile.
 #
+# @example Create a basic Deployment Manager profile
+#   websphere_application_server::profile::dmgr { 'PROFILE_DMGR_01':
+#     instance_base => '/opt/IBM/WebSphere/AppServer',
+#     profile_base  => '/opt/IBM/WebSphere/AppServer/profiles',
+#     cell          => 'CELL_01',
+#     node_name     => 'dmgrNode01',
+#   }
+#
 # @param instance_base
 #   Required. The full path to the installation of WebSphere that this profile should be created under. The IBM default is '/opt/IBM/WebSphere/AppServer'.
 # @param cell

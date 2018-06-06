@@ -1,6 +1,14 @@
 # @summary
 #   Manages the node service for WAS profiles.
 #
+# @example Manage a Deployment Manager profile service
+#   websphere_application_server::profile::service { 'PROFILE_DMGR_01':
+#     type         => 'dmgr',
+#     ensure       => 'running',
+#     profile_base => '/opt/IBM/WebSphere/AppServer/profiles',
+#     user         => 'webadmin',
+#   }
+#
 # @param type
 #   Specifies the type of service. Valid values are 'dmgr' and 'app'. DMGR profiles are managed via IBM's startManager and stopManager scripts. Application servers are managed via the startNode and stopNode scripts.
 # @param profile_base
