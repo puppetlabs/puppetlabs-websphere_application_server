@@ -1,3 +1,14 @@
+# Change log
+All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning](http://semver.org).
+
+## Supported Release [1.3.0]
+### Summary
+This is a feature release enabling the installation of WebSphere AppServer 9.
+
+#### Added
+- `$jdk_package_name` and `$jdk_package_version` parameters for the `websphere_application_server::instance` type. Using these parameters requires puppetlabs-ibm_installation_manager >= 0.5.0. ([MODULES-4738](https://tickets.puppet.com/browse/MODULES-4738))
+
 ## Supported Release [1.2.0]
 ### Summary
 This is a 'minor' feature release, that implements a variety of changes across websphere to ensure that it complies with the set rubocop rules and that it works with the pdk tool.
@@ -52,6 +63,7 @@ This is the first supported release of websphere_application_server on the forge
 This is the initial release of websphere_application_server on the forge. This module has the capability to install and configure websphere application servers, deployment managers, and websphere ihs via the IBM Installation Manager. This module does not support Liberty profiles.
 
 
+[1.3.0]:https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/1.2.0...1.3.0
 [1.2.0]:https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/1.1.0...1.2.0
 [1.1.0]:https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/1.0.1...1.1.0
 [1.0.1]:https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/1.0.0...1.0.1
