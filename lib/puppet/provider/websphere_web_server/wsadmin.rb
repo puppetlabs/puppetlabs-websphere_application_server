@@ -1,6 +1,8 @@
 require_relative '../websphere_helper'
 
 Puppet::Type.type(:websphere_web_server).provide(:wsadmin, parent: Puppet::Provider::Websphere_Helper) do
+  desc 'wsadmin provider for `websphere_web_server`'
+
   def create
     cmd = "\"AdminTask.createWebServer('#{resource[:node_name]}', "
     cmd += "'[-name #{resource[:name]} -templateName #{resource[:template]} "

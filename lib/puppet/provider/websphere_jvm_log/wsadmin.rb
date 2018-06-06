@@ -1,11 +1,12 @@
-# Provider to modify WebSphere JVM Logging Properties
-#
-# We execute the 'wsadmin' tool to query and make changes, which interprets
-# Jython. This means we need to use heredocs to satisfy whitespace sensitivity.
-#
 require_relative '../websphere_helper'
 
 Puppet::Type.type(:websphere_jvm_log).provide(:wsadmin, parent: Puppet::Provider::Websphere_Helper) do
+  desc <<-DESC
+    Provider to modify WebSphere JVM Logging Properties ( `websphere_jvm_log` )
+
+    We execute the 'wsadmin' tool to query and make changes, which interprets
+    Jython. This means we need to use heredocs to satisfy whitespace sensitivity.
+    DESC
   def scope(what)
     file = "#{resource[:profile_base]}/#{resource[:profile]}"
 

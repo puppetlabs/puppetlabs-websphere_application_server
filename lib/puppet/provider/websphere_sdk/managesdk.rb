@@ -1,6 +1,8 @@
 require_relative '../websphere_helper'
 
 Puppet::Type.type(:websphere_sdk).provide(:managesdk, parent: Puppet::Provider::Websphere_Helper) do
+  desc 'managesdk provider for `websphere_sdk`'
+
   def managesdk(opts = {})
     command = build_command(opts)
 

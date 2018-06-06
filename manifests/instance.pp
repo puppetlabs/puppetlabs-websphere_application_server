@@ -1,4 +1,62 @@
+# @summary
+#   Manages the base installation of a WebSphere instance.
 #
+# @example Install an instance of AppServer version 8
+#   websphere_application_server::instance { 'WebSphere85':
+#     target       => '/opt/IBM/WebSphere/AppServer',
+#     package      => 'com.ibm.websphere.NDTRIAL.v85',
+#     version      => '8.5.5000.20130514_1044',
+#     profile_base => '/opt/IBM/WebSphere/AppServer/profiles',
+#     repository   => '/mnt/myorg/was/repository.config',
+#   }
+# @example Install AppServer version 9
+#   websphere_application_server::instance { 'WebSphere90':
+#     target              => '/opt/IBM/WebSphere/AppServer',
+#     package             => 'com.ibm.websphere.ND.v90',
+#     version             => '9.0.0.20160526_1854',
+#     profile_base        => '/opt/IBM/WebSphere/AppServer/profiles',
+#     jdk_package_name    => 'com.ibm.websphere.IBMJAVA.v71',
+#     jdk_package_version => '7.1.2000.20141116_0823',
+#     repository          => '/mnt/myorg/was/repository.config',
+#   }
+# @example Install using an response file
+#   websphere_application_server::instance { 'WebSphere85':
+#     response     => '/mnt/myorg/was/was85_response.xml',
+#     profile_base => '/opt/IBM/WebSphere/AppServer/profiles',
+#   }
+#
+# @param base_dir
+#  This should point to the base directory that WebSphere instances should be installed to. IBM's default is `/opt/IBM`
+# @param target
+#   The full path where this instance should be installed. The IBM default is '/opt/IBM/WebSphere/AppServer'. The module default for `target` is "${base_dir}/${title}/AppServer", where `title` refers to the title of the resource.
+# @param package
+#   This is the first part (before the first underscore) of IBM's full package name. For example, a full name from IBM looks like: "com.ibm.websphere.NDTRIAL.v85_8.5.5000.20130514_1044". The package name for this example is com.ibm.websphere.NDTRIAL.v85". This corresponds to the repository metadata provided with IBM packages. This parameter is required if a response file is not provided.
+# @param version
+#   This is the _second_ part (after the first underscore) of IBM's full package name. For example, a full name from IBM looks like: "com.ibm.websphere.NDTRIAL.v85_8.5.5000.20130514_1044". The package version in this example is "8.5.5000.20130514_1044". This corresponds to the repository metadata provided with IBM packages. This parameter is required if a response file is not provided.
+# @param repository
+#   The full path to the installation repository file to install WebSphere from. This should point to the location that the IBM package is extracted to. When extracting an IBM package, a `repository.config` is provided in the base directory. Example: `/mnt/myorg/was/repository.config`
+# @param response_file
+#   Specifies the full path to a response file to use for installation.  It is the user's responsibility to have a response file created and available for installation. Typically, a response file will include, at a minimum, a package name, version, target, and repository information.
+# @param install_options
+#   Specifies options to be appended to the base set of options. When using a response file, the base options are: `input /path/to/response/file`. When not using a response file, the base set of options are:`install ${package}_${version} -repositories ${repository} -installationDirectory ${target} -acceptLicense`.
+# @param imcl_path
+#   The full path to the `imcl` tool provided by the IBM Installation Manager. The `ibm_pkg` provider attempts to automatically discover this path by parsing IBM's data file in `/var/ibm` to determine where InstallationManager is installed.
+# @param profile_base
+#   Specifies the full path to where WebSphere profiles will be stored. The IBM default is `/opt/IBM/WebSphere/AppServer/profiles`.
+# @param jdk_package_name
+#   Starting with WebSphere 9, you must specify the JDK package you wish to install alongside WebSphere AppServer. Like the `package` parameter, this is the IBM package name. Example: 'com.ibm.websphere.IBMJAVA.v71'
+# @param jdk_package_version
+#   The version string for the JDK you would like to install. Example: '7.1.2000.20141116_0823'
+# @param manage_user
+#   Specifies whether this instance should manage the user specified by the `user` parameter.
+# @param manage_group
+#   Specifies whether this instance should manage the group specified by the `group` parameter.
+# @param user
+#   Specifies the user that should own this instance of WebSphere.
+# @param group
+#   Specifies the group that should own this instance of WebSphere.
+# @param user_home
+#   Specifies the home directory for the `user`. This is only relevant if you're managing the user _with this instance_ (that is, not via the base class). So if `manage_user` is `true`, this is relevant. Defaults to `$target`
 define websphere_application_server::instance (
   $base_dir                  = undef,
   $target                    = undef,

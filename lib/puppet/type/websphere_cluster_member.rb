@@ -1,13 +1,13 @@
-# Type for managing websphere cluster members
-# TODO:
-#   - Parameter validation
-#   - Sane defaults for parameters
-#   - Other things?
-#   - Better documentation for params?
-#   - Maybe make this take a hash instead of a million parameters?
-#
 Puppet::Type.newtype(:websphere_cluster_member) do
-  @doc = 'Manages members of a WebSphere server cluster.'
+  @doc = <<-DOC
+    @summary Manages members of a WebSphere server cluster.
+    @todo
+      - Parameter validation
+      - Sane defaults for parameters
+      - Other things?
+      - Better documentation for params?
+      - Maybe make this take a hash instead of a million parameters?
+    DOC
 
   autorequire(:websphere_cluster) do
     self[:name]
@@ -152,6 +152,7 @@ Puppet::Type.newtype(:websphere_cluster_member) do
   end
 
   newparam(:node_name) do
+    desc 'Required. The name of the _node_ to add as a cluster member.'
     validate do |value|
       unless value =~ %r{^[-0-9A-Za-z._]+$}
         raise("Invalid node_name #{value}")
@@ -167,6 +168,7 @@ Puppet::Type.newtype(:websphere_cluster_member) do
   end
 
   newparam(:replicator_entry) do
+    desc 'This parameter is inactive.'
     ## Not sure if this is even used yet
   end
 

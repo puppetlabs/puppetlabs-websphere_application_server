@@ -1,9 +1,9 @@
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_web_server) do
-  @doc = <<-EOT
-    Manages WebSphere web servers in a cell.
-  EOT
+  @doc = <<-DOC
+    @summary Manages WebSphere web servers in a cell.
+  DOC
 
   ensurable
 

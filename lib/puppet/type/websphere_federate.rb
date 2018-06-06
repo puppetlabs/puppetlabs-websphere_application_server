@@ -1,8 +1,8 @@
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_federate) do
-  @doc = <<-EOT
-  Manages the federation of WebSphere application servers with a cell.
+  @doc = <<-DOC
+  @summary Manages the federation of WebSphere application servers with a cell.
 
   By default, this resource expects that a data file will be available in
   Puppet's `$vardir` containing information about the DMGR cell to federate
@@ -22,7 +22,7 @@ Puppet::Type.newtype(:websphere_federate) do
 
   Essentially, the provider for this resource type executes `addNode.sh` to do
   the federation.
-  EOT
+  DOC
 
   ensurable
 

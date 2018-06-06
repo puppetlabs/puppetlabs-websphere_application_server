@@ -1,4 +1,51 @@
-# Manages DMGR profiles in a WebSphere cell
+# @summary
+#   Manages a DMGR profile.
+#
+# @example Create a basic Deployment Manager profile
+#   websphere_application_server::profile::dmgr { 'PROFILE_DMGR_01':
+#     instance_base => '/opt/IBM/WebSphere/AppServer',
+#     profile_base  => '/opt/IBM/WebSphere/AppServer/profiles',
+#     cell          => 'CELL_01',
+#     node_name     => 'dmgrNode01',
+#   }
+#
+# @param instance_base
+#   Required. The full path to the installation of WebSphere that this profile should be created under. The IBM default is '/opt/IBM/WebSphere/AppServer'.
+# @param cell
+#   Required. The cell name to create. For example: 'CELL_01'.
+# @param node_name
+#   Required. The name for this "node". For example: 'dmgrNode01'.
+# @param profile_base
+#   Required. The full path to the base directory of profiles. The IBM default is '/opt/IBM/WebSphere/AppServer/profiles'.
+# @param profile_name
+#   The name of the profile. The directory that gets created will be named this. Example: 'PROFILE_DMGR_01' or 'dmgrProfile01'. Recommended to keep this alpha-numeric.
+# @param user
+#   The user that should own this profile.
+# @param group
+#   The group that should own this profile.
+# @param dmgr_host
+#   The address for this DMGR system. Should be an address that other hosts can connect to.
+# @param template_path
+#   Should point to the full path to profile templates for creating the profile.
+# @param options
+#   String. Defaults to '-create -profileName ${profile_name} -profilePath ${profile_base}/${profile_name} -templatePath ${_template_path} -nodeName ${node_name} -hostName ${::fqdn} -cellName ${cell}'.  These are the options that are passed to manageprofiles.sh to create the profile.
+# @param manage_service
+#   Specifies whether the service for the DMGR profile should be managed by this defined type instance. In IBM terms, this is startManager.sh and stopManager.sh.
+# @param manage_sdk
+#   Specifies whether SDK versions should be managed by this defined type instance. When managed here, it sets the default SDK for servers created under this profile.
+# @param sdk_name
+#   The SDK name to set if manage_sdk is `true`. This parameter is required if manage_sdk is `true`. By default, it has no value set.  Example: 1.71_64. Refer to the details for the `websphere_sdk` resource type for more information.
+# @param collect_nodes
+#   Specifies whether to collect exported `websphere_node` resources. This is useful for instances where unmanaged servers export `websphere_node` resources to dynamically add themselves to a cell. Refer to the details for the `websphere_node` resource type for more information.
+# @param collect_web_servers
+#   Specifies whether to collect exported `websphere_web_server` resources. This is useful for instances where IHS servers export `websphere_web_server` resources to dynamically add themselves to a cell. Refer to the details for the `websphere_web_server` resource type for more information
+# @param collect_jvm_logs
+#   Specifies whether to collect exported `websphere_jvm_log` resources. This is useful for instances where application servers export `websphere_jvm_log` resources to manage their JVM logging properties. Refer to the details for the `websphere_jvm_log` resource type for more information.
+# @param wsadmin_user
+#   Optional. The username for `wsadmin` authentication if security is enabled.
+# @param wsadmin_pass
+#   Optional. The password for `wsadmin` authentication if security is enabled.
+#
 define websphere_application_server::profile::dmgr (
   $instance_base,
   $cell,

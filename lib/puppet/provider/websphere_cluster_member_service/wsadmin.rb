@@ -7,6 +7,8 @@
 require_relative '../websphere_helper'
 
 Puppet::Type.type(:websphere_cluster_member_service).provide(:wsadmin, parent: Puppet::Provider::Websphere_Helper) do
+  desc 'wsadmin provider for `websphere_cluster_member_service`'
+
   def self.instances
     []
   end

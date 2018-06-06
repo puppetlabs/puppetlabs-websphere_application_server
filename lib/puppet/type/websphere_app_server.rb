@@ -1,7 +1,9 @@
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_app_server) do
-  @doc = 'Manage the existence of WebSphere Application Servers'
+  @doc = <<-DOC
+    @summary Manage the existence of WebSphere Application Servers'
+    DOC
 
   ensurable
 

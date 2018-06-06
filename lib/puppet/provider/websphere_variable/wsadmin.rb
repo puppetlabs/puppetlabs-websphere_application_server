@@ -1,11 +1,12 @@
-# Provider to modify WebSphere Environment Variables
-#
-# We execute the 'wsadmin' tool to query and make changes, which interprets
-# Jython. This means we need to use heredocs to satisfy whitespace sensitivity.
-#
 require_relative '../websphere_helper'
 
 Puppet::Type.type(:websphere_variable).provide(:wsadmin, parent: Puppet::Provider::Websphere_Helper) do
+  desc <<-DESC
+    Provider to modify WebSphere Environment Variables
+
+    We execute the 'wsadmin' tool to query and make changes, which interprets
+    Jython. This means we need to use heredocs to satisfy whitespace sensitivity.
+    DESC
   def scope(what)
     # (cells/CELL_01/nodes/appNode01/servers/AppServer01
     file = "#{resource[:profile_base]}/#{resource[:dmgr_profile]}"

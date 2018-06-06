@@ -1,6 +1,8 @@
 require_relative '../websphere_helper'
 
 Puppet::Type.type(:websphere_app_server).provide(:wsadmin, parent: Puppet::Provider::Websphere_Helper) do
+  desc 'wsadmin provider for `websphere_app_server`'
+
   def create
     # AdminTask.createApplicationServer('appNode01', '[-name asdf -templateName default -genUniquePorts true ]')
     cmd = "\"AdminTask.createApplicationServer('" + resource[:node_name]

@@ -1,12 +1,12 @@
-# Type for managing websphere cluster members
-# TODO:
-#   - Parameter validation
-#   - Sane defaults for parameters
-#   - Other things?
-#   - Better documentation for params?
-#
 Puppet::Type.newtype(:websphere_cluster_member_service) do
-  @doc = "Manages the a WebSphere cluster member's service."
+  @doc = <<-DOC
+    @summary Manages the a WebSphere cluster member's service.
+    @todo
+      - Parameter validation
+      - Sane defaults for parameters
+      - Other things?
+      - Better documentation for params?
+  DOC
 
   autorequire(:websphere_cluster) do
     self[:name]

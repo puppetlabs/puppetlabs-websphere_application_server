@@ -1,7 +1,9 @@
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_jvm_log) do
-  @doc = 'This manages a WebSphere JVM Logging Properties'
+  @doc = <<-DOC
+    @summary This manages a WebSphere JVM Logging Properties'
+    DOC
 
   autorequire(:user) do
     self[:user]
@@ -155,7 +157,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
   newparam(:server) do
     isnamevar
 
-    desc 'The server in the scope for this variable'
+    desc 'The server in the scope for this variable.'
     validate do |value|
       unless value =~ %r{^[-0-9A-Za-z._]+$}
         raise ArgumentError, "Invalid server #{value}"
@@ -166,6 +168,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
   newparam(:cell) do
     isnamevar
 
+    desc 'Required. The cell that the node or server belongs to.'
     validate do |value|
       unless value =~ %r{^[-0-9A-Za-z._]+$}
         raise ArgumentError, "Invalid cell: #{value}"
@@ -176,6 +179,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
   newparam(:node_name) do
     isnamevar
 
+    desc 'Required.  The node to manage properties on.'
     validate do |value|
       unless value =~ %r{^[-0-9A-Za-z._]+$}
         raise ArgumentError, "Invalid node_name: #{value}"

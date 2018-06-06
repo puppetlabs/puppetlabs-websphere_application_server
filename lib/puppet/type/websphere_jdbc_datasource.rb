@@ -1,6 +1,27 @@
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_jdbc_datasource) do
+  @doc = <<-DOC
+    @summary Manages datasources.
+    @example Create a datasource at the node scope
+      websphere_jdbc_datasource { 'Puppet Test':
+        ensure                        => 'present',
+        dmgr_profile                  => 'PROFILE_DMGR_01',
+        profile_base                  => '/opt/IBM/WebSphere/AppServer/profiles',
+        user                          => 'webadmin',
+        scope                         => 'node',
+        cell                          => 'CELL_01',
+        node_name                     => 'appNode01',
+        server                        => 'AppServer01',
+        jdbc_provider                 => 'Puppet Test',
+        jndi_name                     => 'myTest',
+        data_store_helper_class       => 'com.ibm.websphere.rsadapter.Oracle11gDataStoreHelper',
+        container_managed_persistence => true,
+        url                           => 'jdbc:oracle:thin:@//localhost:1521/sample',
+        description                   => 'Created by Puppet',
+      }
+    DOC
+
   autorequire(:user) do
     self[:user]
   end
