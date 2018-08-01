@@ -10,7 +10,7 @@ node_name = fresh_node('centos-6-x86_64')
 
 # Teardown
 teardown do
-  confine_block(:except, roles: %w[master dashboard database]) do
+  confine_block(:except, roles: ['master', 'dashboard', 'database']) do
     agents.each do |agent|
       # comment out due to FM-5130
       # remove_websphere_instance('websphere_application_server', '/opt/log/websphere /opt/IBM')
@@ -88,7 +88,7 @@ inject_site_pp(master, get_site_pp_path(master), site_pp)
 
 # Application Server profile manifest
 
-confine_block(:except, roles: %w[master dashboard database]) do
+confine_block(:except, roles: ['master', 'dashboard', 'database']) do
   agents.each do |agent|
     step 'Run puppet agent to create profile: appserver:'
     expect_failure('Expected to fail due to FM-5093, FM-5130, FM-5150, FM-5211, and FM-5214') do

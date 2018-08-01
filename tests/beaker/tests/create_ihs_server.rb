@@ -7,7 +7,7 @@ test_name 'FM-5225 - C93850 - Create IHS server'
 
 # Teardown
 teardown do
-  confine_block(:except, roles: %w[master dashboard database]) do
+  confine_block(:except, roles: ['master', 'dashboard', 'database']) do
     agents.each do |agent|
       # comment out due to FM-5130
       # remove_websphere_instance('websphere_application_server', '/opt/log/websphere /opt/IBM')
@@ -84,7 +84,7 @@ site_pp = create_site_pp(master, manifest: manifest_erb)
 inject_site_pp(master, get_site_pp_path(master), site_pp)
 
 # config server scoped variable  manifest
-confine_block(:except, roles: %w[master dashboard database]) do
+confine_block(:except, roles: ['master', 'dashboard', 'database']) do
   agents.each do |agent|
     step 'Run puppet agent to create profile: appserver:'
     expect_failure('Expected to fail due to FM-5093, FM-5130, and FM-5150') do

@@ -1,6 +1,6 @@
 
 module HelperConstants
-  @unsupported_platforms    = %w[Suse windows AIX Solaris]
+  @unsupported_platforms    = ['Suse', 'windows', 'AIX', 'Solaris']
   @websphere_source_dir     = '/opt/sources/ibm_websphere'
   @qa_resources             = '/opt/QA_resources'
   @qa_resource_source       = 'int-resources.ops.puppetlabs.net:/tank01/resources0/QA_resources'

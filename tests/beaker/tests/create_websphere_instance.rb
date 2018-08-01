@@ -7,7 +7,7 @@ test_name 'FM-5120 - C93836 - create a WebSphere instance'
 
 # Teardown
 teardown do
-  confine_block(:except, roles: %w[master dashboard database]) do
+  confine_block(:except, roles: ['master', 'dashboard', 'database']) do
     agents.each do |agent|
       # comment out due to FM-5130
       # remove_websphere_instance('websphere_application_server', '/opt/log/websphere /opt/IBM')
@@ -33,7 +33,7 @@ site_pp = create_site_pp(master, manifest: manifest_erb)
 inject_site_pp(master, get_site_pp_path(master), site_pp)
 
 step 'Run Puppet Agent to create a websphere instance'
-confine_block(:except, roles: %w[master dashboard database]) do
+confine_block(:except, roles: ['master', 'dashboard', 'database']) do
   agents.each do |agent|
     on(agent, puppet('agent -t'), acceptable_exit_codes: 1) do |result|
       expect_failure('Expected to fail due FM-5130') do

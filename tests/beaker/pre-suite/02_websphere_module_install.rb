@@ -1,7 +1,7 @@
 test_name 'FM-3808 - C94731 - Plug-in Sync Module from Master with Prerequisites Satisfied on Agent'
 
 step 'Install puppetlabs-websphere_application_server Module Dependencies'
-%w[puppet-archive puppetlabs-stdlib puppetlabs-concat puppetlabs-ibm_installation_manager].each do |dep|
+['puppet-archive', 'puppetlabs-stdlib', 'puppetlabs-concat', 'puppetlabs-ibm_installation_manager'].each do |dep|
   on(master, puppet("module install #{dep}"))
 end
 
