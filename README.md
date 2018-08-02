@@ -494,10 +494,7 @@ See REFERENCE.md.
 
 Tested and developed with **IBM WebSphere Application Server Network Deployment**.
 
-Tested and developed with IBM WebSphere **8.5.0.x** and **8.5.5.x** on:
-
-* CentOS 6 x86_64
-* RHEL 6 x86_64
+Tested and developed with IBM WebSphere **8.5.0.x** and **8.5.5.x**.
 
 ## Dependencies
 

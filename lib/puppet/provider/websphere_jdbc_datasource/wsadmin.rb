@@ -67,7 +67,6 @@ Puppet::Type.type(:websphere_jdbc_datasource).provide(:wsadmin, parent: Puppet::
   end
 
   def create
-    # rubocop:disable Layout/IndentHeredoc
     cmd = <<-EOS
 provider = AdminConfig.getid('/#{scope('get')}/JDBCProvider:#{resource[:jdbc_provider]}/')
 AdminTask.createDatasource(provider, '[#{params_string}]')

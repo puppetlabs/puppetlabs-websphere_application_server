@@ -6,7 +6,7 @@ test_name 'FM-5068 - C93835 - Declare base class'
 
 # Teardown
 teardown do
-  confine_block(:except, roles: %w[master dashboard database]) do
+  confine_block(:except, roles: ['master', 'dashboard', 'database']) do
     agents.each do |agent|
       # comment out due to FM-5093
       # remove_websphere('websphere_application_server')
@@ -44,7 +44,7 @@ site_pp = create_site_pp(master, manifest: pp)
 inject_site_pp(master, get_site_pp_path(master), site_pp)
 
 step 'Run Puppet Agent to declare base class'
-confine_block(:except, roles: %w[master dashboard database]) do
+confine_block(:except, roles: ['master', 'dashboard', 'database']) do
   agents.each do |agent|
     if get_agent_platform(agent) == 'aix'
       expect_failure('expected to fail due to FM-5093') do
