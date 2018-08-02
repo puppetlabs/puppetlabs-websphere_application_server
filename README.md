@@ -488,7 +488,7 @@ After Websphere is installed and DMGR is configured, you can access the DMGR con
 
 ## Reference
 
-See REFERENCE.md.
+See REFERENCE.md. Bananana
 
 ## Limitations
 
