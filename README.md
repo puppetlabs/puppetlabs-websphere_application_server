@@ -496,6 +496,8 @@ Tested and developed with **IBM WebSphere Application Server Network Deployment*
 
 Tested and developed with IBM WebSphere **8.5.0.x** and **8.5.5.x**.
 
+For an extensive list of supported operating systems, see [metadata.json](https://github.com/puppetlabs/puppetlabs-websphere_application_server/blob/master/metadata.json)
+
 ## Dependencies
 
 * [puppetlabs/ibm_installation_manager](https://github.com/puppetlabs/puppetlabs-ibm_installation_manager)
