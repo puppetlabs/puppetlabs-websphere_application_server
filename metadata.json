@@ -1,7 +1,7 @@
 {
   "name": "puppetlabs-websphere_application_server",
   "version": "1.3.0",
-  "author": "Puppet Inc",
+  "author": "puppetlabs",
   "summary": "Manages IBM WebSphere Application Server",
   "license": "proprietary",
   "source": "https://forge.puppetlabs.com/puppetlabs/websphere_application_server",
