@@ -7,32 +7,32 @@ HOSTS:
       - agent
     platform: el-6-x86_64
     template: Delivery/Quality Assurance/Templates/vCloud/centos-6-x86_64
-    hypervisor: vcloud
+    hypervisor: vmpooler
   app-agent:
     roles:
       - agent
       - appserver
     platform: el-6-x86_64
     template: Delivery/Quality Assurance/Templates/vCloud/centos-6-x86_64
-    hypervisor: vcloud
+    hypervisor: vmpooler
   dmgr-agent:
     roles:
       - agent
       - dmgr
     platform: el-6-x86_64
     template: Delivery/Quality Assurance/Templates/vCloud/centos-6-x86_64
-    hypervisor: vcloud
+    hypervisor: vmpooler
   ihs-agent:
     roles:
       - agent
       - ihs
     platform: el-6-x86_64
     template: Delivery/Quality Assurance/Templates/vCloud/centos-6-x86_64
-    hypervisor: vcloud
+    hypervisor: vmpooler
 CONFIG:
   nfs_server: none
   consoleport: 443
   datastore: instance0
   folder: Delivery/Quality Assurance/Enterprise/Dynamic
   resourcepool: delivery/Quality Assurance/Enterprise/Dynamic
-  pooling_api: http://vcloud.delivery.puppetlabs.net/
+  pooling_api: http://vmpooler.delivery.puppetlabs.net/
