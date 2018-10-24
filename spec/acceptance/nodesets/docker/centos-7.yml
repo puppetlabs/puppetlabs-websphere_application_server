@@ -1,0 +1,22 @@
+HOSTS:
+  centos-7-x64:
+    roles:
+      - master
+      - database
+      - dashboard
+      - agent
+      - appserver
+      - dmgr
+      - ihs
+    platform: el-7-x86_64
+    hypervisor: docker
+    pe_ver: http://enterprise.delivery.puppetlabs.net/2018.1/ci-ready/LATEST
+    pe_dir: http://enterprise.delivery.puppetlabs.net/2018.1/ci-ready
+    image: centos:7
+    docker_preserve_image: true
+    docker_cmd: '["/usr/sbin/init"]'
+    # install various tools required to get the image up to usable levels
+    docker_image_commands:
+      - 'yum install -y crontabs tar wget openssl sysvinit-tools iproute which initscripts'
+CONFIG:
+  trace_limit: 200
