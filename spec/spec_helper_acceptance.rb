@@ -302,7 +302,7 @@ class WebSphereHelper
 
                          class { 'ibm_installation_manager':
                            deploy_source     => true,
-                           source            => '/opt/QA_resources/ibm_installation_manager/1.8.3/agent.installer.linux.gtk.x86_64_1.8.3000.20150606_0047.zip',
+                           source            => '/opt/QA_resources/ibm_installation_manager/1.8.7/agent.installer.linux.gtk.x86_64_1.8.7000.20170706_2137.zip',
                            installation_mode => '#{imode}',
                            user              => '#{user}',
                            group             => '#{group}',
@@ -313,7 +313,7 @@ class WebSphereHelper
                        <<-MANIFEST.unindent
                          class { 'ibm_installation_manager':
                            deploy_source     => true,
-                           source            => '/opt/QA_resources/ibm_installation_manager/1.8.3/agent.installer.linux.gtk.x86_64_1.8.3000.20150606_0047.zip',
+                           source            => '/opt/QA_resources/ibm_installation_manager/1.8.7/agent.installer.linux.gtk.x86_64_1.8.7000.20170706_2137.zip',
                            installation_mode => 'administrator',
                          }
                        MANIFEST
