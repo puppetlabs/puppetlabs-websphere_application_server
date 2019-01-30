@@ -17,7 +17,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::P
 
     result = wsadmin(command: cmd, user: resource[:user])
 
-    return true if result =~ %r{^'#{resource[:name]}\(cells\/#{resource[:cell]}\/clusters\/#{resource[:cluster]}}
+    return true if result =~ %r{'#{resource[:name]}\(cells\/#{resource[:cell]}\/clusters\/#{resource[:cluster]}}
   end
 
   def create
@@ -28,7 +28,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::P
     cmd += "]]')\""
 
     result = wsadmin(command: cmd, user: resource[:user], failonfail: false)
-    unless result =~ %r{^'#{resource[:name]}\(cells\/#{resource[:cell]}\/clusters\/#{resource[:cluster]}}
+    unless result =~ %r{'#{resource[:name]}\(cells\/#{resource[:cell]}\/clusters\/#{resource[:cluster]}}
       msg = "Websphere_cluster_member[#{resource[:name]}]: Failed to "\
                + 'add cluster member. Make sure the node service is running '\
                + "on the remote server. Output: #{result}"

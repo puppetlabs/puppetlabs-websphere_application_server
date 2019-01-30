@@ -123,7 +123,7 @@ define websphere_application_server::profile::dmgr (
   $_cell      = downcase($cell)
   $_profile   = downcase($profile_name)
   $_node      = downcase($node_name)
-  $soap_port  = getvar("websphere_${_profile}_${_cell}_${_node}_soap")
+  $soap_port  = $facts["websphere_${_profile}_${_cell}_${_node}_soap"]
 
   if $soap_port {
     @@file { "/etc/dmgr_${_dmgr_host}_${_cell}":

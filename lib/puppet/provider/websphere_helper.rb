@@ -198,3 +198,11 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider # rubocop:disable St
     sync_node
   end
 end
+
+# Provide ability to remove indentation from strings, for the purpose of
+# left justifying heredoc blocks.
+class String
+  def unindent
+    gsub(%r{^#{scan(%r{^\s*}).min_by { |l| l.length }}}, '')
+  end
+end
