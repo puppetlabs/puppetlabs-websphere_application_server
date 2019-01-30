@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [1.4.1](https://github.com/puppetlabs/puppetlabs-websphere_application_server/tree/1.4.1) (2019-01-30)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/1.4.0...1.4.1)
+
+### Fixed
+
+- \(MODULES-7815\) - Fix issues with WebSphere 9 cluster membership [\#147](https://github.com/puppetlabs/puppetlabs-websphere_application_server/pull/147) ([eimlav](https://github.com/eimlav))
+- pdksync - \(FM-7655\) Fix rubygems-update for ruby \< 2.3 [\#142](https://github.com/puppetlabs/puppetlabs-websphere_application_server/pull/142) ([tphoney](https://github.com/tphoney))
+
 ## [1.4.0](https://github.com/puppetlabs/puppetlabs-websphere_application_server/tree/1.4.0) (2018-09-27)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/1.3.0...1.4.0)
