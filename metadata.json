@@ -5,7 +5,7 @@
   "summary": "Manages IBM WebSphere Application Server",
   "license": "proprietary",
   "source": "https://forge.puppetlabs.com/puppetlabs/websphere_application_server",
-  "project_page": "https://forge.puppetlabs.com/puppetlabs/websphere_application_server",
+  "project_page": "https://github.com/puppetlabs/puppetlabs-websphere_application_server",
   "issues_url": "https://tickets.puppetlabs.com/browse/MODULES",
   "dependencies": [
     {
