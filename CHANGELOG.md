@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [1.4.2](https://github.com/puppetlabs/puppetlabs-websphere_application_server/tree/1.4.2) (2019-02-11)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/1.4.1...1.4.2)
+
+### Fixed
+
+- \(FM-7731\) Change internal resource location to Platform 9 [\#153](https://github.com/puppetlabs/puppetlabs-websphere_application_server/pull/153) ([eimlav](https://github.com/eimlav))
+
 ## [1.4.1](https://github.com/puppetlabs/puppetlabs-websphere_application_server/tree/1.4.1) (2019-01-30)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/1.4.0...1.4.1)
