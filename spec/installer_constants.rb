@@ -3,7 +3,7 @@ module HelperConstants
   @unsupported_platforms    = ['Suse', 'windows', 'AIX', 'Solaris']
   @websphere_source_dir     = '/opt/sources/ibm_websphere'
   @qa_resources             = '/opt/QA_resources'
-  @qa_resource_source       = 'int-resources.ops.puppetlabs.net:/tank01/resources0/QA_resources'
+  @qa_resource_source       = '10.234.0.63:/shared'
   class << self
     attr_reader :unsupported_platforms, :websphere_source_dir, :qa_resources, :qa_resource_source
   end
