@@ -1,4 +1,11 @@
 ---
+.gitlab-ci.yml:
+  unmanaged: true
+
+.rubocop.yml:
+  default_configs:
+    inherit_from: .rubocop_todo.yml
+
 .travis.yml:
   docker_sets:
     - set: docker/centos-7
@@ -8,6 +15,9 @@
   secure: ""
   branches:
     - release
+
+appveyor.yml:
+  delete: true
 
 Gemfile:
   required:
@@ -30,16 +40,10 @@ Gemfile:
     ':system_tests':
       - gem: 'beaker-testmode_switcher'
 
-appveyor.yml:
-  delete: true
-
 Rakefile:
   requires:
     - puppet-lint/tasks/puppet-lint
 
-.rubocop.yml:
-  default_configs:
-    inherit_from: .rubocop_todo.yml
-
-.gitlab-ci.yml:
-  unmanaged: true
+spec/spec_helper.rb:
+  mock_with: ':rspec'
+  coverage_report: true
