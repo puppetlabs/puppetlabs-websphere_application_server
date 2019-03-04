@@ -2,10 +2,10 @@
 
 #### Table of Contents
 
-1. [Description](#description)
+1. [Module Description - What the module does and why it is useful](#description)
 2. [Setup - The basics of getting started with websphere_application_server](#setup)
     * [Beginning with websphere_application_server](#beginning-with-websphere_application_server)
-3. [Usage](#usage)
+3. [Usage - Configuration options and additional functionality](#usage)
     * [Creating a websphere_application_server instance](#creating-a-websphere_application_server-instance)
     * [Install FixPacks](#fixpacks)
     * [Installation dependencies](#installation-dependencies)
@@ -16,16 +16,9 @@
         * [JVM Logs](#jvm-logs)
         * [JDBC Providers and Datasources](#jdbc-providers-and-datasources)
     * [IHS](#ihs)
-4. [Reference - Classes and Parameters](#reference)
-    * [Classes](#classes)
-    * [Defined Types](#defined-types)
-    * [Types](#types)
-    * [Facts](#facts)
+4. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
 5. [Limitations - OS compatibility, etc.](#limitations)
-6. [Dependencies](#dependencies)
-7. [Development and Contributing](#development-and-contributing)
-   * [TODO](#todo)
-   * [Contributors](#contributors)
+6. [Development - Guide for contributing to the module](#development-and-contributing)
 
 ## Description
 
@@ -488,7 +481,44 @@ After Websphere is installed and DMGR is configured, you can access the DMGR con
 
 ## Reference
 
-See REFERENCE.md.
+### Facts
+
+The following facts are provided by this module:
+
+| Fact name                | Description                                      |
+| ------------------------ | ------------------------------------------------ |
+| *instance*\_name         | This is the name of a WebSphere instance; the base directory name.
+| *instance*\_target       | The full path to where a particular instance is installed.
+| *instance*\_user         | The user that "owns" this instance.
+| *instance*\_group        | The group that "owns" this instance.
+| *instance*\_profilebase  | The full path to where profiles for this instance are located.
+| *instance*\_version      | The version of WebSphere an instance is running.
+| *instance*\_package      | The package name a WebSphere instance was installed from.
+| websphere\_profiles      | A comma-separated list of profiles discovered on a system across instances.
+| websphere\_*profile*\_*cell*\_*node*\_soap | The SOAP port for an instance. This is particularly relevant on the DMGR, so that App servers can federate with it.
+
+#### Examples
+
+Assuming we've installed a WebSphere instance called "WebSphere85" to a custom
+location:
+
+```
+websphere85_group => webadmins
+websphere85_name => WebSphere85
+websphere85_package => com.ibm.websphere.NDTRIAL.v85
+websphere85_profile_base => /opt/myorg/IBM/WebSphere85/AppServer/profiles
+websphere85_target => /opt/myorg/IBM/WebSphere85/AppServer
+websphere85_user => webadmin
+websphere85_version => 8.5.5004.20141119_1746
+websphere_base_dir => /opt/myorg/IBM
+websphere_profile_dmgr_01_cell_01_appnode01_soap => 8878
+websphere_profile_dmgr_01_cell_01_node_dmgr_01_soap => 8879
+websphere_profiles => PROFILE_DMGR_01
+```
+
+### More Information
+
+See [REFERENCE.md](https://github.com/puppetlabs/puppetlabs-websphere_application_server/blob/master/REFERENCE.md) for all other reference documentation.
 
 ## Limitations
 
@@ -498,13 +528,7 @@ Tested and developed with IBM WebSphere **8.5.0.x** and **8.5.5.x**.
 
 For an extensive list of supported operating systems, see [metadata.json](https://github.com/puppetlabs/puppetlabs-websphere_application_server/blob/master/metadata.json)
 
-## Dependencies
-
-* [puppetlabs/ibm_installation_manager](https://github.com/puppetlabs/puppetlabs-ibm_installation_manager)
-* [puppetlabs/stdlib](https://forge.puppetlabs.com/puppetlabs/stdlib)
-* [puppetlabs/concat](https://forge.puppetlabs.com/puppetlabs/concat)
-
-## Development and Contributing
+## Development
 
 WebSphere is a large software stack, and this module manages only some of its core functions. See [CONTRIBUTING.md](CONTRIBUTING.md) for information on contributing.
 
