@@ -1,5 +1,4 @@
 require 'spec_helper_acceptance'
-require 'installer_constants'
 
 describe 'Verify the minimum install' do
   context 'as root user' do
