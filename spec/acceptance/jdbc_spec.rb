@@ -1,5 +1,4 @@
 require 'spec_helper_acceptance'
-require 'installer_constants'
 
 describe 'jdbc layer is setup and working' do
   before(:all) do

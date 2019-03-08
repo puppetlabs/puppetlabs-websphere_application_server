@@ -11,9 +11,7 @@
     inherit_from: .rubocop_todo.yml
 
 .travis.yml:
-  docker_sets:
-    - set: docker/centos-7
-    - set: docker/ubuntu-14.04
+  docker_sets: []
   docker_defaults:
     bundler_args: ""
   secure: ""
@@ -35,8 +33,6 @@ Gemfile:
           - x64_mingw
   optional:
     ':development':
-      - gem: 'rototiller'
-        version: '0.1.0'
       - gem: 'github_changelog_generator'
         git: 'https://github.com/skywinder/github-changelog-generator'
         ref: '20ee04ba1234e9e83eb2ffb5056e23d641c7a018'

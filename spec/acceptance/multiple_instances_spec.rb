@@ -1,5 +1,4 @@
 require 'spec_helper_acceptance'
-require 'installer_constants'
 
 describe 'install multiple instances' do
   before(:all) do
