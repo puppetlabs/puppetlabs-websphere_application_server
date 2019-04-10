@@ -36,11 +36,13 @@ To get started, declare the base class on any server that will use this module: 
 
 #### As root user (default)
 
+Please make sure the selected user has root permissions
+
 ```puppet
 class { 'websphere_application_server':
   user     => 'webadmin',
   group    => 'webadmins',
-  base_dir => '/opt/IBM',
+  user_home => '/opt/IBM',
 }
 ```
 
@@ -52,10 +54,19 @@ The primary difference here being the `base_dir`. Set this to a dir your user ha
 class { 'websphere_application_server':
   user     => 'webadmin',
   group    => 'webadmins',
-  base_dir => '/home/webadmin/IBM',
+  user_home => '/home/webadmin',
 }
 ```
+or you can also use this structure to install websphere_application_server
 
+```puppet
+class { 'websphere_application_server':
+  user     => 'webadmin',
+  group    => 'webadmins',
+  manage_user  => false,
+  manage_group => false,
+}
+```
 ## Usage
 
 ### Creating a websphere_application_server instance
