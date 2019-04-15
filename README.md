@@ -42,7 +42,7 @@ Please make sure the selected user has root permissions
 class { 'websphere_application_server':
   user     => 'webadmin',
   group    => 'webadmins',
-  user_home => '/opt/IBM',
+  base_dir => '/opt/IBM',
 }
 ```
 
@@ -55,6 +55,7 @@ class { 'websphere_application_server':
   user     => 'webadmin',
   group    => 'webadmins',
   user_home => '/home/webadmin',
+  base_dir => '/home/webadmin/IBM',
 }
 ```
 or you can also use this structure to install websphere_application_server
