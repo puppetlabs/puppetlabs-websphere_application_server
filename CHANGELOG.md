@@ -2,13 +2,21 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
-## [1.4.2](https://github.com/puppetlabs/puppetlabs-websphere_application_server/tree/1.4.2) (2019-02-11)
+## [v2.0.0](https://github.com/puppetlabs/puppetlabs-websphere_application_server/tree/v2.0.0) (2019-05-13)
 
-[Full Changelog](https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/1.4.1...1.4.2)
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/1.4.2...v2.0.0)
+
+### Changed
+
+- pdksync - \(MODULES-8444\) - Raise lower Puppet bound [\#165](https://github.com/puppetlabs/puppetlabs-websphere_application_server/pull/165) ([david22swan](https://github.com/david22swan))
 
 ### Fixed
 
-- \(FM-7731\) Change internal resource location to Platform 9 [\#153](https://github.com/puppetlabs/puppetlabs-websphere_application_server/pull/153) ([eimlav](https://github.com/eimlav))
+- Modules 7472 - Websphere\_application\_server: Instance installation fails with nil conversion [\#162](https://github.com/puppetlabs/puppetlabs-websphere_application_server/pull/162) ([lionce](https://github.com/lionce))
+
+## [1.4.2](https://github.com/puppetlabs/puppetlabs-websphere_application_server/tree/1.4.2) (2019-02-12)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-websphere_application_server/compare/1.4.1...1.4.2)
 
 ## [1.4.1](https://github.com/puppetlabs/puppetlabs-websphere_application_server/tree/1.4.1) (2019-01-30)
 
