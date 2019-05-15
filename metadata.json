@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-websphere_application_server",
-  "version": "1.4.2",
+  "version": "2.0.0",
   "author": "puppetlabs",
   "summary": "Manages IBM WebSphere Application Server",
   "license": "proprietary",
