@@ -15,6 +15,8 @@
 #
 # @param instance_base
 #   Required. The full path to the installation of WebSphere that this profile should be created under. The IBM default is '/opt/IBM/WebSphere/AppServer'.
+# @param instance_is_nd
+#   The type of instance installation (BASE or ND). Defaults to ND.
 # @param profile_base
 #   Required. The full path to the base directory of profiles. The IBM default is '/opt/IBM/WebSphere/AppServer/profiles'.
 # @param cell
@@ -53,6 +55,7 @@ define websphere_application_server::profile::appserver (
   $profile_base,
   $cell,
   $node_name,
+  $instance_is_nd    = true,
   $profile_name      = $title,
   $user              = $::websphere_application_server::user,
   $group             = $::websphere_application_server::group,
@@ -76,7 +79,7 @@ define websphere_application_server::profile::appserver (
   validate_string($user)
   validate_string($group)
   validate_string($dmgr_host)
-  validate_string($dmgr_host)
+  validate_bool($instance_is_nd)
   validate_bool($manage_federation)
   validate_bool($manage_service)
   validate_bool($manage_sdk)
@@ -127,27 +130,30 @@ define websphere_application_server::profile::appserver (
     require => Exec["was_profile_app_${title}"],
   }
 
-  $_dmgr_host = downcase($dmgr_host)
   $_cell = downcase($cell)
 
-  ## Collect the federation resource
-  File <<| title == "/etc/dmgr_${_dmgr_host}_${_cell}" |>> {
-    path   => "${profile_base}/${profile_name}/dmgr_${_dmgr_host}_${_cell}.yaml",
-    before => Websphere_federate["${title}_${dmgr_host}_${cell}"],
-  }
+  if $instance_is_nd {
+    $_dmgr_host = downcase($dmgr_host)
 
-  if $manage_federation {
-    websphere_federate { "${title}_${dmgr_host}_${cell}":
-      ensure       => present,
-      node_name    => $node_name,
-      cell         => $cell,
-      profile_base => $profile_base,
-      profile      => $profile_name,
-      dmgr_host    => $dmgr_host,
-      user         => $user,
-      username     => $wsadmin_user,
-      password     => $wsadmin_pass,
-      before       => Websphere_application_server::Profile::Service[$title],
+    ## Collect the federation resource
+    File <<| title == "/etc/dmgr_${_dmgr_host}_${_cell}" |>> {
+      path   => "${profile_base}/${profile_name}/dmgr_${_dmgr_host}_${_cell}.yaml",
+      before => Websphere_federate["${title}_${dmgr_host}_${cell}"],
+    }
+
+    if $manage_federation {
+      websphere_federate { "${title}_${dmgr_host}_${cell}":
+        ensure       => present,
+        node_name    => $node_name,
+        cell         => $cell,
+        profile_base => $profile_base,
+        profile      => $profile_name,
+        dmgr_host    => $dmgr_host,
+        user         => $user,
+        username     => $wsadmin_user,
+        password     => $wsadmin_pass,
+        before       => Websphere_application_server::Profile::Service[$title],
+      }
     }
 
     ## Modifying SDK requires federation
@@ -171,8 +177,15 @@ define websphere_application_server::profile::appserver (
   }
 
   if $manage_service {
+
+    if $instance_is_nd {
+      $_type = 'app'
+    } else {
+      $_type = 'adminagent'
+    }
+
     websphere_application_server::profile::service { $title:
-      type         => 'app',
+      type         => $_type,
       profile_base => $profile_base,
       user         => $user,
       wsadmin_user => $wsadmin_user,
