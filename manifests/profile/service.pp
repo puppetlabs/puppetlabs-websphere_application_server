@@ -90,13 +90,17 @@ define websphere_application_server::profile::service (
   }
 
   if ! $status {
-    if $type == 'dmgr' {
-      $_status = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/serverStatus.sh dmgr ${_auth_string} -profileName ${profile_name} | grep -q STARTED'"
-    } else {
-      $_status = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/serverStatus.sh nodeagent -profileName ${profile_name} ${_auth_string}| grep -q STARTED'"
+    case $type {
+      'dmgr': {
+        $_status = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/serverStatus.sh dmgr ${_auth_string} -profileName ${profile_name} | grep -q STARTED'"
+      }
+      'adminagent': {
+        $_status = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/serverStatus.sh adminagent| grep -q STARTED'"
+      }
+      default: {
+        $_status = "/bin/su - ${user} -c '${profile_base}/${profile_name}/bin/serverStatus.sh nodeagent -profileName ${profile_name} ${_auth_string}| grep -q STARTED'"
+      }
     }
-  } else {
-    $_status = $status
   }
 
   if ! $start {
