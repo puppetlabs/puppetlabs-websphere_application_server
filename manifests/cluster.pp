@@ -29,16 +29,16 @@
 #   The resolvable hostname for the DMGR that this cluster exists on. This is needed for collecting cluster members. Defaults to `$::fqdn`.
 #
 define websphere_application_server::cluster (
-  $dmgr_profile,
-  $profile_base,
-  $cell,
-  $ensure           = 'present',
-  $user             = $::websphere_application_server::user,
-  $cluster          = $title,
-  $collect_members  = true,
-  $wsadmin_user     = undef,
-  $wsadmin_pass     = undef,
-  $dmgr_host        = $::fqdn,
+  String $dmgr_profile,
+  Stdlib::AbsolutePath $profile_base,
+  String $cell,
+  Enum[present, absent] $ensure       = 'present',
+  String $user                        = $::websphere_application_server::user,
+  String $cluster                     = $title,
+  Boolean $collect_members            = true,
+  Optional[String] $wsadmin_user      = undef,
+  Optional[String] $wsadmin_pass      = undef,
+  Stdlib::Fqdn     $dmgr_host         = $::fqdn,
 ) {
 
   websphere_cluster { $cluster:

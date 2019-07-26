@@ -57,31 +57,18 @@
 #   Optional. The password for `wsadmin` authentication if security is enabled.
 #
 define websphere_application_server::profile::service (
-  $type,
-  $profile_base,
-  $profile_name = $title,
-  $user         = 'root',
-  $ensure       = 'running',
-  $start        = undef,
-  $stop         = undef,
-  $status       = undef,
-  $restart      = undef,
-  $wsadmin_user = undef,
-  $wsadmin_pass = undef,
+  Enum['dmgr', 'app', 'appserver', 'node'] $type,
+  Stdlib::AbsolutePath $profile_base,
+  String $profile_name = $title,
+  String $user         = 'root',
+  Enum[running, stopped] $ensure       = 'running',
+  Optional[String] $start              = undef,
+  Optional[String] $stop               = undef,
+  Optional[String] $status             = undef,
+  Optional[String] $restart            = undef,
+  Optional[String] $wsadmin_user       = undef,
+  Optional[String] $wsadmin_pass       = undef,
 ) {
-
-  ## Really, we can create more profile types than this, but this is all we
-  ## support right now.
-  validate_re($type, '(dmgr|app|appserver|node)')
-  validate_absolute_path($profile_base)
-  validate_string($profile_name)
-  validate_string($user)
-  validate_re($ensure, '(running|stopped)')
-
-  if $start   { validate_string($start) }
-  if $stop    { validate_string($stop) }
-  if $status  { validate_string($status) }
-  if $restart { validate_string($restart) }
 
   if $wsadmin_user and $wsadmin_pass {
     $_auth_string = "-username \"${wsadmin_user}\" -password \"${wsadmin_pass}\" "

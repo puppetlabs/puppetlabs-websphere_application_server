@@ -113,49 +113,50 @@
 #   This is required if you're exporting the server for a DMGR to collect. The DMGR host to add this server to.
 #
 define websphere_application_server::ihs::server (
-  $target,
-  $status                  = 'running',
-  $httpd_config            = undef,
-  $user                    = $::websphere_application_server::user,
-  $group                   = $::websphere_application_server::group,
-  $docroot                 = undef,
-  $instance                = $title,
-  $httpd_config_template   = "${module_name}/ihs/httpd.conf.erb",
-  $timeout                 = '300',
-  $max_keep_alive_requests = '100',
-  $keep_alive              = 'On',
-  $keep_alive_timeout      = '10',
-  $thread_limit            = '25',
-  $server_limit            = '64',
-  $start_servers           = '1',
-  $max_clients             = '600',
-  $min_spare_threads       = '25',
-  $max_spare_threads       = '75',
-  $threads_per_child       = '25',
-  $max_requests_per_child  = '25',
-  $limit_request_field_size = '12392',
-  $listen_address          = $::fqdn,
-  $listen_port             = '10080',
-  $server_admin_email      = 'user@example.com',
-  $server_name             = $::fqdn,
-  $server_listen_port      = '80',
-  $pid_file                = "${title}.pid",
-  $replace_config          = true,
-  $directory_index         = 'index.html index.html.var',
-  $log_dir                 = undef,
-  $access_log              = 'access_log',
-  $error_log               = 'error_log',
-  $export_node             = true,
-  $export_server           = true,
-  $node_name               = $::fqdn,
-  $node_hostname           = $::fqdn,
-  $node_os                 = undef,
-  $cell                    = undef,
-  $admin_username          = 'httpadmin',
-  $admin_password          = 'password',
-  $plugin_base             = '/opt/IBM/Plugins',
-  $propagate_keyring       = true,
-  $dmgr_host               = undef,
+  String $target,
+  Enum['running', 'stopped'] $status               = 'running',
+  Stdlib::AbsolutePath $httpd_config               = "${target}/conf/httpd_${title}.conf",
+  String $user                                     = $::websphere_application_server::user,
+  String $group                                    = $::websphere_application_server::group,
+  Stdlib::AbsolutePath $docroot                    = "${target}/htdocs",
+  String $instance                                 = $title,
+  String $httpd_config_template                    = "${module_name}/ihs/httpd.conf.erb",
+  Stdlib::Compat::Integer $timeout                 = 300,
+  Stdlib::Compat::Integer $max_keep_alive_requests = 100,
+  Enum['On', 'Off'] $keep_alive                    = 'On',
+  Stdlib::Compat::Integer $keep_alive_timeout      = 10,
+  Stdlib::Compat::Integer $thread_limit            = 25,
+  Stdlib::Compat::Integer $server_limit            = 64,
+  Stdlib::Compat::Integer $start_servers           = 1,
+  Stdlib::Compat::Integer $max_clients             = 600,
+  Stdlib::Compat::Integer $min_spare_threads       = 25,
+  Stdlib::Compat::Integer $max_spare_threads       = 75,
+  Stdlib::Compat::Integer $threads_per_child       = 25,
+  Stdlib::Compat::Integer $max_requests_per_child  = 25,
+  Stdlib::Compat::Integer $limit_request_field_size = 12392,
+  Stdlib::Fqdn $listen_address      = $::fqdn,
+  Stdlib::Port $listen_port         = 10080,
+  String $server_admin_email        = 'user@example.com',
+  Stdlib::Fqdn $server_name         = $::fqdn,
+  Stdlib::Port $server_listen_port  = 80,
+  String $pid_file                  = "${title}.pid",
+  Boolean $replace_config           = true,
+  String $directory_index           = 'index.html index.html.var',
+  Stdlib::AbsolutePath $log_dir     = "${target}/logs",
+  String $access_log                = 'access_log',
+  String $error_log                 = 'error_log',
+  Boolean $export_node              = true,
+  Boolean $export_server            = true,
+  Stdlib::Fqdn $node_name           = $::fqdn,
+  Stdlib::Fqdn $node_hostname       = $::fqdn,
+  Optional[Enum['aix', 'linux']] $node_os  = undef,
+  Optional[String] $cell                   = undef,
+  String $admin_username                   = 'httpadmin',
+  String $admin_password                   = 'password',
+  Stdlib::AbsolutePath $plugin_base        = '/opt/IBM/Plugins',
+  Boolean $propagate_keyring               = true,
+  Optional[Stdlib::Fqdn] $dmgr_host        = undef,
+
 ) {
 
   Exec {
@@ -167,27 +168,9 @@ define websphere_application_server::ihs::server (
     group  => $group,
   }
 
-  if !$docroot {
-    $_docroot = "${target}/htdocs"
-  } else {
-    $_docroot = $docroot
-  }
-
-  if !$httpd_config {
-    $_httpd_config = "${target}/conf/httpd_${title}.conf"
-  } else {
-    $_httpd_config = $httpd_config
-  }
-
-  if !$log_dir {
-    $_log_dir = "${target}/logs"
-  } else {
-    $_log_dir = $log_dir
-  }
-
-  file { "${title} ${_docroot}":
+  file { "${title} ${docroot}":
     ensure => 'directory',
-    path   => $_docroot,
+    path   => $docroot,
   }
 
   file { "${plugin_base}/config/${instance}":
@@ -197,18 +180,18 @@ define websphere_application_server::ihs::server (
   ## Use exec to create the log_dir.  It might be several levels deep.  In that
   ## case, a regular 'file' resource would be tricky.
   exec { "${title}_log_dir":
-    command => "mkdir -p ${_log_dir}",
-    creates => $_log_dir,
+    command => "mkdir -p ${log_dir}",
+    creates => $log_dir,
   }
 
   file_line { 'Adding user':
-    path  => $_httpd_config,
+    path  => $httpd_config,
     line  => "User ${user}",
     match => '^User $',
   }
 
   file_line { 'Adding group':
-    path  => $_httpd_config,
+    path  => $httpd_config,
     line  => "Group ${group}",
     match => '^Group $',
   }
@@ -232,7 +215,7 @@ define websphere_application_server::ihs::server (
 
   file { "${title}_httpd_config":
     ensure  => 'file',
-    path    => $_httpd_config,
+    path    => $httpd_config,
     content => template($httpd_config_template),
     replace => $replace_config,
   }
@@ -250,27 +233,18 @@ define websphere_application_server::ihs::server (
   }
 
   service { "${title}_httpd":
-    ensure    => $status,
-    start     => "su - ${user} -c \"${target}/bin/apachectl -d ${target} -k start -f '${_httpd_config}'\"",
-    stop      => "su - ${user} -c \"${target}/bin/apachectl -d ${target} -k stop -f '${_httpd_config}'\"",
-    restart   => "su - ${user} -c \"${target}/bin/apachectl -d ${target} -k restart -f '${_httpd_config}'\"",
+    ensure    => 'running',
+    start     => "su - ${user} -c \"${target}/bin/apachectl -k start -f '${httpd_config}'\"",
+    stop      => "su - ${user} -c \"${target}/bin/apachectl -k stop -f '${httpd_config}'\"",
+    restart   => "su - ${user} -c \"${target}/bin/apachectl -k restart -f '${httpd_config}'\"",
     hasstatus => false,
-    pattern   => "${target}/bin/httpd.*-f ${_httpd_config}",
+    pattern   => "${target}/bin/httpd.*-f ${httpd_config}",
     provider  => 'base',
     subscribe => File["${title}_httpd_config"],
   }
 
   # Exporting for a DMGR to collect.
   if $export_node {
-
-    if $node_os {
-      $_node_os = $node_os
-    } else {
-      $_node_os = downcase($::kernel)
-    }
-
-    validate_re($_node_os, '(aix|linux)', "Invalid node_os: #{_node_os}. Must be 'aix' or 'linux'")
-
     if !$cell {
       fail('cell is required when export_node is true')
     }
@@ -283,12 +257,10 @@ define websphere_application_server::ihs::server (
       fail('dmgr_host is required when export_node is true')
     }
 
-    validate_bool($propagate_keyring)
-
     @@websphere_node { "ihs_${title}_${node_hostname}":
       ensure    => present,
       node_name => $node_name,
-      os        => $_node_os,
+      os        => $node_os,
       hostname  => $node_hostname,
       cell      => $cell,
       dmgr_host => $dmgr_host,
@@ -304,7 +276,7 @@ define websphere_application_server::ihs::server (
         admin_pass        => $admin_password,
         plugin_base       => $plugin_base,
         install_root      => $target,
-        config_file       => $_httpd_config,
+        config_file       => $httpd_config,
         access_log        => $access_log,
         error_log         => $error_log,
         web_port          => $listen_port,

@@ -83,77 +83,45 @@
 #   The DMGR host to add this cluster member to.  This is required if you're exporting the cluster member for a DMGR to collect. Otherwise, it's optional.
 #
 define websphere_application_server::cluster::member (
-  $profile_base,
-  $cluster,
-  $node_name,
-  $cell,
-  $dmgr_profile,
-  $cluster_member_name              = $title,
-  $ensure                           = 'present',
-  $user                             = $::websphere_application_server::user,
-  $runas_user                       = $::websphere_application_server::user,
-  $runas_group                      = $::websphere_application_server::group,
-  $client_inactivity_timeout        = undef,
-  $gen_unique_ports                 = undef,
-  $jvm_maximum_heap_size            = undef,
-  $jvm_verbose_mode_class           = undef,
-  $jvm_verbose_garbage_collection   = undef,
-  $jvm_verbose_mode_jni             = undef,
-  $jvm_initial_heap_size            = undef,
-  $jvm_run_hprof                    = undef,
-  $jvm_hprof_arguments              = undef,
-  $jvm_debug_mode                   = undef,
-  $jvm_debug_args                   = undef,
-  $jvm_executable_jar_filename      = undef,
-  $jvm_generic_jvm_arguments        = undef,
-  $jvm_disable_jit                  = undef,
-  $replicator_entry                 = undef,
-  $total_transaction_timeout        = undef,
-  $threadpool_webcontainer_min_size = undef,
-  $threadpool_webcontainer_max_size = undef,
-  $umask                            = undef,
-  $wsadmin_user                     = undef,
-  $wsadmin_pass                     = undef,
-  $weight                           = undef,
-  $manage_service                   = true,
-  $dmgr_host                        = undef,
+  Stdlib::AbsolutePath $profile_base,
+  String $cluster,
+  String $node_name,
+  String $cell,
+  String $dmgr_profile,
+  String $cluster_member_name                        = $title,
+  Enum[present, absent] $ensure                      = 'present',
+  String $user                                       = $::websphere_application_server::user,
+  String $runas_user                                 = $::websphere_application_server::user,
+  String $runas_group                                = $::websphere_application_server::group,
+  Optional[String] $client_inactivity_timeout        = undef,
+  Optional[Boolean] $gen_unique_ports                = undef,
+  Optional[String] $jvm_maximum_heap_size            = undef,
+  Optional[Boolean] $jvm_verbose_mode_class          = undef,
+  Optional[Boolean] $jvm_verbose_garbage_collection  = undef,
+  Optional[Boolean] $jvm_verbose_mode_jni            = undef,
+  Optional[String] $jvm_initial_heap_size            = undef,
+  Optional[Boolean] $jvm_run_hprof                   = undef,
+  Optional[String] $jvm_hprof_arguments              = undef,
+  Optional[Boolean] $jvm_debug_mode                  = undef,
+  Optional[String] $jvm_debug_args                   = undef,
+  Optional[String] $jvm_executable_jar_filename      = undef,
+  Optional[String] $jvm_generic_jvm_arguments        = undef,
+  Optional[String] $jvm_disable_jit                  = undef,
+  Optional[String] $replicator_entry                 = undef,
+  Optional[String] $total_transaction_timeout        = undef,
+  Optional[String] $threadpool_webcontainer_min_size = undef,
+  Optional[String] $threadpool_webcontainer_max_size = undef,
+  Optional[String] $umask                            = undef,
+  Optional[String] $wsadmin_user                     = undef,
+  Optional[String] $wsadmin_pass                     = undef,
+  Optional[String] $weight                           = undef,
+  Boolean $manage_service                            = true,
+  Optional[Stdlib::Fqdn] $dmgr_host                  = undef,
 ) {
 
   if !$dmgr_profile or !$cluster {
     fail('dmgr_profile and cluster is required')
   }
-
-  validate_string($dmgr_profile)
-  validate_absolute_path($profile_base)
-  validate_string($cluster)
-  validate_string($node_name)
-  validate_string($cell)
-  validate_string($user)
-
-  if $runas_user                       { validate_string($runas_user) }
-  if $runas_group                      { validate_string($runas_group) }
-  if $client_inactivity_timeout        { validate_string($client_inactivity_timeout) }
-  if $gen_unique_ports                 { validate_bool($gen_unique_ports) }
-  if $jvm_maximum_heap_size            { validate_string($jvm_maximum_heap_size) }
-  if $jvm_verbose_mode_class           { validate_bool($jvm_verbose_mode_class) }
-  if $jvm_verbose_garbage_collection   { validate_bool($jvm_verbose_garbage_collection) }
-  if $jvm_verbose_mode_jni             { validate_bool($jvm_verbose_mode_jni) }
-  if $jvm_initial_heap_size            { validate_string($jvm_initial_heap_size) }
-  if $jvm_run_hprof                    { validate_bool($jvm_run_hprof) }
-  if $jvm_hprof_arguments              { validate_string($jvm_hprof_arguments) }
-  if $jvm_debug_mode                   { validate_bool($jvm_debug_mode) }
-  if $jvm_debug_args                   { validate_string($jvm_debug_args) }
-  if $jvm_executable_jar_filename      { validate_string($jvm_executable_jar_filename) }
-  if $jvm_generic_jvm_arguments        { validate_string($jvm_generic_jvm_arguments) }
-  if $jvm_disable_jit                  { validate_string($jvm_disable_jit) }
-  if $replicator_entry                 { validate_string($replicator_entry) }
-  if $total_transaction_timeout        { validate_string($total_transaction_timeout) }
-  if $threadpool_webcontainer_min_size { validate_string($threadpool_webcontainer_min_size) }
-  if $threadpool_webcontainer_max_size { validate_string($threadpool_webcontainer_max_size) }
-  if $umask                            { validate_string($umask) }
-  if $wsadmin_user                     { validate_string($wsadmin_user) }
-  if $wsadmin_pass                     { validate_string($wsadmin_pass) }
-  if $weight                           { validate_string($weight) }
 
   websphere_cluster_member { $cluster_member_name:
     ensure                           => $ensure,
@@ -192,11 +160,7 @@ define websphere_application_server::cluster::member (
   }
 
   if $manage_service {
-    if $ensure == 'present' {
-      $_service_ensure = 'running'
-    } else {
-      $_service_ensure = 'stopped'
-    }
+    $_service_ensure = $ensure ? { present => 'running', default => 'stopped' }
 
     websphere_cluster_member_service { $cluster_member_name:
       ensure       => $_service_ensure,

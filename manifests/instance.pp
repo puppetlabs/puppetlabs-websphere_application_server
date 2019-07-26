@@ -58,85 +58,36 @@
 # @param user_home
 #   Specifies the home directory for the `user`. This is only relevant if you're managing the user _with this instance_ (that is, not via the base class). So if `manage_user` is `true`, this is relevant. Defaults to `$target`
 define websphere_application_server::instance (
-  $base_dir                  = undef,
-  $target                    = undef,
-  $package                   = undef,
-  $version                   = undef,
-  $repository                = undef,
-  $response_file             = undef,
-  $install_options           = undef,
-  $imcl_path                 = undef,
-  $profile_base              = undef,
-  $jdk_package_name          = undef,
-  $jdk_package_version       = undef,
-  $manage_user               = false,
-  $manage_group              = false,
-  $user                      = $::websphere_application_server::user,
-  $group                     = $::websphere_application_server::group,
-  $user_home                 = undef,
+  Optional[Stdlib::AbsolutePath] $base_dir      = undef,
+  Stdlib::AbsolutePath $target                  = "${pick($base_dir, $::websphere_application_server::base_dir)}/${title}/AppServer",
+  Optional[Stdlib::Fqdn] $package               = undef,
+  Optional[String] $version                     = undef,
+  Optional[Stdlib::AbsolutePath] $repository    = undef,
+  Optional[String] $response_file               = undef,
+  Optional[String] $install_options             = undef,
+  Optional[String] $jdk_package_name            = undef,
+  Optional[String] $jdk_package_version         = undef,
+  Optional[Stdlib::AbsolutePath] $imcl_path     = undef,
+  Optional[Stdlib::AbsolutePath] $profile_base  = "${target}/profiles",
+  Boolean $manage_user                          = false,
+  Boolean $manage_group                         = false,
+  String $user                                  = $::websphere_application_server::user,
+  String $group                                 = $::websphere_application_server::group,
+  Optional[Stdlib::AbsolutePath] $user_home     = $target,
 ) {
 
   if $version =~ /^9.*/ and !$jdk_package_name {
     fail('When installing WebSphere AppServer 9, you must specify a JDK')
   }
-
-  if $target and $base_dir {
-    fail('Only one of $target and $base_dir can be specified')
-  }
-
-  validate_bool($manage_user, $manage_group)
-
-  # The target is where WebSphere will get installed. If it isn't set,
-  # we default it to the base_dir from the base class/title/AppServer.  This
-  # is pretty much IBM's default.
-  if $target {
-    $_target = $target
-  } else {
-    if $base_dir {
-      $_base_dir = $base_dir
-    } else {
-      $_base_dir = $::websphere_application_server::base_dir
-    }
-    $_target = "${_base_dir}/${title}/AppServer"
-  }
-
-  validate_absolute_path($_target)
-
-  # A reasonable default user home if we're managing it for this instance.
-  if $user_home {
-    $_user_home = $user_home
-  } else {
-    $_user_home = $_target
-  }
-
-  # This is the IBM default. E.g. /opt/IBM/WebSphere/AppServer/profiles
-  # Yes - right in the installation path.
-  if $profile_base {
-    $_profile_base = $profile_base
-  } else {
-    $_profile_base = "${_target}/profiles"
-  }
-
   # If no response file is provided, we need a package version, name,
   # repository, and target.  Otherwise, a response file can potentially include
   # those values.
-  if $response_file {
-    validate_absolute_path($response_file)
-  } else {
+  unless $response_file {
     if !$package or !$version or !$repository or !$target {
-      fail('package_name, package_version, target and repository are required
-      when a response file is not provided.')
-    }
-
-    validate_absolute_path($repository)
-
-    # The imcl path is optional.  We do our best to autodiscover it, but
-    # this can be used if all else fails (or if preferences vary).
-    if $imcl_path {
-      validate_absolute_path($imcl_path)
+    fail('package_name, package_version, target and repository are required
+        when a response file is not provided.')
     }
   }
-
 
   # We want a sanitized instance name derived from the title that we can use
   # in various places that need only alpha-numeric.
@@ -149,7 +100,7 @@ define websphere_application_server::instance (
   if $manage_user {
     user { $user:
       ensure => 'present',
-      home   => $_user_home,
+      home   => $user_home,
       gid    => $group,
     }
   }
@@ -163,7 +114,7 @@ define websphere_application_server::instance (
     ensure              => 'present',
     package             => $package,
     version             => $version,
-    target              => $_target,
+    target              => $target,
     response            => $response_file,
     options             => $install_options,
     repository          => $repository,
@@ -176,7 +127,7 @@ define websphere_application_server::instance (
     user                => $user,
   }
 
-  file { $_profile_base:
+  file { $profile_base:
     ensure  => 'directory',
     owner   => $user,
     group   => $group,

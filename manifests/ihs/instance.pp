@@ -96,28 +96,28 @@
 #   The administrator password that a WebSphere Console can use for authentication to query and manage this IHS instance.
 #
 define websphere_application_server::ihs::instance (
-  $base_dir                  = $::websphere_application_server::base_dir,
-  $target                    = undef,
-  $package                   = undef,
-  $version                   = undef,
-  $repository                = undef,
-  $response_file             = undef,
-  $install_options           = undef,
-  $imcl_path                 = undef,
-  $manage_user               = true,
-  $manage_group              = true,
-  $user                      = $::websphere_application_server::user,
-  $group                     = $::websphere_application_server::group,
-  $user_home                 = $::websphere_application_server::user_home,
-  $log_dir                   = undef,
-  $webroot                   = undef,
-  $admin_listen_port         = '8008',
-  $adminconf_template        = undef,
-  $replace_config            = true,
-  $server_name               = $::fqdn,
-  $manage_htpasswd           = true,
-  $admin_username            = 'httpadmin',
-  $admin_password            = 'password',
+  Stdlib::AbsolutePath $base_dir            = $::websphere_application_server::base_dir,
+  Stdlib::AbsolutePath $target              = "${base_dir}/${title}",
+  Optional[Stdlib::Fqdn] $package           = undef,
+  Optional[String] $version                 = undef,
+  Stdlib::AbsolutePath $repository          = undef,
+  Optional[String] $response_file           = undef,
+  Optional[String] $install_options         = undef,
+  Optional[Stdlib::AbsolutePath] $imcl_path = undef,
+  Boolean $manage_user                      = true,
+  Boolean $manage_group                     = true,
+  String $user                              = $::websphere_application_server::user,
+  String $group                             = $::websphere_application_server::group,
+  Stdlib::AbsolutePath $user_home           = $::websphere_application_server::user_home,
+  Stdlib::AbsolutePath $log_dir             = "${target}/logs",
+  Stdlib::AbsolutePath $webroot             = '/opt/web',
+  Stdlib::Port $admin_listen_port           = 8008,
+  String $adminconf_template                = "${module_name}/ihs/admin.conf.erb",
+  Boolean $replace_config                   = true,
+  Stdlib::Fqdn $server_name                 = $::fqdn,
+  Boolean $manage_htpasswd                  = true,
+  String $admin_username                    = 'httpadmin',
+  String $admin_password                    = 'password',
 ) {
 
   File {
@@ -125,36 +125,8 @@ define websphere_application_server::ihs::instance (
     group => $group,
   }
 
-  if ! $target {
-    $_target = "${base_dir}/${title}"
-  } else {
-    $_target = $target
-  }
-  validate_absolute_path($_target)
-
-  if ! $log_dir {
-    $_log_dir = "${_target}/logs"
-  } else {
-    $_log_dir = $log_dir
-  }
-  validate_absolute_path($_log_dir)
-
-  if ! $webroot {
-    $_webroot = '/opt/web'
-  } else {
-    $_webroot = $webroot
-  }
-  validate_absolute_path($_webroot)
-
-  if ! $adminconf_template {
-    $_adminconf_template = "${module_name}/ihs/admin.conf.erb"
-  } else {
-    $_adminconf_template = $adminconf_template
-  }
-
   # Ensure any non-admin user and group we'll use are present.
   # IBM's "expected layout" wants this user's home to be where IM is installed.
-  validate_bool($manage_user)
   if $manage_user {
     user { $user:
       ensure => 'present',
@@ -162,7 +134,7 @@ define websphere_application_server::ihs::instance (
       gid    => $group,
     }
   }
-  validate_bool($manage_group)
+
   if $manage_group {
     group { $group:
       ensure => 'present',
@@ -173,7 +145,7 @@ define websphere_application_server::ihs::instance (
     ensure           => 'present',
     package          => $package,
     version          => $version,
-    target           => $_target,
+    target           => $target,
     response         => $response_file,
     options          => $install_options,
     repository       => $repository,
@@ -183,12 +155,11 @@ define websphere_application_server::ihs::instance (
     package_group    => $group,
   }
 
-  file { $_webroot:
+  file { $webroot:
     ensure  => 'directory',
     require => Ibm_pkg["IHS ${title}"],
   }
-
-  file { $_log_dir:
+  file { $log_dir:
     ensure  => 'directory',
     require => Ibm_pkg["IHS ${title}"],
   }
@@ -196,8 +167,8 @@ define websphere_application_server::ihs::instance (
   ## Config file for the admin HTTP instance.
   file { "ihs_adminconf_${title}":
     ensure  => 'file',
-    path    => "${_target}/conf/admin.conf",
-    content => template($_adminconf_template),
+    path    => "${target}/conf/admin.conf",
+    content => template($adminconf_template),
     mode    => '0775',
     replace => $replace_config,
     require => Ibm_pkg["IHS ${title}"],
@@ -211,13 +182,10 @@ define websphere_application_server::ihs::instance (
   # shell script to do this using openssl.
   # It's in a template to keep the long stuff out of the DSL here. Eventually,
   # a cleaner way of doing this should be looked implemented.
-  validate_bool($manage_htpasswd)
   if $manage_htpasswd {
-    validate_string($admin_username)
-    validate_string($admin_password)
     $htpasswd_verify = template("${module_name}/ihs/htpasswd.erb")
     exec { "htpasswd for admin ${title}":
-      command => "${_target}/bin/htpasswd -b -c ${_target}/conf/admin.passwd ${admin_username} ${admin_password}",
+      command => "${target}/bin/htpasswd -b -c ${target}/conf/admin.passwd ${admin_username} ${admin_password}",
       unless  => "/bin/sh -c '${htpasswd_verify}'",
       path    => '/bin:/usr/bin:/sbin:/usr/sbin',
       user    => $user,
@@ -233,10 +201,9 @@ define websphere_application_server::ihs::instance (
   # 'base' as the provider until an upstream answer is retrieved.
   service { "ihs_admin_${title}":
     ensure    => 'running',
-    start     => "su - ${user} -c '${_target}/bin/adminctl start'",
-    stop      => "su - ${user} -c '${_target}/bin/adminctl stop'",
-    restart   => "su - ${user} -c '${_target}/bin/adminctl restart'",
-    #status   => "su - ${user} -c '${_target}/bin/adminctl status'",
+    start     => "su - ${user} -c '${target}/bin/adminctl start'",
+    stop      => "su - ${user} -c '${target}/bin/adminctl stop'",
+    restart   => "su - ${user} -c '${target}/bin/adminctl restart'",
     pattern   => "${target}/bin/httpd -f ${target}/conf/admin.conf",
     hasstatus => false,
     provider  => 'base',

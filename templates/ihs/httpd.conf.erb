@@ -16,7 +16,7 @@
 ServerRoot "<%= @target %>"
 
 # change the pid file name & keep the httpdconf name
-PidFile <%= @_log_dir %>/<%= @pid_file %>
+PidFile <%= @log_dir %>/<%= @pid_file %>
 
 Timeout <%= @timeout %>
 KeepAlive <%= @keep_alive %>
@@ -90,7 +90,7 @@ ServerAdmin <%= @server_admin_email %>
 ServerName <%= @server_name %>:<%= @server_listen_port %>
 
 UseCanonicalName Off
-DocumentRoot "<%= @_docroot %>"
+DocumentRoot "<%= @docroot %>"
 
 <Directory />
     Options FollowSymLinks
@@ -98,7 +98,7 @@ DocumentRoot "<%= @_docroot %>"
     FileETag All -INode
 </Directory>
 
-<Directory "<%= @_docroot %>">
+<Directory "<%= @docroot %>">
 
 #
     Options FollowSymLinks

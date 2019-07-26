@@ -49,45 +49,24 @@
 #   Optional. The password for `wsadmin` authentication if security is enabled.
 #
 define websphere_application_server::profile::appserver (
-  $instance_base,
-  $profile_base,
-  $cell,
-  $node_name,
-  $profile_name      = $title,
-  $user              = $::websphere_application_server::user,
-  $group             = $::websphere_application_server::group,
-  $dmgr_host         = undef,
-  $dmgr_port         = undef,
-  $template_path     = undef,
-  $options           = undef,
-  $manage_federation = true,
-  $manage_service    = true,
-  $manage_sdk        = false,
-  $sdk_name          = undef,
-  $wsadmin_user      = undef,
-  $wsadmin_pass      = undef,
+  Stdlib::AbsolutePath $instance_base,
+  Stdlib::AbsolutePath $profile_base,
+  String $cell,
+  String $node_name,
+  String $profile_name                = $title,
+  String $user                        = $::websphere_application_server::user,
+  String $group                       = $::websphere_application_server::group,
+  Optional[Stdlib::Fqdn] $dmgr_host   = undef,
+  Optional[Stdlib::Port] $dmgr_port   = undef,
+  Stdlib::AbsolutePath $template_path = "${instance_base}/profileTemplates/app",
+  Optional[String] $options           = undef,
+  Boolean $manage_federation          = true,
+  Boolean $manage_service             = true,
+  Boolean $manage_sdk                 = false,
+  Optional[String] $sdk_name          = undef,
+  Optional[String] $wsadmin_user      = undef,
+  Optional[String] $wsadmin_pass      = undef,
 ) {
-
-  validate_absolute_path($instance_base)
-  validate_absolute_path($profile_base)
-  validate_string($cell)
-  validate_string($node_name)
-  validate_string($profile_name)
-  validate_string($user)
-  validate_string($group)
-  validate_string($dmgr_host)
-  validate_string($dmgr_host)
-  validate_bool($manage_federation)
-  validate_bool($manage_service)
-  validate_bool($manage_sdk)
-
-  ## Template path. Figure out a sane default if not explicitly specified.
-  if ! $template_path {
-    $_template_path = "${instance_base}/profileTemplates/app"
-  } else {
-    $_template_path = $template_path
-  }
-  validate_absolute_path($_template_path)
 
   if $manage_sdk and !$sdk_name {
     fail('sdk_name is required when manage_sdk is true. E.g. 1.71_64')
@@ -100,7 +79,7 @@ define websphere_application_server::profile::appserver (
   ## Build our installation options if none are profided. These are mostly
   ## similar, but we do add extra to the 'app' profile type. Hackish.
   if ! $options {
-    $_options = "-create -profileName ${profile_name} -profilePath ${profile_base}/${profile_name} -templatePath ${_template_path} -nodeName ${node_name} -hostName ${::fqdn} -federateLater true -cellName standalone"
+    $_options = "-create -profileName ${profile_name} -profilePath ${profile_base}/${profile_name} -templatePath ${template_path} -nodeName ${node_name} -hostName ${::fqdn} -federateLater true -cellName standalone"
   } else {
     $_options = $options
   }

@@ -28,14 +28,11 @@
 # @see ftp://ftp.software.ibm.com/software/iea/content/com.ibm.iea.infosphere_is/infosphere_is/8.5/configuration/ConfigWebSphere.pdf
 #
 define websphere_application_server::ownership (
-  $user,
-  $group,
-  $path = $title,
-) {
+  String $user,
+  String $group,
+  Stdlib::AbsolutePath $path = $title,
 
-  validate_string($user)
-  validate_string($group)
-  validate_absolute_path($path)
+) {
 
   exec { "Ownership_${title}":
     command => "chown -R ${user}:${group} ${path}",
