@@ -8,5 +8,6 @@ fixtures:
       repo: 'git://github.com/nanliu/puppet-staging.git'
     ibm_installation_manager:
       repo: 'git://github.com/puppetlabs/puppetlabs-ibm_installation_manager.git'
+    debug: 'https://github.com/nwops/puppet-debug.git'
   symlinks:
     'websphere_application_server': "#{source_dir}"

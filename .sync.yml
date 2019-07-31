@@ -33,6 +33,9 @@ Gemfile:
           - x64_mingw
   optional:
     ':development':
+      - gem: 'puppet-lint-duplicate_class_parameters-check'
+      - gem: 'puppet-lint-param-types'
+      - gem: 'puppet-debugger'
       - gem: 'github_changelog_generator'
         git: 'https://github.com/skywinder/github-changelog-generator'
         ref: '20ee04ba1234e9e83eb2ffb5056e23d641c7a018'

@@ -5,3 +5,7 @@
 ipaddress: "172.16.254.254"
 is_pe: false
 macaddress: "AA:AA:AA:AA:AA:AA"
+id: 'root'
+concat_basedir: '/dne'
+path: '/opt/puppetlabs/bin'
+osfamily: 'debian'

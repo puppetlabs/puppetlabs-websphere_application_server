@@ -5,3 +5,8 @@ RSpec/InstanceVariable:
   Exclude:
       - spec/acceptance/*
       - spec/support/examples/*
+Metrics/LineLength:
+  Exclude:
+    - spec/defines/profile/dmgr_spec.rb
+    - spec/defines/instance_spec.rb
+    - spec/defines/profile/appserver_spec.rb
