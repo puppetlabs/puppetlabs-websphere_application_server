@@ -25,7 +25,7 @@ class profile::websphere::dmgr { # lint:ignore:autoloader_layout
   $java7_version    = '7.1.2000.20141116_0823'
 
   ## Manage an instance of WebSphere 8.5
-  websphere::instance { 'WebSphere85':
+  websphere_application_server::instance { 'WebSphere85':
     target       => $instance_base,
     package      => $package_name,
     version      => $package_version,
@@ -44,7 +44,7 @@ class profile::websphere::dmgr { # lint:ignore:autoloader_layout
     target     => $instance_base,
     user       => $user,
     group      => $group,
-    require    => Websphere::Instance['WebSphere85'],
+    require    => Websphere_application_server::Instance['WebSphere85'],
   }
 
   ## Install Java7
@@ -60,7 +60,7 @@ class profile::websphere::dmgr { # lint:ignore:autoloader_layout
   }
 
   ## Create a DMGR Profile
-  websphere::profile::dmgr { $dmgr_profile:
+  websphere_application_server::profile::dmgr { $dmgr_profile:
     instance_base => $instance_base,
     profile_base  => $profile_base,
     cell          => $dmgr_cell,
@@ -74,12 +74,12 @@ class profile::websphere::dmgr { # lint:ignore:autoloader_layout
   }
 
   ## Create a cluster
-  websphere::cluster { 'PuppetCluster01':
+  websphere_application_server::cluster { 'PuppetCluster01':
     profile_base => $profile_base,
     dmgr_profile => $dmgr_profile,
     cell         => $dmgr_cell,
     user         => $user,
-    require      => Websphere::Profile::Dmgr[$dmgr_profile],
+    require      => Websphere_application_server::Profile::Dmgr[$dmgr_profile],
   }
 
 }

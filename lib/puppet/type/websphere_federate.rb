@@ -8,9 +8,9 @@ Puppet::Type.newtype(:websphere_federate) do
   Puppet's `$vardir` containing information about the DMGR cell to federate
   with.
 
-  By default, this module's `websphere::profile::dmgr` defined type will
+  By default, this module's `websphere_application_server::profile::dmgr` defined type will
   _export_ a file resource containing this information.  The application
-  servers that have declared `websphere::profile::appserver` will _collect_
+  servers that have declared `websphere_application_server::profile::appserver` will _collect_
   that exported resource and place it under
   `${vardir}/dmgr_${dmgr_host}_${cell}.yaml` For example:
   `/var/opt/lib/pe-puppet/dmgr_dmgr.example.com_cell01.yaml`  This is all

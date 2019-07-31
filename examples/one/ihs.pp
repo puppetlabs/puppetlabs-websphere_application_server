@@ -22,7 +22,7 @@ class profile::websphere::ihs { # lint:ignore:autoloader_layout
 
 
   ## WAS IHS instance
-  websphere::ihs::instance { 'HTTPServer85':
+  websphere_application_server::ihs::instance { 'HTTPServer85':
     target          => $instance_base,
     package         => $package_name,
     version         => $package_version,
@@ -44,10 +44,10 @@ class profile::websphere::ihs { # lint:ignore:autoloader_layout
     repository => '/vagrant/ibm/plg/repository.config',
     package    => 'com.ibm.websphere.PLGILAN.v85',
     version    => '8.5.5000.20130514_1044',
-    require    => Websphere::Ihs::Instance['HTTPServer85'],
+    require    => Websphere_application_server::Ihs::Instance['HTTPServer85'],
   }
 
-  websphere::ihs::server { 'test':
+  websphere_application_server::ihs::server { 'test':
     target      => "${ibm_base_dir}/HTTPServer85",
     log_dir     => '/opt/log/websphere/httpserver',
     plugin_dir  => "${ibm_base_dir}/Plugins85/config/test",
