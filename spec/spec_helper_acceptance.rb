@@ -87,7 +87,7 @@ class BeakerAgentRunner
       # pull out the node specific block for the site.pp
       node_block = create_site_pp(master, manifest: manifest, node_def_name: agent.hostname)
       node_block = node_block.split("node #{agent.hostname}")[-1]
-      node_block = "node #{agent.hostname}#{node_block}"
+      node_block = "node '#{agent.hostname}'#{node_block}"
       site_pp << node_block
     end
     site_pp
