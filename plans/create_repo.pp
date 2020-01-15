@@ -106,7 +106,7 @@ plan websphere_application_server::create_repo (
   Optional[String[1]] $shell_remote   = '/bin/sh',
   Optional[String[1]] $openssl_local  = 'openssl',
   Optional[String[1]] $openssl_remote = 'openssl',
-  Optioanl[String[1]] $awk_remote     = 'awk',
+  Optional[String[1]] $awk_remote     = 'awk',
   Optional[String[1]] $awk_local      = 'awk',
   Optional[String[1]] $unzip_remote   = 'unzip',
   Optional[String[1]] $touch_remote   = 'touch',
@@ -123,8 +123,8 @@ plan websphere_application_server::create_repo (
   # Otherwise, you shouldn't need to modify/override these at all
   Optional[String[1]] $remote_unzipped_location = "${remote_install_dir}/disk_linux.gtk.x86_64/InstallerImage_linux.gtk.x86_64/",
   Optional[String[1]] $pu_install_command       = "${remote_unzipped_location}/installc -acceptLicense",
-  Optioanl[String[1]] $im_basedir               = '/opt/IBM/InstallationManager',
-  Optioanl[String[1]] $imutilsc                 = "${im_basedir}/eclipse/tools/imutilsc",
+  Optional[String[1]] $im_basedir               = '/opt/IBM/InstallationManager',
+  Optional[String[1]] $imutilsc                 = "${im_basedir}/eclipse/tools/imutilsc",
   Optional[String[1]] $pucl                     = '/opt/IBM/PackagingUtility/PUCL',
 
 ) {
