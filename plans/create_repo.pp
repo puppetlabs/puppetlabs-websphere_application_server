@@ -114,6 +114,11 @@ plan websphere_application_server::create_repo (
   Optional[String[1]] $echo_remote    = 'echo',
 
   ##########
+  ## remote locations for pu installer files, you can modify these, but its likely not necessary
+  Optional[String[1]] $remote_install_dir    = '/opt/ibm_pu_installer',
+  Optional[String[1]] $remote_ibm_pu_zipfile = 'ibm_pu.zip',
+
+  ##########
   # In case future versions of the IBM tools expand/install in different locations
   # Otherwise, you shouldn't need to modify/override these at all
   Optional[String[1]] $remote_unzipped_location = "${remote_install_dir}/disk_linux.gtk.x86_64/InstallerImage_linux.gtk.x86_64/",
@@ -121,11 +126,6 @@ plan websphere_application_server::create_repo (
   Optioanl[String[1]] $im_basedir               = '/opt/IBM/InstallationManager',
   Optioanl[String[1]] $imutilsc                 = "${im_basedir}/eclipse/tools/imutilsc",
   Optional[String[1]] $pucl                     = '/opt/IBM/PackagingUtility/PUCL',
-
-  ##########
-  ## remote locations for pu installer files, you can modify these, but its likely not necessary
-  Optional[String[1]] $remote_install_dir    = '/opt/ibm_pu_installer',
-  Optional[String[1]] $remote_ibm_pu_zipfile = 'ibm_pu.zip',
 
 ) {
 
