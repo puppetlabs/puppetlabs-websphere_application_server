@@ -84,7 +84,7 @@ plan websphere_application_server::create_repo (
   Optional[String[1]] $credential_file       = '/home/credential.store',
   Optional[String[1]] $master_password_file  = '~/master_password_file.txt',
   # This variable enables long listing format when listing packages and fixpacks
-  Optional[String[1]] $long_listing_format             = false,
+  Optional[Boolean]   $long_listing_format             = false,
 
   ##########
   ## Short circuit options to only run parts of the plan if desired.
