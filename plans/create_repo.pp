@@ -164,10 +164,10 @@ plan websphere_application_server::create_repo (
         out::message("MD5SUM Local: ${local_md5}")
         out::message("MD5SUM Remote: ${remote_md5}")
         if ($remote_md5 == $local_md5) {
-          out::message('MD5SUM of Remote and Local files match. Upload not required.')
+          out::message('MD5SUM of remote and local files match. Upload not required.')
         }
         else {
-          out::message('MD5SUM Missmatch or File Not Exist at remote location. Uploading file...')
+          out::message('MD5SUM mismatch or file does not exist at remote location. Uploading file...')
           upload_file($package_utility_zipfile,"${remote_install_dir}/${remote_ibm_pu_zipfile}",$targets,'_run_as' => 'root')
         }
       }
