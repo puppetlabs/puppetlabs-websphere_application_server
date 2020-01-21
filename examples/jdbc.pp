@@ -11,7 +11,7 @@ websphere_jdbc_provider { 'Puppet Test':
   providertype   => 'Oracle JDBC Driver',
   implementation => 'Connection pool data source',
   description    => 'Created by Puppet',
-  classpath      => '${ORACLE_JDBC_DRIVER_PATH}/ojdbc6.jar',
+  classpath      => "${ORACLE_JDBC_DRIVER_PATH}/ojdbc6.jar",
 }
 
 websphere_jdbc_datasource { 'Puppet Test':
