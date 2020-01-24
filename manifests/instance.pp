@@ -128,7 +128,8 @@ define websphere_application_server::instance (
       when a response file is not provided.')
     }
 
-    validate_absolute_path($repository)
+    #VK: repository is not necessary absolute path, it could be http://xxx
+    #validate_absolute_path($repository)
 
     # The imcl path is optional.  We do our best to autodiscover it, but
     # this can be used if all else fails (or if preferences vary).
