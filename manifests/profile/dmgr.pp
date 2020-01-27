@@ -139,6 +139,7 @@ define websphere_application_server::profile::dmgr (
       server              => 'all',
       sdkname             => $sdk_name,
       instance_base       => $instance_base,
+      profile_base        => $profile_base,
       new_profile_default => $sdk_name,
       command_default     => $sdk_name,
       user                => $user,
