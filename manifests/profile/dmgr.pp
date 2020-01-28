@@ -134,7 +134,16 @@ define websphere_application_server::profile::dmgr (
     $soap_port  = $dmgr_port
   }
 
+
+  notify { 'DMGR before export':
+      message  => "DMGR before export"
+  }
+
   if $soap_port {
+    notify { 'DMGR doing export':
+      message  => "DMGR doing export $soap_port /etc/dmgr_${_dmgr_host}_${_cell}"
+    }
+
     @@file { "/etc/dmgr_${_dmgr_host}_${_cell}":
       ensure  => 'file',
       content => template("${module_name}/dmgr_federation.yaml.erb"),
