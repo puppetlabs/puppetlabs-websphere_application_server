@@ -141,6 +141,7 @@ define websphere_application_server::profile::appserver (
   }
 
   File  {
+    ensure => 'file',
     path   => "${profile_base}/${profile_name}/dmgr_${_dmgr_host}_${_cell}.yaml",
     before => Websphere_federate["${title}_${dmgr_host}_${cell}"],
     content=> "test content"
