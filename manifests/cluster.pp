@@ -40,7 +40,9 @@ define websphere_application_server::cluster (
   $wsadmin_pass     = undef,
   $dmgr_host        = $::fqdn,
 ) {
-
+  notify { 'CLUSTER was RUN':
+    message => 'CLUSTER was RUN'
+  }
   websphere_cluster { $cluster:
     ensure       => $ensure,
     profile_base => $profile_base,
