@@ -138,10 +138,11 @@ define websphere_application_server::profile::appserver (
   File <<| title == "/etc/dmgr_${_dmgr_host}_${_cell}" |>> {
     path   => "${profile_base}/${profile_name}/dmgr_${_dmgr_host}_${_cell}.yaml",
     before => Websphere_federate["${title}_${dmgr_host}_${cell}"],
+    notify => Notify['APPSERVER after collect']
   }
 
   notify { 'APPSERVER after collect':
-    message  => "File path ${profile_base}/${profile_name}/dmgr_${_dmgr_host}_${_cell}.yaml"
+    message  => "File path ${profile_base}/${profile_name}/dmgr_${_dmgr_host}_${_cell}.yaml",
   }
 
   if $manage_federation {
