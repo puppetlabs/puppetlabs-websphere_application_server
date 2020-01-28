@@ -148,6 +148,13 @@ define websphere_application_server::profile::dmgr (
       ensure  => 'file',
       content => template("${module_name}/dmgr_federation.yaml.erb"),
     }
+    exec {
+      'listing_etc_dmgr_file':
+        command => "ls -al /etc/dmgr_${_dmgr_host}_${_cell}",
+    }
+    notify { 'DMGR did export':
+      message  => "DMGR did export $soap_port /etc/dmgr_${_dmgr_host}_${_cell}"
+    }
   }
 
   validate_bool($manage_sdk)
