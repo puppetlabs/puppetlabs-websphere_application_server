@@ -67,6 +67,9 @@ define websphere_application_server::profile::dmgr (
   $wsadmin_user            = undef,
   $wsadmin_pass            = undef,
 ) {
+  notify { 'DMGR was RUN':
+    message => 'DMGR was RUN'
+  }
 
   validate_absolute_path($instance_base)
   validate_string($cell, $node_name, $profile_name, $user, $group, $dmgr_host)
