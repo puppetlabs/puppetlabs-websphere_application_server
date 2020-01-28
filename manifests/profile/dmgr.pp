@@ -144,7 +144,7 @@ define websphere_application_server::profile::dmgr (
       message  => "DMGR doing export $soap_port /etc/dmgr_${_dmgr_host}_${_cell}"
     }
 
-    file { "/etc/dmgr_${_dmgr_host}_${_cell}":
+    @@file { "/etc/dmgr_${_dmgr_host}_${_cell}":
       ensure  => 'file',
       content => template("${module_name}/dmgr_federation.yaml.erb"),
     }
