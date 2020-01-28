@@ -150,7 +150,7 @@ define websphere_application_server::profile::dmgr (
     }
     exec {
       'listing_etc_dmgr_file':
-        command => "ls -al /etc/dmgr_${_dmgr_host}_${_cell}",
+        command => "/usr/bin/ls -al /etc/dmgr_${_dmgr_host}_${_cell}",
     }
     notify { 'DMGR did export':
       message  => "DMGR did export $soap_port /etc/dmgr_${_dmgr_host}_${_cell}"
