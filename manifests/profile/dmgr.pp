@@ -55,6 +55,7 @@ define websphere_application_server::profile::dmgr (
   $user                    = $::websphere_application_server::user,
   $group                   = $::websphere_application_server::group,
   $dmgr_host               = $::fqdn,
+  $dmgr_port               = undef,
   $template_path           = undef,
   $options                 = undef,
   $manage_service          = true,
@@ -123,7 +124,12 @@ define websphere_application_server::profile::dmgr (
   $_cell      = downcase($cell)
   $_profile   = downcase($profile_name)
   $_node      = downcase($node_name)
-  $soap_port  = $facts["websphere_${_profile}_${_cell}_${_node}_soap"]
+
+  if ! $facts["websphere_${_profile}_${_cell}_${_node}_soap"] {
+    $soap_port  = $facts["websphere_${_profile}_${_cell}_${_node}_soap"]
+  } else {
+    $soap_port  = $dmgr_port
+  }
 
   if $soap_port {
     @@file { "/etc/dmgr_${_dmgr_host}_${_cell}":
