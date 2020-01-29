@@ -25,7 +25,9 @@
 * [`websphere_cluster_member_service`](#websphere_cluster_member_service): Manages the a WebSphere cluster member's service.
 * [`websphere_federate`](#websphere_federate): Manages the federation of WebSphere application servers with a cell.
 * [`websphere_jdbc_datasource`](#websphere_jdbc_datasource): Manages datasources.
-* [`websphere_jdbc_provider`](#websphere_jdbc_provider): Manages the existence of a WebSphere JDBC provider. The current provider does _not_ manage parameters post-creation.
+* [`websphere_jdbc_provider`](#websphere_jdbc_provider): Manages the existence of JAAS data (username/password for DB)
+* [`websphere_jaas_data`](#websphere_jaas_data): Manages the existence of a WebSphere JDBC provider. The current provider does _not_ manage parameters post-creation.
+
 * [`websphere_jvm_log`](#websphere_jvm_log): This manages a WebSphere JVM Logging Properties'
 * [`websphere_node`](#websphere_node): Manages the an "unmanaged" WebSphere node in a cell.
 * [`websphere_sdk`](#websphere_sdk): This manages WebSphere SDK/JDK versions'
@@ -2339,6 +2341,30 @@ The username for wsadmin authentication
 ##### `wsadmin_pass`
 
 The password for wsadmin authentication
+
+### websphere_jaas_data
+
+Manages the JAAS data (username/password for particular database)
+
+#### Examples
+
+##### Create JAAS data
+
+```puppet
+websphere_jaas_data { 'MXG_YUNE_52905_CC':
+  ensure         => 'present',
+  dmgr_profile   => 'PROFILE_DMGR_01',
+  profile_base   => '/opt/IBM/WebSphere/AppServer/profiles',
+  user           => 'webadmin',
+  scope          => 'cell',
+  cell           => 'CELL_01',
+  username       => 'MXG_YUNE_52905_CC',
+  password       => 'MXG_YUNE_52905_CC',
+  description    => 'Created by Puppet',
+}
+```
+
+TODO: reference doc.
 
 ### websphere_jdbc_provider
 
