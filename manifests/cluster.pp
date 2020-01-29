@@ -53,7 +53,9 @@ define websphere_application_server::cluster (
   }
 
   if $collect_members {
-
+    notify { 'CLUSTER collect members started':
+      message => 'CLUSTER collect members started'
+    }
     ## Collect any or our exported defined types
     Websphere_application_server::Cluster::Member <<| cell == $cell and dmgr_host == $dmgr_host |>> {
       profile_base => $profile_base,
@@ -72,6 +74,10 @@ define websphere_application_server::cluster (
       wsadmin_user => $wsadmin_user,
       wsadmin_pass => $wsadmin_pass,
       require      => Websphere_cluster[$name],
+    }
+
+    notify { 'CLUSTER collect members ended':
+      message => 'CLUSTER collect members ended'
     }
 
     Websphere_cluster_member_service <<| cell == $cell and dmgr_host == $dmgr_host |>> {
