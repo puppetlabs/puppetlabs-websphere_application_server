@@ -10,22 +10,22 @@ Puppet::Type.type(:websphere_jaas_data).provide(:wsadmin, parent: Puppet::Provid
       mod_path = "Cell=#{resource[:cell]}"
       get      = "Cell:#{resource[:cell]}"
       path     = "cells/#{resource[:cell]}"
-      file << "/config/cells/#{resource[:cell]}/variables.xml"
+      file << "/config/cells/#{resource[:cell]}/security.xml"
     when 'server'
       mod_path = "Cell=#{resource[:cell]},Server=#{resource[:server]}"
       get      = "Cell:#{resource[:cell]}/Node:#{resource[:node_name]}/Server:#{resource[:server]}"
       path     = "cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/#{resource[:server]}"
-      file << "/config/cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/#{resource[:server]}/variables.xml"
+      file << "/config/cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/#{resource[:server]}/security.xml"
     when 'cluster'
       mod_path = "Cluster=#{resource[:cluster]}"
       get      = "Cell:#{resource[:cell]}/ServerCluster:#{resource[:cluster]}"
       path     = "cells/#{resource[:cell]}/clusters/#{resource[:cluster]}"
-      file += "/config/cells/#{resource[:cell]}/clusters/#{resource[:cluster]}/variables.xml"
+      file += "/config/cells/#{resource[:cell]}/clusters/#{resource[:cluster]}/security.xml"
     when 'node'
       mod_path = "Node=#{resource[:node_name]}"
       get      = "Cell:#{resource[:cell]}/Node:#{resource[:node_name]}"
       path     = "cells/#{resource[:cell]}/nodes/#{resource[:node_name]}"
-      file << "/config/cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/variables.xml"
+      file << "/config/cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/security.xml"
     end
 
     case what
