@@ -136,13 +136,6 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
     EOT
   end
 
-  newparam(:jaas_alias) do
-    desc <<-EOT
-    JAAS alias
-    String: Optional
-    EOT
-  end
-
   newparam(:jaas_alias_mapping) do
     desc <<-EOT
     JAAS mapping type (i.e. DefaultPrincipalMapping)
