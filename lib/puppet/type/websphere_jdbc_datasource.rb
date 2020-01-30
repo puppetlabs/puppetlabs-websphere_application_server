@@ -129,12 +129,23 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
     defaultto :true
   end
 
-  newparam(:component_managed_auth_alias) do
+  newparam(:jaas_alias) do
     desc <<-EOT
-    The alias used for database authentication at run time.
-    This alias is only used when the application resource
-    reference is using res-auth=Application.
+    JAAS alias
+    String: Optional
+    EOT
+  end
 
+  newparam(:jaas_alias) do
+    desc <<-EOT
+    JAAS alias
+    String: Optional
+    EOT
+  end
+
+  newparam(:jaas_alias_mapping) do
+    desc <<-EOT
+    JAAS mapping type (i.e. DefaultPrincipalMapping)
     String: Optional
     EOT
   end
