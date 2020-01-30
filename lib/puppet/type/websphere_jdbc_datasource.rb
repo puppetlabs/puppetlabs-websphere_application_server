@@ -139,6 +139,16 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
     EOT
   end
 
+  newparam(:component_managed_auth_alias) do
+    desc <<-EOT
+    The alias used for database authentication at run time.
+    This alias is only used when the application resource
+    reference is using res-auth=Application.
+
+    String: Optional
+    EOT
+  end
+
   newparam(:url) do
     desc <<-EOT
     JDBC URL for Oracle providers.
