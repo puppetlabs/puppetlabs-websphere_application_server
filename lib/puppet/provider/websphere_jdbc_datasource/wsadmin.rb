@@ -60,8 +60,6 @@ Puppet::Type.type(:websphere_jdbc_datasource).provide(:wsadmin, parent: Puppet::
     params_list << "-configureResourceProperties #{config_props} "
     # append optional parameters
     #
-    params_list << "-authDataAlias \"DefaultPrincipalMapping\" "
-    params_list << "-mappingConfigAlias \"#{resource[:component_managed_auth_alias]}\" " if resource[:component_managed_auth_alias]
     params_list << "-containerManagedPersistence #{resource[:container_managed_persistence]} " if resource[:container_managed_persistence]
     params_list << "-componentManagedAuthenticationAlias \"#{resource[:component_managed_auth_alias]}\" " if resource[:component_managed_auth_alias]
     params_list << "-description \"#{resource[:description]}\" " if resource[:description]
@@ -72,7 +70,8 @@ Puppet::Type.type(:websphere_jdbc_datasource).provide(:wsadmin, parent: Puppet::
   def create
     cmd = <<-EOS
 provider = AdminConfig.getid('/#{scope('get')}/JDBCProvider:#{resource[:jdbc_provider]}/')
-AdminTask.createDatasource(provider, '[#{params_string}]')
+dsid = AdminTask.createDatasource(provider, '[#{params_string}]')
+AdminConfig.create('MappingModule', dsid , '[[authDataAlias #{resource[:component_managed_auth_alias]}] [mappingConfigAlias "DefaultPrincipalMapping"]]')
 AdminConfig.save()
 EOS
     # rubocop:enable Layout/IndentHeredoc
