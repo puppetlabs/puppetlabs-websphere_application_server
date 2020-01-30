@@ -1,7 +1,7 @@
 require_relative '../websphere_helper'
 
-Puppet::Type.type(:websphere_jaas_data).provide(:wsadmin, parent: Puppet::Provider::Websphere_Helper) do
-  desc 'wsadmin provider for `websphere_jaas_data`'
+Puppet::Type.type(:websphere_shared_library).provide(:wsadmin, parent: Puppet::Provider::Websphere_Helper) do
+  desc 'wsadmin provider for `websphere_shared_library`'
 
   def scope(what)
     file = "#{resource[:profile_base]}/#{resource[:dmgr_profile]}"
@@ -43,19 +43,13 @@ Puppet::Type.type(:websphere_jaas_data).provide(:wsadmin, parent: Puppet::Provid
   def create
     cmd = <<-END.unindent
     # Create #{resource[:name]} for #{scope('get')}
-    sec = AdminConfig.getid('/#{scope('get')}/Security:/')
+    cell = AdminConfig.getid('/#{scope('get')}/')
 
-    alias_attr = ["alias", "#{resource[:name]}"]
-    desc_attr = ["description", "authentication information, Created by Puppet"]
-    userid_attr = ["userId", "#{resource[:username]}"]
-    password_attr = ["password", "#{resource[:password]}"]
-    attrs = [alias_attr, desc_attr, userid_attr, password_attr]
-    AdminConfig.create("JAASAuthData", sec, attrs)
-
+    AdminConfig.create('Library', cell, [['name', '#{resource[:name]}'], ['classPath', '#{resource[:classpath]}']])
     AdminConfig.save()
     END
 
-    debug "Creating JAAS Config Data with #{cmd}"
+    debug "Creating Shared Library with #{cmd}"
     result = wsadmin(file: cmd, user: resource[:user])
     debug "Result: #{result}"
   end
@@ -68,8 +62,8 @@ Puppet::Type.type(:websphere_jaas_data).provide(:wsadmin, parent: Puppet::Provid
     debug "Retrieving value of #{resource[:name]} from #{scope('file')}"
     doc = REXML::Document.new(File.open(scope('file')))
 
-    path = XPath.first(doc, "//authDataEntries[@alias='#{resource[:name]}']")
-    value = XPath.first(path, '@alias') if path
+    path = XPath.first(doc, "//libraries:Library[@name='#{resource[:name]}']")
+    value = XPath.first(path, '@name') if path
 
     debug "Exists? #{resource[:name]} is: #{value}"
 
@@ -77,7 +71,7 @@ Puppet::Type.type(:websphere_jaas_data).provide(:wsadmin, parent: Puppet::Provid
   end
 
   def destroy
-    Puppet.warning('Removal of JAAS Config Data is not yet implemented')
+    Puppet.warning('Removal of Shared Libraries is not yet implemented')
   end
 
   def flush
