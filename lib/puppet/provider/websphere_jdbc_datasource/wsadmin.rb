@@ -60,8 +60,8 @@ Puppet::Type.type(:websphere_jdbc_datasource).provide(:wsadmin, parent: Puppet::
     params_list << "-configureResourceProperties #{config_props} "
     # append optional parameters
     #
-    params_list << "-authDataAlias \"#{resource[:jaas_alias_name]}\" " if resource[:jaas_alias_name]
-    params_list << "-mappingConfigAlias \"#{resource[:jaas_alias_type]}\" " if resource[:jaas_alias_type]
+    params_list << "-authDataAlias \"DefaultPrincipalMapping\" "
+    params_list << "-mappingConfigAlias \"#{resource[:component_managed_auth_alias]}\" " if resource[:component_managed_auth_alias]
     params_list << "-containerManagedPersistence #{resource[:container_managed_persistence]} " if resource[:container_managed_persistence]
     params_list << "-componentManagedAuthenticationAlias \"#{resource[:component_managed_auth_alias]}\" " if resource[:component_managed_auth_alias]
     params_list << "-description \"#{resource[:description]}\" " if resource[:description]
