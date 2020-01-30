@@ -2290,6 +2290,20 @@ reference is using res-auth=Application.
 
 String: Optional
 
+##### `jaas_alias_name`
+
+The alias used for database authentication at run time.
+It is mentioned twice in websphere UI for some reason:)
+
+String: Optional
+
+##### `jaas_alias_type`
+
+The alias used for database authentication at run time.
+This one contains only 
+String: Optional
+
+
 ##### `url`
 
 JDBC URL for Oracle providers.

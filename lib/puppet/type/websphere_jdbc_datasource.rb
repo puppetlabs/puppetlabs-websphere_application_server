@@ -129,20 +129,6 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
     defaultto :true
   end
 
-  newparam(:jaas_alias) do
-    desc <<-EOT
-    JAAS alias
-    String: Optional
-    EOT
-  end
-
-  newparam(:jaas_alias_mapping) do
-    desc <<-EOT
-    JAAS mapping type (i.e. DefaultPrincipalMapping)
-    String: Optional
-    EOT
-  end
-
   newparam(:component_managed_auth_alias) do
     desc <<-EOT
     The alias used for database authentication at run time.
@@ -167,6 +153,18 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
   newparam(:description) do
     desc <<-EOT
     A description for the data source
+    EOT
+  end
+
+  newparam(:jaas_alias_type) do
+    desc <<-EOT
+    JAAS Alias Type:
+    EOT
+  end
+
+  newparam(:jaas_alias_name) do
+    desc <<-EOT
+    JAAS Alias Name:
     EOT
   end
 
