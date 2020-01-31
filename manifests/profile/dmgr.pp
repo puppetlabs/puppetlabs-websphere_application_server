@@ -67,10 +67,6 @@ define websphere_application_server::profile::dmgr (
   $wsadmin_user            = undef,
   $wsadmin_pass            = undef,
 ) {
-  notify { 'DMGR was RUN':
-    message => 'DMGR was RUN'
-  }
-
   validate_absolute_path($instance_base)
   validate_string($cell, $node_name, $profile_name, $user, $group, $dmgr_host)
 
@@ -134,22 +130,10 @@ define websphere_application_server::profile::dmgr (
     $soap_port  = $dmgr_port
   }
 
-
-  notify { 'DMGR before export':
-      message  => "DMGR before export"
-  }
-
   if $soap_port {
-    notify { 'DMGR doing export':
-      message  => "DMGR doing export $soap_port /etc/dmgr_${_dmgr_host}_${_cell}"
-    }
-
     @@file { "/etc/dmgr_${_dmgr_host}_${_cell}":
       ensure  => 'file',
       content => template("${module_name}/dmgr_federation.yaml.erb"),
-    }
-    notify { 'DMGR did export':
-      message  => "DMGR did export $soap_port /etc/dmgr_${_dmgr_host}_${_cell}"
     }
   }
 

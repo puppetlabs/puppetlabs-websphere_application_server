@@ -130,18 +130,10 @@ define websphere_application_server::profile::appserver (
   $_dmgr_host = downcase($dmgr_host)
   $_cell = downcase($cell)
 
-  notify { 'APPSERVER before collect':
-    message  => "File path ${profile_base}/${profile_name}/dmgr_${_dmgr_host}_${_cell}.yaml"
-  }
-
   ## Collect the federation resource
   File <<| title == "/etc/dmgr_${_dmgr_host}_${_cell}" |>> {
     path   => "${profile_base}/${profile_name}/dmgr_${_dmgr_host}_${_cell}.yaml",
     before => Websphere_federate["${title}_${dmgr_host}_${cell}"],
-  }
-
-  notify { 'APPSERVER after collect':
-    message  => "File path ${profile_base}/${profile_name}/dmgr_${_dmgr_host}_${_cell}.yaml",
   }
 
   if $manage_federation {
