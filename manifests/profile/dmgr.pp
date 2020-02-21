@@ -124,22 +124,10 @@ define websphere_application_server::profile::dmgr (
   $_profile   = downcase($profile_name)
   $_node      = downcase($node_name)
 
-  #if ! $facts["websphere_${_profile}_${_cell}_${_node}_soap"] {
+  if $facts["websphere_${_profile}_${_cell}_${_node}_soap"] {
   $soap_port  = $facts["websphere_${_profile}_${_cell}_${_node}_soap"]
-  #} else {
-  #  $soap_port  = $dmgr_port
-  #}
-  notify { 'DMGR-1':
-    withpath => true,
-    name     => "soap_port = $soap_port",
-  }
-  notify { 'DMGR-2':
-    withpath => true,
-    name     => "module_name = ${module_name}",
-  }
-  notify { 'DMGR-3':
-    withpath => true,
-    name     => "file = /etc/dmgr_${_dmgr_host}_${_cell}",
+  } else {
+    $soap_port  = $dmgr_port
   }
 
   if $soap_port {
