@@ -129,6 +129,18 @@ define websphere_application_server::profile::dmgr (
   #} else {
   #  $soap_port  = $dmgr_port
   #}
+  notify { 'DMGR-1':
+    withpath => true,
+    name     => "soap_port = $soap_port",
+  }
+  notify { 'DMGR-2':
+    withpath => true,
+    name     => "module_name = ${module_name}",
+  }
+  notify { 'DMGR-3':
+    withpath => true,
+    name     => "file = /etc/dmgr_${_dmgr_host}_${_cell}",
+  }
 
   if $soap_port {
     @@file { "/etc/dmgr_${_dmgr_host}_${_cell}":
