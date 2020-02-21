@@ -130,10 +130,10 @@ define websphere_application_server::profile::appserver (
   $_dmgr_host = downcase($dmgr_host)
   $_cell = downcase($cell)
 
-  ## Collect the federation resource
-  File <<| title == "/etc/dmgr_${_dmgr_host}_${_cell}" |>> {
+  file { "/etc/dmgr_${_dmgr_host}_${_cell}":
     path   => "${profile_base}/${profile_name}/dmgr_${_dmgr_host}_${_cell}.yaml",
     before => Websphere_federate["${title}_${dmgr_host}_${cell}"],
+    content => "dmgr_soap: ${dmgr_port}\ndmgr_fqdn: ${dmgr_host}\ndmgr_cell: ${cell}"
   }
 
   if $manage_federation {

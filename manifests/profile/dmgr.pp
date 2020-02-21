@@ -124,19 +124,6 @@ define websphere_application_server::profile::dmgr (
   $_profile   = downcase($profile_name)
   $_node      = downcase($node_name)
 
-  if $facts["websphere_${_profile}_${_cell}_${_node}_soap"] {
-  $soap_port  = $facts["websphere_${_profile}_${_cell}_${_node}_soap"]
-  } else {
-    $soap_port  = $dmgr_port
-  }
-
-  if $soap_port {
-    @@file { "/etc/dmgr_${_dmgr_host}_${_cell}":
-      ensure  => 'file',
-      content => template("${module_name}/dmgr_federation.yaml.erb"),
-    }
-  }
-
   validate_bool($manage_sdk)
   if $manage_sdk {
     websphere_sdk { "${title}_${sdk_name}":
