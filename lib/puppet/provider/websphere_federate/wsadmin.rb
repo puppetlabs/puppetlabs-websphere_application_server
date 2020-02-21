@@ -63,7 +63,8 @@ Puppet::Type.type(:websphere_federate).provide(:wsadmin) do
       debug "result: #{result}"
       # Validate the result, regex should account for whitespace and new line inconsistencies in wsadmin.
       unless result =~ %r{Node .* has been successfully\s*federated}
-        raise Puppet::Error, "#{resource[:node_name]} may not have been successful federating. Run with --debug for details."
+        #raise Puppet::Error, "#{resource[:node_name]} may not have been successful federating. Run with --debug for details."
+        info "#{resource[:node_name]} may not have been successful federating. result: #{result}"
       end
 
     else

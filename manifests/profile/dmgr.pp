@@ -187,5 +187,4 @@ define websphere_application_server::profile::dmgr (
       wsadmin_pass => $wsadmin_pass,
     }
   }
-
 }
