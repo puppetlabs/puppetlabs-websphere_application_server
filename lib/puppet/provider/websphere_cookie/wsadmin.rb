@@ -1,7 +1,7 @@
 require_relative '../websphere_helper'
 
-Puppet::Type.type(:websphere_jaas_data).provide(:wsadmin, parent: Puppet::Provider::Websphere_Helper) do
-  desc 'wsadmin provider for `websphere_jaas_data`'
+Puppet::Type.type(:websphere_cookie).provide(:wsadmin, parent: Puppet::Provider::Websphere_Helper) do
+  desc 'wsadmin provider for `websphere_cookie`'
 
   def scope(what)
     file = "#{resource[:profile_base]}/#{resource[:dmgr_profile]}"
