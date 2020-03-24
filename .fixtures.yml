@@ -6,7 +6,12 @@ fixtures:
       repo: 'https://github.com/puppetlabs/puppetlabs-stdlib.git'
     staging:
       repo: 'https://github.com/nanliu/puppet-staging.git'
+    puppet-conf:
+      repo: 'https://github.com/puppetlabs/puppet_conf.git'
     ibm_installation_manager:
       repo: 'https://github.com/puppetlabs/puppetlabs-ibm_installation_manager.git'
+    facts: 'https://github.com/puppetlabs/puppetlabs-facts.git'
+    puppet_agent: 'https://github.com/puppetlabs/puppetlabs-puppet_agent.git'
+    provision: 'https://github.com/puppetlabs/provision.git'
   symlinks:
-    'websphere_application_server': "#{source_dir}"
+    websphere_application_server: "#{source_dir}"

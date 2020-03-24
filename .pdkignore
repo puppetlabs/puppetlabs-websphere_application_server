@@ -40,3 +40,6 @@
 /.yardopts
 /spec/
 /.vscode/
+/plans/provision_machines.pp
+/plans/pe_server_setup.pp
+/plans/puppet_agents_setup.pp

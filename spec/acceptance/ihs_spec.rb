@@ -1,19 +1,19 @@
 require 'spec_helper_acceptance'
 
-describe 'IHS instance' do
+describe 'IHS instance', :integration do
   before(:all) do
     @agent = WebSphereHelper.ihs_server
     @ws_manifest = WebSphereInstance.manifest(user: 'webadmin',
                                               group: 'webadmins')
     @dmgr_manifest = WebSphereDmgr.manifest(target_agent: @agent)
-    @ihs_host     = @agent.hostname
+    @ihs_host     = @agent
     @listen_port  = 10_080
 
     @ihs_manifest = WebSphereIhs.manifest(user: 'webadmin',
                                           group: 'webadmins',
                                           target_agent: @agent,
                                           listen_port: @listen_port)
-    runner = BeakerAgentRunner.new
+    runner = LitmusAgentRunner.new
     runner.execute_agent_on(@agent, @ws_manifest)
     runner.execute_agent_on(@agent, @dmgr_manifest)
     @result = runner.execute_agent_on(@agent, @ihs_manifest)
@@ -27,10 +27,12 @@ describe 'IHS instance' do
 
   it 'shall start an ihs server process' do
     sleep(10)
-    ports_ihs_listening = on(@agent, "lsof -ti :#{@listen_port}").stdout.split
+    ENV['TARGET_HOST'] = @agent
+    ports_ihs_listening = Helper.instance.run_shell("lsof -ti :#{@listen_port}").stdout.split
     ihs_server_process = []
     ports_ihs_listening.each do |port|
-      proc_result = on(@agent, "ps -elf | egrep \"#{port}(\ )+1 \"", acceptable_exit_codes: [0, 1])
+      ENV['TARGET_HOST'] = @agent
+      proc_result = Helper.instance.run_shell("ps -elf | egrep \"#{port}(\ )+1 \"", expect_failures: true)
       ihs_server_process.push(proc_result.stdout) unless proc_result.stdout.empty?
     end
 
@@ -40,12 +42,14 @@ describe 'IHS instance' do
 
   it 'shall be listening on the correct port' do
     sleep(10)
-    ports_ihs_listening = on(@agent, "lsof -ti :#{@listen_port}").stdout.split
+    ENV['TARGET_HOST'] = @agent
+    ports_ihs_listening = Helper.instance.run_shell("lsof -ti :#{@listen_port}").stdout.split
     expect(ports_ihs_listening.size).to eq 2
   end
 
   it 'shall respond to http queries' do
-    on(@agent, "curl -s -w '%{http_code}' http://#{@agent}:#{@listen_port} | egrep \"<title>|200\"", acceptable_exit_codes: [0, 1]) do |response|
+    ENV['TARGET_HOST'] = @agent
+    Helper.instance.run_shell("curl -s -w '%{http_code}' http://#{@agent}:#{@listen_port} | egrep \"<title>|200\"") do |response|
       response_lines = response.stdout.split(%r{\r?\n})
       expected = [0, 2]
       expect(expected).to include(response_lines.length)
@@ -57,7 +61,7 @@ describe 'IHS instance' do
   context 'shall stop the IHS server' do
     before(:all) do
       @agent        = WebSphereHelper.ihs_server
-      @ihs_host     = @agent.hostname
+      @ihs_host     = @agent
       @listen_port  = 10_080
 
       @ihs_manifest = WebSphereIhs.manifest(user: 'webadmin',
@@ -65,7 +69,7 @@ describe 'IHS instance' do
                                             target_agent: @agent,
                                             listen_port: @listen_port,
                                             status: 'stopped')
-      runner = BeakerAgentRunner.new
+      runner = LitmusAgentRunner.new
       @result = runner.execute_agent_on(@agent, @ihs_manifest)
     end
 
@@ -75,12 +79,13 @@ describe 'IHS instance' do
 
     it 'shall not have processess listening on the configured port' do
       sleep(10)
-      ports_ihs_listening = on(@agent, "lsof -ti :#{@listen_port}", acceptable_exit_codes: [0, 1]).stdout
+      ENV['TARGET_HOST'] = @agent
+      ports_ihs_listening = Helper.instance.run_shell("lsof -ti :#{@listen_port}", expect_failures: true).stdout
       expect(ports_ihs_listening.empty?).to be true
     end
 
     it 'runs a second time without changes' do
-      runner = BeakerAgentRunner.new
+      runner = LitmusAgentRunner.new
       second_result = runner.execute_agent_on(@agent, @ihs_manifest)
       expect(second_result.exit_code).to eq 2
     end

@@ -1,6 +1,11 @@
 ---
 ".gitlab-ci.yml":
   delete: true
+.pdkignore:
+  paths:
+    - /plans/provision_machines.pp
+    - /plans/pe_server_setup.pp
+    - /plans/puppet_agents_setup.pp
 ".rubocop.yml":
   default_configs:
     inherit_from: ".rubocop_todo.yml"
@@ -40,7 +45,17 @@ Gemfile:
     - gem: beaker-testmode_switcher
 Rakefile:
   requires:
-  - puppet-lint/tasks/puppet-lint
+    - puppet-lint/tasks/puppet-lint
+  extras:
+    - |
+      require 'rspec/core/rake_task'
+      namespace :websphere_application_server do
+        RSpec::Core::RakeTask.new(:integration) do |t|
+          t.pattern = 'spec/acceptance/**{,/*/**}/*_spec.rb'
+          t.rspec_opts = "--tag integration"
+        end
+      end
+
 spec/spec_helper.rb:
   mock_with: ":rspec"
   coverage_report: true
