@@ -49,6 +49,7 @@ describe 'jdbc layer is setup and working', :integration do
     runner.execute_agent_on(@agent, @was_manifest)
     runner.execute_agent_on(@agent, @dmgr_manifest)
     @result = runner.execute_agent_on(@agent, @manifest)
+    ENV['TARGET_HOST'] = @agent
   end
 
   it 'runs successfully' do
@@ -58,7 +59,6 @@ describe 'jdbc layer is setup and working', :integration do
   it_behaves_like 'an idempotent resource'
 
   it 'has installed the thin client datasource and provider' do
-    ENV['TARGET_HOST'] = @agent
     @ws_admin_result = Helper.instance.run_shell("su - webadmin -c \"#{WebSphereConstants.ws_admin} -lang jython -c \\\"print AdminConfig.list('DataSource',AdminConfig.getid('/Cell:#{JDBCProviderConstants.cell}/Node:#{@hostname}/'))\\\"\"") # rubocop:disable Metrics/LineLength
     results = @ws_admin_result.stdout.split(%r{\r?\n})
     expect(results.size).to eq 3

@@ -17,6 +17,7 @@ describe 'IHS instance', :integration do
     runner.execute_agent_on(@agent, @ws_manifest)
     runner.execute_agent_on(@agent, @dmgr_manifest)
     @result = runner.execute_agent_on(@agent, @ihs_manifest)
+    ENV['TARGET_HOST'] = @agent
   end
 
   it 'runs without errors' do
@@ -27,11 +28,9 @@ describe 'IHS instance', :integration do
 
   it 'shall start an ihs server process' do
     sleep(10)
-    ENV['TARGET_HOST'] = @agent
     ports_ihs_listening = Helper.instance.run_shell("lsof -ti :#{@listen_port}").stdout.split
     ihs_server_process = []
     ports_ihs_listening.each do |port|
-      ENV['TARGET_HOST'] = @agent
       proc_result = Helper.instance.run_shell("ps -elf | egrep \"#{port}(\ )+1 \"", expect_failures: true)
       ihs_server_process.push(proc_result.stdout) unless proc_result.stdout.empty?
     end
@@ -42,13 +41,11 @@ describe 'IHS instance', :integration do
 
   it 'shall be listening on the correct port' do
     sleep(10)
-    ENV['TARGET_HOST'] = @agent
     ports_ihs_listening = Helper.instance.run_shell("lsof -ti :#{@listen_port}").stdout.split
     expect(ports_ihs_listening.size).to eq 2
   end
 
   it 'shall respond to http queries' do
-    ENV['TARGET_HOST'] = @agent
     Helper.instance.run_shell("curl -s -w '%{http_code}' http://#{@agent}:#{@listen_port} | egrep \"<title>|200\"") do |response|
       response_lines = response.stdout.split(%r{\r?\n})
       expected = [0, 2]
@@ -71,6 +68,7 @@ describe 'IHS instance', :integration do
                                             status: 'stopped')
       runner = LitmusAgentRunner.new
       @result = runner.execute_agent_on(@agent, @ihs_manifest)
+      ENV['TARGET_HOST'] = @agent
     end
 
     it 'runs without errors' do
@@ -79,7 +77,6 @@ describe 'IHS instance', :integration do
 
     it 'shall not have processess listening on the configured port' do
       sleep(10)
-      ENV['TARGET_HOST'] = @agent
       ports_ihs_listening = Helper.instance.run_shell("lsof -ti :#{@listen_port}", expect_failures: true).stdout
       expect(ports_ihs_listening.empty?).to be true
     end

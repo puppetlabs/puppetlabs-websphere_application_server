@@ -12,10 +12,4 @@ plan websphere_application_server::puppet_agents_setup(
   # set the server
   $server_string = $server[0].name
   run_task('puppet_conf', $agents, action => 'set', section => 'main', setting => 'server', value => $server_string)
-  
-  # run agent -t
-  run_command('puppet agent -t', $agents, '_catch_errors' => true)
-
-  # install the module
-  run_command('puppet module install puppetlabs-websphere_application_server', $agents)
 }

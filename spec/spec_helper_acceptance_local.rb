@@ -20,34 +20,11 @@ class Helper
     }.flatten
     # rubocop:enable Style/MultilineBlockChain
   end
-
-  def change_target_host(role)
-    @orig_target_host = ENV['TARGET_HOST']
-    ENV['TARGET_HOST'] = target_roles(role)[0][:name]
-  end
-
-  def reset_target_host
-    ENV['TARGET_HOST'] = @orig_target_host
-  end
 end
 
 class LitmusAgentRunner
   include MasterManipulator::Site
   include PuppetLitmus
-
-  def execute_apply_on(host, manifest, opts = {})
-    apply_manifest_on(
-      host,
-      manifest,
-      expect_changes: true,
-      debug: opts[:debug] || {},
-      dry_run: opts[:dry_run] || {},
-      environment: opts[:environment] || {},
-      noop: opts[:noop] || {},
-      trace: opts[:trace] || {},
-      acceptable_exit_codes: (0...256),
-    )
-  end
 
   def create_site_pp_host(master_host, opts = {})
     opts[:manifest] ||= ''
@@ -264,24 +241,6 @@ class WebSphereHelper
   def self.app_host
     hosts = host_by_role('appserver')
     hosts.first
-  end
-
-  def self.is_master(host)
-    hosts = host_by_role('master')
-    hosts.each do |n|
-      if n == host
-        return true
-      end
-    end
-  end
-
-  def self.is_agent(host)
-    hosts = host_by_role('agent')
-    hosts.each do |n|
-      if n == host
-        return true
-      end
-    end
   end
 
   def self.ihs_server

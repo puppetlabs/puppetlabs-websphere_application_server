@@ -6,7 +6,7 @@ fixtures:
       repo: 'https://github.com/puppetlabs/puppetlabs-stdlib.git'
     staging:
       repo: 'https://github.com/nanliu/puppet-staging.git'
-    puppet-conf:
+    puppet_conf:
       repo: 'https://github.com/puppetlabs/puppet_conf.git'
     ibm_installation_manager:
       repo: 'https://github.com/puppetlabs/puppetlabs-ibm_installation_manager.git'

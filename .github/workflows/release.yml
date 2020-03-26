@@ -1,8 +1,9 @@
-name: "weekly"
+name: "release"
 
-on:
-  schedule:
-    - cron: '0 0 * * 1'
+on: 
+  push:
+    branches:
+      - 'release'
 
 jobs:  
   Spec:
