@@ -1,0 +1,11 @@
+{
+    "package_utility_zipfile": "/mnt/c/Users/Paul/Downloads/pu.offering.disk.linux.gtk.x86_64_1.9.1001.20191112_1636.zip",
+    "ibm_id_user": "<IBM ID Username>",
+    "ibm_id_password": "<IBM ID Password>",
+    "ibm_credential_store_master_password": "<Master Password>",
+    "was_repo": "http://www.ibm.com/software/repositorymanager/com.ibm.websphere.NDTRIAL.v85",
+    "package_id": "com.ibm.websphere.NDTRIAL.v85_8.5.5016.20190801_0951",
+    "stage_list_packages": true,
+    "stage_list_fixes": false,
+    "stage_copy_repo": false
+}
