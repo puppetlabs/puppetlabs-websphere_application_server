@@ -100,7 +100,7 @@ MANIFEST
     end
     cmd =  'agent --test --environment production'
     cmd << ' --debug' if opts[:debug]
-    cmd << '--noop' if opts[:noop]
+    cmd << ' --noop' if opts[:noop]
     cmd << ' --trace' if opts[:trace]
     # acceptable_exit_codes are passed because we want detailed-exit-codes but want to
     # make our own assertions about the responses
