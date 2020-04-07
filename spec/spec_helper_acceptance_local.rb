@@ -99,7 +99,7 @@ MANIFEST
       copy_site_pp(site_pp, opts)
     end
     cmd =  'agent --test --environment production'
-    cmd << '--debug' if opts[:debug]
+    cmd << ' --debug' if opts[:debug]
     cmd << '--noop' if opts[:noop]
     cmd << '--trace' if opts[:trace]
     # acceptable_exit_codes are passed because we want detailed-exit-codes but want to
