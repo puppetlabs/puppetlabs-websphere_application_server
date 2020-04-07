@@ -1,6 +1,6 @@
 require 'spec_helper_acceptance'
 
-describe 'jdbc layer is setup and working' do
+describe 'jdbc layer is setup and working', :integration do
   before(:all) do
     @agent = WebSphereHelper.ihs_server
     @was_manifest = WebSphereInstance.manifest(user: 'webadmin',
@@ -8,7 +8,7 @@ describe 'jdbc layer is setup and working' do
     @dmgr_manifest = WebSphereDmgr.manifest(target_agent: @agent,
                                             user: 'webadmin',
                                             group: 'webadmins')
-    @hostname = @agent.hostname
+    @hostname = @agent
 
     @manifest = <<-MANIFEST
     websphere_jdbc_provider { '#{JDBCProviderConstants.jdbc_provider}':
@@ -45,10 +45,11 @@ describe 'jdbc layer is setup and working' do
     }
 
     MANIFEST
-    runner = BeakerAgentRunner.new
+    runner = LitmusAgentRunner.new
     runner.execute_agent_on(@agent, @was_manifest)
     runner.execute_agent_on(@agent, @dmgr_manifest)
     @result = runner.execute_agent_on(@agent, @manifest)
+    ENV['TARGET_HOST'] = @agent
   end
 
   it 'runs successfully' do
@@ -58,7 +59,7 @@ describe 'jdbc layer is setup and working' do
   it_behaves_like 'an idempotent resource'
 
   it 'has installed the thin client datasource and provider' do
-    @ws_admin_result = on(@agent, "su - webadmin -c \"#{WebSphereConstants.ws_admin} -lang jython -c \\\"print AdminConfig.list('DataSource',AdminConfig.getid('/Cell:#{JDBCProviderConstants.cell}/Node:#{@hostname}/'))\\\"\"", acceptable_exit_codes: [0, 1, 103]) # rubocop:disable Metrics/LineLength
+    @ws_admin_result = Helper.instance.run_shell("su - webadmin -c \"#{WebSphereConstants.ws_admin} -lang jython -c \\\"print AdminConfig.list('DataSource',AdminConfig.getid('/Cell:#{JDBCProviderConstants.cell}/Node:#{@hostname}/'))\\\"\"") # rubocop:disable Metrics/LineLength
     results = @ws_admin_result.stdout.split(%r{\r?\n})
     expect(results.size).to eq 3
     expect(results[0]).to match(%r{^WASX.*:.*is: DeploymentManager})

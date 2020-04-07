@@ -1,0 +1,63 @@
+name: "weekly"
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'
+
+jobs:  
+  Spec:
+    runs-on: self-hosted
+    strategy:
+      matrix:
+        check: [parallel_spec, 'syntax lint metadata_lint check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop']
+        ruby_version: [2.5.x]
+        puppet_gem_version: [~> 5.0, ~> 6.0]
+        exclude:
+        - puppet_gem_version: ~> 5.0
+          check: 'syntax lint metadata_lint check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop'
+        - ruby_version: 2.5.x
+          puppet_gem_version: ~> 5.0
+    steps:
+    - uses: actions/checkout@v1
+    - name: Spec Tests
+      uses: puppetlabs/action-litmus_spec@master
+      with:
+        puppet_gem_version: ${{ matrix.puppet_gem_version }}
+        check: ${{ matrix.check }}
+  
+  ModuleIntegration:
+    runs-on: self-hosted
+    strategy:
+      matrix:
+        puppet_gem_version: [~> 5.0, ~> 6.0]
+        provision_params: ['pe_master="centos-7-x86_64" app_agent="centos-6-x86_64" dmgr_agent="redhat-6-x86_64" ihs_agent="redhat-7-x86_64"',
+                           'pe_master="centos-7-x86_64" app_agent="oracle-7-x86_64" dmgr_agent="ubuntu-1404-x86_64" ihs_agent="oracle-6-x86_64"',
+                           'pe_master="centos-7-x86_64" app_agent="ubuntu-1604-x86_64" dmgr_agent="ubuntu-1804-x86_64" ihs_agent="centos-7-x86_64"'
+                          ]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build
+      run: |
+        gem install bundler
+        bundle install --path .bundle/gems --jobs 4 --retry 3
+        bundle exec rake spec_prep
+    - name: Provision and setup
+      run: |
+        export LANG=en_US.UTF-8
+        export LANGUAGE=en_US:en
+        bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::provision_machines ${{ matrix.provision_params }}
+        bundle exec bolt --modulepath spec/fixtures/modules -i ./inventory.yaml plan run websphere_application_server::pe_server_setup
+        bundle exec bolt --modulepath spec/fixtures/modules -i ./inventory.yaml plan run websphere_application_server::puppet_agents_setup
+        bundle exec rake litmus:install_agent
+        bundle exec rake litmus:install_module
+    - name: Inventory
+      run: |
+        cat ./inventory.yaml
+    - name: Run tests
+      run: |
+        env
+        bundle exec rake websphere_application_server:integration
+    - name: Tidy up
+      if: always()
+      run: |
+        bundle exec rake litmus:tear_down

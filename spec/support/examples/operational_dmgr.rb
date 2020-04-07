@@ -1,10 +1,9 @@
 
 shared_examples 'a running dmgr' do |profile_base, dmgr_title|
   before(:all) do # rubocop:disable RSpec/BeforeAfterAll
-    @dmgr_result     = on(@agent, "#{profile_base}/#{dmgr_title}/bin/serverStatus.sh -all -profileName #{dmgr_title} |  grep 'The Deployment Manager'",
-                          acceptable_exit_codes: [0, 1])
-    @ws_admin_result = on(@agent, "#{profile_base}/#{dmgr_title}/bin/wsadmin.sh -lang jython -c \"AdminConfig.getid('/ServerCluster: #{WebSphereConstants.cluster_member}/')\"",
-                          acceptable_exit_codes: [0, 1, 103])
+    ENV['TARGET_HOST'] = @agent
+    @dmgr_result = Helper.instance.run_shell("#{profile_base}/#{dmgr_title}/bin/serverStatus.sh -all -profileName #{dmgr_title} |  grep 'The Deployment Manager'")
+    @ws_admin_result = Helper.instance.run_shell("#{profile_base}/#{dmgr_title}/bin/wsadmin.sh -lang jython -c \"AdminConfig.getid('/ServerCluster: #{WebSphereConstants.cluster_member}/')\"")
   end
 
   it 'is contactable' do
@@ -20,10 +19,10 @@ end
 
 shared_examples 'a stopped dmgr' do |profile_base, dmgr_title|
   before(:all) do # rubocop:disable RSpec/BeforeAfterAll
-    @dmgr_result     = on(@agent, "#{profile_base}/#{dmgr_title}/bin/serverStatus.sh -all -profileName #{WebSphereConstants.dmgr_title} |  grep 'The Deployment Manager'",
-                          acceptable_exit_codes: [0, 1])
-    @ws_admin_result = on(@agent, "#{profile_base}/#{dmgr_title}/bin/wsadmin.sh -lang jython -c \"AdminConfig.getid('/ServerCluster: #{WebSphereConstants.cluster_member}/')\"",
-                          acceptable_exit_codes: [0, 1, 103])
+    ENV['TARGET_HOST'] = @agent
+    @dmgr_result = Helper.instance.run_shell("#{profile_base}/#{dmgr_title}/bin/serverStatus.sh -all -profileName #{WebSphereConstants.dmgr_title} |  grep 'The Deployment Manager'")
+    @ws_admin_result = Helper.instance.run_shell("#{profile_base}/#{dmgr_title}/bin/wsadmin.sh -lang jython -c \"AdminConfig.getid('/ServerCluster: #{WebSphereConstants.cluster_member}/')\"", expect_failures: true) # rubocop:disable Metrics/LineLength
+    @ws_admin_result.exit_code == %r{0,1,103}
   end
 
   it 'is not contactable' do

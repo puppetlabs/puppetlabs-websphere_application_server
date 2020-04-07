@@ -1,6 +1,6 @@
 require 'spec_helper_acceptance'
 
-describe 'Install the websphere dmgr' do
+describe 'Install the websphere dmgr', :integration do
   before(:all) do
     @agent = WebSphereHelper.dmgr_host
     WebSphereInstance.install(@agent)
@@ -24,7 +24,7 @@ describe 'Install the websphere dmgr' do
         user         => '#{WebSphereConstants.user}',
       }
       MANIFEST
-      runner = BeakerAgentRunner.new
+      runner = LitmusAgentRunner.new
       @result = runner.execute_agent_on(@agent, @manifest)
     end
 
@@ -46,7 +46,7 @@ describe 'Install the websphere dmgr' do
         user         => '#{WebSphereConstants.user}',
       }
       MANIFEST
-      runner = BeakerAgentRunner.new
+      runner = LitmusAgentRunner.new
       @result = runner.execute_agent_on(@agent, @manifest)
     end
 

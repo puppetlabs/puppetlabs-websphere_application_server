@@ -12,7 +12,7 @@ describe 'Verify the minimum install' do
         @agent = WebSphereHelper.dmgr_host
         @manifest = WebSphereInstance.manifest
 
-        runner = BeakerAgentRunner.new
+        runner = LitmusAgentRunner.new
         @result = runner.execute_agent_on(@agent, @manifest)
         @second_result = runner.execute_agent_on(@agent, @manifest)
       end
@@ -37,7 +37,7 @@ describe 'Verify the minimum install' do
         raise '@agent MUST be set for the websphere class to install' unless @agent.hostname
         @manifest = WebSphereDmgr.manifest(target_agent: @agent)
 
-        runner = BeakerAgentRunner.new
+        runner = LitmusAgentRunner.new
         @result = runner.execute_agent_on(@agent, @manifest)
         @second_result = runner.execute_agent_on(@agent, @manifest)
       end
@@ -69,7 +69,7 @@ describe 'Verify the minimum install' do
                                                user: 'root',
                                                profile_base: '/opt/IBM/WebSphere85/AppServer/profiles',
                                                profile_name: 'PROFILE_DMGR_02')
-        runner = BeakerAgentRunner.new
+        runner = LitmusAgentRunner.new
         runner.execute_agent_on(@agent, manifest)
       end
 
@@ -88,7 +88,7 @@ describe 'Verify the minimum install' do
         @agent = WebSphereHelper.dmgr_host
         @manifest = WebSphereInstance.manifest(base_dir: '/home/webadmin/IBM')
 
-        runner = BeakerAgentRunner.new
+        runner = LitmusAgentRunner.new
         @result = runner.execute_agent_on(@agent, @manifest)
         @second_result = runner.execute_agent_on(@agent, @manifest)
       end
@@ -114,7 +114,7 @@ describe 'Verify the minimum install' do
         @manifest = WebSphereDmgr.manifest(target_agent: @agent,
                                            base_dir: '/home/webadmin/IBM')
 
-        runner = BeakerAgentRunner.new
+        runner = LitmusAgentRunner.new
         @result = runner.execute_agent_on(@agent, @manifest)
         @second_result = runner.execute_agent_on(@agent, @manifest)
       end
@@ -148,7 +148,7 @@ describe 'Verify the minimum install' do
                                                user: 'webadmin',
                                                profile_base: '/home/webadmin/IBM/WebSphere85/AppServer/profiles',
                                                profile_name: 'PROFILE_DMGR_02')
-        runner = BeakerAgentRunner.new
+        runner = LitmusAgentRunner.new
         runner.execute_agent_on(@agent, manifest)
       end
     end

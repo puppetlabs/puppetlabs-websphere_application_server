@@ -1,8 +1,8 @@
 require 'spec_helper_acceptance'
 
-describe 'add cluster members' do
+describe 'add cluster members', :integration do
   before(:all) do
-    runner = BeakerAgentRunner.new
+    runner = LitmusAgentRunner.new
 
     @dmgragent = WebSphereHelper.dmgr_host
     @appagent = WebSphereHelper.app_host
@@ -13,11 +13,6 @@ describe 'add cluster members' do
 
     @dmgrmanifest = WebSphereDmgr.manifest(target_agent: @dmgragent)
     @appmanifest = WebSphereAppServer.manifest(@appagent, @dmgragent)
-
-    @member1 = WebSphereHelper.fresh_node('redhat-7-x86_64')
-    @member2 = WebSphereHelper.fresh_node('centos-6-x86_64')
-    @member3 = WebSphereHelper.fresh_node('centos-6-x86_64')
-
     @execute_hash = { @dmgragent => @dmgrmanifest, @appagent => @appmanifest }
     @site_pp = runner.generate_site_pp(@execute_hash)
     runner.copy_site_pp(@site_pp)

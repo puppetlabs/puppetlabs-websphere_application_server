@@ -1,6 +1,6 @@
 require 'spec_helper_acceptance'
 
-describe 'install multiple instances' do
+describe 'install multiple instances', :integration do
   before(:all) do
     @agent = WebSphereHelper.dmgr_host
     @second_instance_name = 'WebSphere86'
@@ -19,11 +19,11 @@ describe 'install multiple instances' do
 
   it 'shall be installed to the first instance directory' do
     rc = WebSphereHelper.remote_dir_exists(@agent, WebSphereConstants.base_dir + '/' + WebSphereConstants.instance_name + '/AppServer')
-    expect(rc).to eq 0
+    expect(rc.exit_code).to eq 0
   end
 
   it 'shall be installed to the second instance directory' do
     rc = WebSphereHelper.remote_dir_exists(@agent, WebSphereConstants.base_dir + '/' + @second_instance_name + '/AppServer')
-    expect(rc).to eq 0
+    expect(rc.exit_code).to eq 0
   end
 end
