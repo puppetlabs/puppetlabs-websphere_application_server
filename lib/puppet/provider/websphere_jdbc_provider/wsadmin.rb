@@ -55,20 +55,24 @@ Puppet::Type.type(:websphere_jdbc_provider).provide(:wsadmin, parent: Puppet::Pr
   end
 
   def exists?
-    cmd = "\"print AdminConfig.list('JDBCProvider', AdminConfig.getid( '/"
-    cmd << "#{scope('get')}/'))\""
+    xml_file = resource[:profile_base] + '/' + resource[:dmgr_profile] + '/config/' + scope('path') + '/resources.xml'
 
-    debug "Querying JDBC Provider with #{cmd}"
-    result = wsadmin(command: cmd, user: resource[:user])
-    debug "Result: #{result}"
-
-    if result =~ %r{^"?#{resource[:name]}\(#{scope('path')}\|}
-      debug "Found match for #{resource[:name]}"
-      return true
+    unless File.exist?(xml_file)
+      debug "File does not exist! #{xml_file}"
+      return false
     end
 
-    debug "#{resource[:name]} doesn't seem to exist."
-    false
+    doc = REXML::Document.new(File.open(xml_file))
+    path = REXML::XPath.first(doc, "//resources.jdbc:JDBCProvider[@name='#{resource[:name]}']")
+    value = REXML::XPath.first(path, '@name') if path
+
+    debug "Exists? #{resource[:name]} : #{value}"
+
+    unless value
+      debug "#{resource[:name]} does not exist"
+      return false
+    end
+    true
   end
 
   def destroy

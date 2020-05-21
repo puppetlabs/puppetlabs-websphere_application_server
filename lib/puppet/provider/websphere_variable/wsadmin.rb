@@ -180,9 +180,9 @@ Puppet::Type.type(:websphere_variable).provide(:wsadmin, parent: Puppet::Provide
   end
 
   def flush
-    debug 'Initiating node synchronization'
-    sync_node
-    ## TODO: Need to handle this somehow.
-    # restart_server
+    case resource[:scope]
+    when %r{(server|node)}
+      sync_node
+    end
   end
 end

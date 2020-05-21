@@ -80,20 +80,23 @@ EOS
   end
 
   def exists?
-    cmd = "\"print AdminConfig.list('DataSource', AdminConfig.getid( '/"
-    cmd << "#{scope('get')}/'))\""
+    xml_file = resource[:profile_base] + '/' + resource[:dmgr_profile] + '/config/' + scope('path') + '/resources.xml'
 
-    debug "Querying JDBC Datasource with #{cmd}"
-    result = wsadmin(command: cmd, user: resource[:user])
-    debug "Result: #{result}"
-
-    if result =~ %r{^"?#{resource[:name]}\(#{scope('path')}\|}
-      debug "Found match for #{resource[:name]}"
-      return true
+    unless File.exist?(xml_file)
+      debug "File does not exist! #{xml_file}"
+      return false
     end
+    doc = REXML::Document.new(File.open(xml_file))
+    path = REXML::XPath.first(doc, "//resources.jdbc:JDBCProvider[@name='#{resource[:jdbc_provider]}']/factories[@xmi:type='resources.jdbc:DataSource'][@name='#{resource[:name]}']")
+    value = REXML::XPath.first(path, '@name') if path
 
-    debug "Datasource #{resource[:name]} doesn't seem to exist in #{scope('path')}"
-    false
+    debug "Exists? #{resource[:name]} : #{value}"
+
+    unless value
+      debug "#{resource[:name]} does not exist within #{resource[:jdbc_provider]}"
+      return false
+    end
+    true
   end
 
   def destroy

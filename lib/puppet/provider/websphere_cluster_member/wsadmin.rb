@@ -9,15 +9,23 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::P
   desc 'wsadmin provider for `websphere_cluster_member`'
 
   def exists?
-    cmd = "\"AdminConfig.getid('/ServerCluster:"
-    cmd += "#{resource[:cluster]}/ClusterMember:#{resource[:name]}"
-    cmd += "')\""
+    xml_file = resource[:profile_base] + '/' + resource[:dmgr_profile] + '/config/cells/' + resource[:cell] + '/clusters/' + resource[:cluster] + '/cluster.xml'
 
-    debug "Querying members: #{cmd}"
+    unless File.exist?(xml_file)
+      debug "#{xml_file} does not exist!}"
+      return false
+    end
+    doc = REXML::Document.new(File.open(xml_file))
+    path = REXML::XPath.first(doc, "//members[@memberName='#{resource[:name]}'][@nodeName='#{resource[:node_name]}']")
+    value = REXML::XPath.first(path, '@memberName') if path
 
-    result = wsadmin(command: cmd, user: resource[:user])
+    debug "Exists? #{resource[:name]} : #{value}"
 
-    return true if result =~ %r{'#{resource[:name]}\(cells\/#{resource[:cell]}\/clusters\/#{resource[:cluster]}}
+    unless value
+      debug "#{resource[:name]} does not exist on node #{resource[:node_name]}"
+      return false
+    end
+    true
   end
 
   def create
