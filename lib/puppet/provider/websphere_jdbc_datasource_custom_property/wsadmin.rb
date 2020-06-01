@@ -63,9 +63,9 @@ Puppet::Type.type(:websphere_jdbc_datasource_custom_property).provide(:wsadmin, 
 
     jdbc_provider_path = XPath.first(doc, "//resources.jdbc:JDBCProvider[@name='#{resource[:jdbc_provider]}']")
     raise Puppet::Error, "JDBC provider #{resource[:jdbc_provider]} does not exist. Cannot create custom property: #{resource[:name]}." unless jdbc_provider_path
-    jdbc_datasource_path = XPath.first(jdbc_provider_path, "//factories[@name='#{resource[:jdbc_datasource]}']")
+    jdbc_datasource_path = XPath.first(jdbc_provider_path, "factories[@name='#{resource[:jdbc_datasource]}']")
     raise Puppet::Error, "JDBC datasource #{resource[:jdbc_datasource]} does not exist for #{resource[:jdbc_provider]}. Cannot create custom property: #{resource[:name]}." unless jdbc_datasource_path
-    custom_property_path = XPath.first(jdbc_datasource_path, "//propertySet/resourceProperties[@name='#{resource[:name]}']")
+    custom_property_path = XPath.first(jdbc_datasource_path, "propertySet/resourceProperties[@name='#{resource[:name]}']")
 
     debug "Exists? Found match for #{resource[:name]}. Path #{custom_property_path}" if custom_property_path
 
