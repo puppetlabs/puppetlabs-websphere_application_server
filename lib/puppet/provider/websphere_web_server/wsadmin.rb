@@ -24,14 +24,20 @@ Puppet::Type.type(:websphere_web_server).provide(:wsadmin, parent: Puppet::Provi
   end
 
   def exists?
-    cmd = "\"print AdminTask.listServers('[-serverType WEB_SERVER]')\""
+    xml_file = resource[:profile_base] + '/' + resource[:dmgr_profile] + '/config/cells/' + resource[:cell] + '/nodes/' + resource[:node_name] + '/serverindex.xml'
 
-    debug "Getting list of nodes with jython: #{cmd}"
-    result = wsadmin(command: cmd, user: resource[:user])
-    debug result
+    unless File.exist?(xml_file)
+      debug "File does not exist! #{xml_file}"
+      return false
+    end
+    doc = REXML::Document.new(File.open(xml_file))
+    path = REXML::XPath.first(doc, "//serverEntries[@serverType='WEB_SERVER'][@serverName='#{resource[:name]}']")
+    value = REXML::XPath.first(path, '@serverName') if path
 
-    unless result =~ %r{^('|")?#{resource[:name]}\(.*\|server\.xml\)$}
-      debug "#{resource[:name]} doesn't seem to exist."
+    debug "Exists? #{resource[:name]} : #{value}"
+
+    unless value
+      debug "#{resource[:name]} does not exist"
       return false
     end
     true

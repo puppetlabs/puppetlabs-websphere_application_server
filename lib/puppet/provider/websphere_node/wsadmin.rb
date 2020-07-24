@@ -13,13 +13,20 @@ Puppet::Type.type(:websphere_node).provide(:wsadmin, parent: Puppet::Provider::W
   end
 
   def exists?
-    cmd = '"print AdminTask.listNodes()"'
+    xml_file = resource[:profile_base] + '/' + resource[:dmgr_profile] + '/config/cells/' + resource[:cell] + '/nodes/' + resource[:node_name] + '/node.xml'
 
-    debug "Running #{cmd}"
-    result = wsadmin(command: cmd, user: resource[:user])
-    debug result
+    unless File.exist?(xml_file)
+      debug "File does not exist! #{xml_file}"
+      return false
+    end
+    doc = REXML::Document.new(File.open(xml_file))
+    path = REXML::XPath.first(doc, "//topology.node:Node[@name='#{resource[:node_name]}']")
+    value = REXML::XPath.first(path, '@name') if path
 
-    unless result =~ %r{^('|")?#{resource[:node_name]}$}
+    debug "Exists? #{resource[:node_name]} : #{value}"
+
+    unless value
+      debug "#{resource[:node_name]} does not exist"
       return false
     end
     true

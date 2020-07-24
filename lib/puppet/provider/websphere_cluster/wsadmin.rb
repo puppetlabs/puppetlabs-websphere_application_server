@@ -12,17 +12,20 @@ Puppet::Type.type(:websphere_cluster).provide(:wsadmin, parent: Puppet::Provider
   desc 'wsadmin provider for `websphere_cluster`'
 
   def exists?
-    # This will output an empty string: '' if there are no clusters.
-    # If a cluster is present, it will output:
-    #   test_cluster(cells/dmgrCell01/clusters/test_cluster|cluster.xml#ServerCluster_1421550161639)'
-    # Unfortunately, it does *not* give a good exit code. It always exits 0
+    cluster_xml = resource[:profile_base] + '/' + resource[:dmgr_profile] + '/config/cells/*/clusters/' + resource[:name] + '/cluster.xml'
 
-    cmd = "\"AdminConfig.getid('/ServerCluster: #{resource[:name]}/')\""
+    Dir.glob(cluster_xml) do |file_name|
+      xml_data = File.open(file_name)
+      doc = REXML::Document.new(xml_data)
 
-    result = wsadmin(command: cmd, user: resource[:user])
+      value = doc.root.attributes['name']
+      debug "Exists? #{resource[:name]} : #{value}"
 
-    return false unless result.include?(resource[:name])
-    true
+      if value.to_s == resource[:name]
+        return true
+      end
+    end
+    false
   end
 
   def create
