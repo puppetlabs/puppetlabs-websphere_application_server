@@ -21,7 +21,7 @@ def changelog_project
 
   returnVal = nil
   returnVal ||= begin
-    metadata_source = JSON.load(File.read('metadata.json'))['source']
+    metadata_source = JSON.load(File.read('metadata.json'))['project_page']
     metadata_source_match = metadata_source && metadata_source.match(%r{.*\/([^\/]*?)(?:\.git)?\Z})
 
     metadata_source_match && metadata_source_match[1]
@@ -85,7 +85,7 @@ Gemfile:
         condition: "Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.2.2')"
 EOM
   end
-end
+end 
 
 require 'rspec/core/rake_task'
 namespace :websphere_application_server do
