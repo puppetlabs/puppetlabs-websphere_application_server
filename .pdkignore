@@ -32,6 +32,7 @@
 /.gitignore
 /.gitlab-ci.yml
 /.pdkignore
+/.puppet-lint.rc
 /Rakefile
 /rakelib/
 /.rspec
@@ -40,6 +41,7 @@
 /.yardopts
 /spec/
 /.vscode/
+/.sync.yml
 /plans/provision_machines.pp
 /plans/pe_server_setup.pp
 /plans/puppet_agents_setup.pp
