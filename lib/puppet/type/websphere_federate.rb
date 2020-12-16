@@ -44,7 +44,7 @@ Puppet::Type.newtype(:websphere_federate) do
     isnamevar
     desc 'Required. The profile to federate'
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid profile #{value}")
       end
     end

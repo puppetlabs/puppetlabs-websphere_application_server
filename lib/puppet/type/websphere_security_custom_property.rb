@@ -78,7 +78,7 @@ Puppet::Type.newtype(:websphere_security_custom_property) do
 
   validate do
     [:dmgr_profile, :name, :user, :node, :cell].each do |value|
-      raise ArgumentError, "Invalid #{value} #{self[value]}" unless value =~ %r{^[-0-9A-Za-z._]+$}
+      raise ArgumentError, "Invalid #{value} #{self[value]}" unless %r{^[-0-9A-Za-z._]+$}.match?(value)
     end
 
     raise("Invalid profile_base #{self[:profile_base]}") unless Pathname.new(self[:profile_base]).absolute?

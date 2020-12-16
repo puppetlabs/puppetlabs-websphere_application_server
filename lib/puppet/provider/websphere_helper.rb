@@ -148,7 +148,7 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider # rubocop:disable St
     debug "Sync status #{resource[:node_name]}: #{status}"
 
     return if status.include?("'true'")
-    if status =~ %r{Error found in String ""; cannot create ObjectName}
+    if %r{Error found in String ""; cannot create ObjectName}.match?(status)
       msg = <<-EOT
       Attempt to synchronize node failed because the node service likely
       isn't running or reachable.  A message about "cannot create ObjectName

@@ -173,10 +173,10 @@ Puppet::Type.newtype(:websphere_jdbc_datasource_custom_property) do
 
   validate do
     [:dmgr_profile, :name, :user, :node, :cell].each do |value|
-      raise ArgumentError, "Invalid #{value} #{self[value]}" unless value =~ %r{^[-0-9A-Za-z._]+$}
+      raise ArgumentError, "Invalid #{value} #{self[value]}" unless %r{^[-0-9A-Za-z._]+$}.match?(value)
     end
 
-    raise ArgumentError, "Invalid scope #{self[:scope]}: Must be cell, cluster, node, or server" unless self[:scope] =~ %r{^(cell|cluster|node|server)$}
+    raise ArgumentError, "Invalid scope #{self[:scope]}: Must be cell, cluster, node, or server" unless %r{^(cell|cluster|node|server)$}.match?(self[:scope])
 
     raise ArgumentError, 'server is required when scope is server' if self[:server].nil? && self[:scope] == 'server'
     raise ArgumentError, 'cell is a required attribute' if self[:cell].nil?
@@ -191,7 +191,7 @@ Puppet::Type.newtype(:websphere_jdbc_datasource_custom_property) do
       self[:profile] = self[:dmgr_profile]
     end
 
-    unless self[:java_type] =~ %r{^(String|Integer|Double|Float|Short|Long|Byte|Boolean)$}
+    unless %r{^(String|Integer|Double|Float|Short|Long|Byte|Boolean)$}.match?(self[:java_type])
       raise ArgumentError, "Invalid java_type #{self[:java_type]}: Must be String, Integer, Double, Float, Short, Long, Byte, or Boolean"
     end
   end

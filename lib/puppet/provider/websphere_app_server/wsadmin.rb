@@ -23,7 +23,7 @@ Puppet::Type.type(:websphere_app_server).provide(:wsadmin, parent: Puppet::Provi
     result = wsadmin(command: cmd, user: resource[:user])
     debug result
 
-    unless result =~ %r{^#{resource[:name]}\(cells/.*/nodes/#{resource[:node_name]}/servers/#{resource[:name]}}
+    unless %r{^#{resource[:name]}\(cells/.*/nodes/#{resource[:node_name]}/servers/#{resource[:name]}}.match?(result)
       return false
     end
     true

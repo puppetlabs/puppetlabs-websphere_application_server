@@ -10,8 +10,8 @@ describe 'Install the websphere dmgr', :integration do
   end
 
   it 'is installed' do
-    expect(WebSphereHelper.remote_file_exists(@agent, WebSphereConstants.dmgr_status)) # rubocop:disable RSpec/VoidExpect
-    expect(WebSphereHelper.remote_file_exists(@agent, WebSphereConstants.ws_admin)) # rubocop:disable RSpec/VoidExpect
+    expect(WebSphereHelper.remote_file_exists(@agent, WebSphereConstants.dmgr_status))
+    expect(WebSphereHelper.remote_file_exists(@agent, WebSphereConstants.ws_admin))
   end
 
   it_behaves_like 'a running dmgr', WebSphereConstants.profile_base, WebSphereConstants.dmgr_title

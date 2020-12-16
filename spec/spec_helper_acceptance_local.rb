@@ -361,7 +361,7 @@ class WebSphereHelper
     runner = LitmusAgentRunner.new
     result = runner.execute_agent_on(host, nfs_pp)
 
-    raise("nfs mount of QA software failed [#{HelperConstants.qa_resource_source}]") unless result.exit_code.to_s =~ %r{[0,2]}
+    raise("nfs mount of QA software failed [#{HelperConstants.qa_resource_source}]") unless %r{[0,2]}.match?(result.exit_code.to_s)
     raise('nfs mount failed as the software directories are missing') unless remote_dir_exists(host, WebSphereConstants.fixpack_installer)
   end
 end
@@ -389,9 +389,9 @@ RSpec.configure do |c|
     PP
     Helper.instance.apply_manifest(pp)
     osfamily = WebSphereHelper.platform_by_host(host)
-    if osfamily =~ %r{^redhat|^oracle|^scientific|^centos}
+    if %r{^redhat|^oracle|^scientific|^centos}.match?(osfamily)
       Helper.instance.run_shell('yum install -y lsof')
-    elsif osfamily =~ %r{^ubuntu|^debian}
+    elsif %r{^ubuntu|^debian}.match?(osfamily)
       Helper.instance.run_shell('apt-get install -y lsof')
     else
       raise('Acceptance tests cannot run as OS package [lsof] cannot be installed')

@@ -40,7 +40,7 @@ module WebSphereConstants
   @cluster_title          = 'MyCluster01'
   @cluster_member         = 'AppServer01'
 
-  @dmgr_status            = @profile_base + '/' + @dmgr_title + '/bin/serverStatus.sh'
+  @dmgr_status = @profile_base + '/' + @dmgr_title + '/bin/serverStatus.sh'
   @ws_admin = @profile_base + '/' + @dmgr_title + '/bin/wsadmin.sh'
 
   class << self

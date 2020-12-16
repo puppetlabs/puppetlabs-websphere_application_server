@@ -18,7 +18,7 @@ Puppet::Type.newtype(:websphere_app_server) do
     EOT
 
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid dmgr_profile #{value}")
       end
     end
@@ -37,7 +37,7 @@ Puppet::Type.newtype(:websphere_app_server) do
     desc 'The name of the application server to create or manage.'
 
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid name #{value}")
       end
     end
@@ -49,7 +49,7 @@ Puppet::Type.newtype(:websphere_app_server) do
       `websphere_node` type for managing the creation of nodes.
     EOT
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid dmgr_profile #{value}")
       end
     end
@@ -74,7 +74,7 @@ Puppet::Type.newtype(:websphere_app_server) do
 
     defaultto 'root'
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid user #{value}")
       end
     end

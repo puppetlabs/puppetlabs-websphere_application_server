@@ -18,7 +18,7 @@ Puppet::Type.newtype(:websphere_cluster) do
     EOT
 
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid dmgr_profile #{value}")
       end
     end
@@ -37,7 +37,7 @@ Puppet::Type.newtype(:websphere_cluster) do
     desc 'The name of the cluster to manage.'
 
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid name #{value}")
       end
     end
@@ -63,7 +63,7 @@ Puppet::Type.newtype(:websphere_cluster) do
     EOT
 
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid user #{value}")
       end
     end

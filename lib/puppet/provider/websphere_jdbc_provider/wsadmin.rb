@@ -27,11 +27,11 @@ Puppet::Type.type(:websphere_jdbc_provider).provide(:wsadmin, parent: Puppet::Pr
 
     case what
     when 'mod'
-      return mod_path
+      mod_path
     when 'get'
-      return get
+      get
     when 'path'
-      return path
+      path
     end
   end
 

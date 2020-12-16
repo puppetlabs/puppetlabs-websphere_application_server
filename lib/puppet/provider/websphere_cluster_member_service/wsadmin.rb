@@ -30,7 +30,7 @@ Puppet::Type.type(:websphere_cluster_member_service).provide(:wsadmin, parent: P
     ## including single quotes.
     return if result.include?("'true'")
 
-    if result =~ %r{Error found in String ""; cannot create ObjectName}
+    if %r{Error found in String ""; cannot create ObjectName}.match?(result)
       msg = <<-END
       Could not start cluster member #{resource[:name]}. The service on
       node #{resource[:node_name]} may not be running.

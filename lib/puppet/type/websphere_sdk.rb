@@ -32,7 +32,7 @@ Puppet::Type.newtype(:websphere_sdk) do
 
   validate do
     [:server, :profile, :user].each do |value|
-      raise ArgumentError, "Invalid #{value} #{self[:value]}" unless value =~ %r{^[-0-9A-Za-z._]+$}
+      raise ArgumentError, "Invalid #{value} #{self[:value]}" unless %r{^[-0-9A-Za-z._]+$}.match?(value)
     end
 
     raise ArgumentError, 'Name of the SDK to modify is required.' unless self[:sdkname]
