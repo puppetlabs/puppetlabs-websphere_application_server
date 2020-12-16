@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Puppet::Type.newtype(:websphere_cluster_member_service) do
   @doc = <<-DOC
     @summary Manages the a WebSphere cluster member's service.

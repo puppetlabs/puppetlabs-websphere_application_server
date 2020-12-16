@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Provider for managing WebSphere clusters via 'wsadmin'
 #
 # This thing needs some love - some Ruby refinement.

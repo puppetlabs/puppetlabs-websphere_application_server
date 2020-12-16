@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Provider for managing websphere cluster members services.
 #
 # Each cluster member has a 'service' to enable/disable it with the cluster.

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 module HelperConstants
   @unsupported_platforms    = ['Suse', 'windows', 'AIX', 'Solaris']

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Provider for managing websphere cluster members.
 # This parses the cluster member's "server.xml" to read current status, but
 # uses the 'wsadmin' tool to make changes.  We cannot modify the xml data, as

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 shared_examples 'a running dmgr' do |profile_base, dmgr_title|
   before(:all) do # rubocop:disable RSpec/BeforeAfterAll
@@ -21,7 +22,7 @@ shared_examples 'a stopped dmgr' do |profile_base, dmgr_title|
   before(:all) do # rubocop:disable RSpec/BeforeAfterAll
     ENV['TARGET_HOST'] = @agent
     @dmgr_result = Helper.instance.run_shell("#{profile_base}/#{dmgr_title}/bin/serverStatus.sh -all -profileName #{WebSphereConstants.dmgr_title} |  grep 'The Deployment Manager'")
-    @ws_admin_result = Helper.instance.run_shell("#{profile_base}/#{dmgr_title}/bin/wsadmin.sh -lang jython -c \"AdminConfig.getid('/ServerCluster: #{WebSphereConstants.cluster_member}/')\"", expect_failures: true) # rubocop:disable Metrics/LineLength
+    @ws_admin_result = Helper.instance.run_shell("#{profile_base}/#{dmgr_title}/bin/wsadmin.sh -lang jython -c \"AdminConfig.getid('/ServerCluster: #{WebSphereConstants.cluster_member}/')\"", expect_failures: true) # rubocop:disable Layout/LineLength
     @ws_admin_result.exit_code == %r{0,1,103}
   end
 

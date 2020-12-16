@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../websphere_helper'
 #
 Puppet::Type.type(:websphere_security_custom_property).provide(:wsadmin, parent: Puppet::Provider::Websphere_Helper) do

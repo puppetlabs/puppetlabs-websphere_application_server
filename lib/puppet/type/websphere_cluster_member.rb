@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Puppet::Type.newtype(:websphere_cluster_member) do
   @doc = <<-DOC
     @summary Manages members of a WebSphere server cluster.

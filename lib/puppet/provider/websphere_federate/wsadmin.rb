@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'yaml'
 
 Puppet::Type.type(:websphere_federate).provide(:wsadmin) do

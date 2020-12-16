@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'puppet_litmus'
 require 'installer_constants'
 require 'master_manipulator'

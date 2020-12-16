@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../websphere_helper'
 
 Puppet::Type.type(:websphere_sdk).provide(:managesdk, parent: Puppet::Provider::Websphere_Helper) do
