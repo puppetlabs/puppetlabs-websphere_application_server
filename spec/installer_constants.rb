@@ -83,7 +83,7 @@ module JDBCProviderConstants
 
   class << self
     attr_reader :jdbc_provider, :dmgr_profile, :profile_base, :user, :scope, :cell, :node_name, :server, :dbtype,
-                :providertype, :implementation, :description, :jdbc_driver, :classpath, :oracle_driver_target, :jdbc_driver
+                :providertype, :implementation, :description, :jdbc_driver, :classpath, :oracle_driver_target
   end
 end
 
