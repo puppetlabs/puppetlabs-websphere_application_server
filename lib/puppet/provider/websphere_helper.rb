@@ -5,7 +5,7 @@ require 'tempfile'
 
 # Common functionality for our websphere cluster providers.
 # The methods here are generic enough to be used in multiple providers.
-class Puppet::Provider::Websphere_Helper < Puppet::Provider # rubocop:disable Style/ClassAndModuleCamelCase
+class Puppet::Provider::Websphere_Helper < Puppet::Provider # rubocop:disable Naming/ClassAndModuleCamelCase
   ## Build the base 'wsadmin' command that we'll use to make changes.  This
   ## command is derived from whatever the 'profile_base' is (since wsadmin is
   ## profile-specific), the name of the profile, and credentials, if provided.
