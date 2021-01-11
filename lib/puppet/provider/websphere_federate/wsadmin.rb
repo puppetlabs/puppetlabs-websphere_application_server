@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'yaml'
 
 Puppet::Type.type(:websphere_federate).provide(:wsadmin) do
@@ -62,7 +64,7 @@ Puppet::Type.type(:websphere_federate).provide(:wsadmin) do
 
       debug "result: #{result}"
       # Validate the result, regex should account for whitespace and new line inconsistencies in wsadmin.
-      unless result =~ %r{Node .* has been successfully\s*federated}
+      unless %r{Node .* has been successfully\s*federated}.match?(result)
         raise Puppet::Error, "#{resource[:node_name]} may not have been successful federating. Run with --debug for details."
       end
 
@@ -95,6 +97,6 @@ Puppet::Type.type(:websphere_federate).provide(:wsadmin) do
 
     debug "result: #{result}"
 
-    raise Puppet::Error, "#{resource[:node_name]} may not have been successful unfederating. Run with --debug for details." unless result =~ %r{Removal of node .* is complete}
+    raise Puppet::Error, "#{resource[:node_name]} may not have been successful unfederating. Run with --debug for details." unless %r{Removal of node .* is complete}.match?(result)
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_jvm_custom_property) do
@@ -104,7 +106,7 @@ Puppet::Type.newtype(:websphere_jvm_custom_property) do
 
   validate do
     [:dmgr_profile, :name, :user, :node, :cell].each do |value|
-      raise ArgumentError, "Invalid #{value} #{self[value]}" unless value =~ %r{^[-0-9A-Za-z._]+$}
+      raise ArgumentError, "Invalid #{value} #{self[value]}" unless %r{^[-0-9A-Za-z._]+$}.match?(value)
     end
 
     raise ArgumentError, 'server is required attribute' if self[:server].nil?

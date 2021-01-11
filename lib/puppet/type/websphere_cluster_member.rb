@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Puppet::Type.newtype(:websphere_cluster_member) do
   @doc = <<-DOC
     @summary Manages members of a WebSphere server cluster.
@@ -26,7 +28,7 @@ Puppet::Type.newtype(:websphere_cluster_member) do
   newparam(:cell) do
     desc 'The name of the cell the cluster member belongs to'
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid cell #{value}")
       end
     end
@@ -39,7 +41,7 @@ Puppet::Type.newtype(:websphere_cluster_member) do
   newparam(:cluster) do
     desc 'The name of the cluster'
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid cluster #{value}")
       end
     end
@@ -48,7 +50,7 @@ Puppet::Type.newtype(:websphere_cluster_member) do
   newparam(:dmgr_profile) do
     desc 'The name of the DMGR profile to manage. E.g. PROFILE_DMGR_01'
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid dmgr_profile #{value}")
       end
     end
@@ -145,7 +147,7 @@ Puppet::Type.newtype(:websphere_cluster_member) do
     desc 'The server to add to the cluster'
     isnamevar
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid server #{value}")
       end
     end
@@ -154,7 +156,7 @@ Puppet::Type.newtype(:websphere_cluster_member) do
   newparam(:node_name) do
     desc 'Required. The name of the _node_ to add as a cluster member.'
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid node_name #{value}")
       end
     end
@@ -201,7 +203,7 @@ Puppet::Type.newtype(:websphere_cluster_member) do
     desc "The user to run 'wsadmin' with"
     defaultto 'root'
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid user #{value}")
       end
     end

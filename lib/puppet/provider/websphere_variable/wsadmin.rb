@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../websphere_helper'
 
 Puppet::Type.type(:websphere_variable).provide(:wsadmin, parent: Puppet::Provider::Websphere_Helper) do
@@ -58,7 +60,7 @@ Puppet::Type.type(:websphere_variable).provide(:wsadmin, parent: Puppet::Provide
     debug "Running #{cmd}"
     result = wsadmin(file: cmd, user: resource[:user], failonfail: false)
 
-    if result =~ %r{Invalid parameter value "" for parameter "parent config id" on command "create"}
+    if %r{Invalid parameter value "" for parameter "parent config id" on command "create"}.match?(result)
       ## I'd rather handle this in the Jython, but I'm not sure how.
       ## This usually indicates that the server isn't ready on the DMGR yet -
       ## the DMGR needs to do another Puppet run, probably.

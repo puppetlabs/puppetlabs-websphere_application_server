@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../websphere_helper'
 #
 Puppet::Type.type(:websphere_jdbc_datasource_jaas_auth_data).provide(:wsadmin, parent: Puppet::Provider::Websphere_Helper) do

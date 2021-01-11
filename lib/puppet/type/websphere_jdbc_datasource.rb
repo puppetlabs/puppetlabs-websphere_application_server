@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_jdbc_datasource) do
@@ -34,12 +36,12 @@ Puppet::Type.newtype(:websphere_jdbc_datasource) do
 
   validate do
     [:dmgr_profile, :name, :user, :node_name, :cell].each do |value|
-      raise ArgumentError, "Invalid #{value} #{self[value]}" unless value =~ %r{^[-0-9A-Za-z._]+$}
+      raise ArgumentError, "Invalid #{value} #{self[value]}" unless %r{^[-0-9A-Za-z._]+$}.match?(value)
     end
 
     raise ArgumentError, 'cell is a required attribute' if self[:cell].nil?
     raise("Invalid profile_base #{self[:profile_base]}") unless Pathname.new(self[:profile_base]).absolute?
-    raise ArgumentError 'Invalid scope, must be "node", "server", "cell", or "cluster"' unless self[:scope] =~ %r{^(node|server|cell|cluster)$}
+    raise ArgumentError 'Invalid scope, must be "node", "server", "cell", or "cluster"' unless %r{^(node|server|cell|cluster)$}.match?(self[:scope])
   end
 
   newparam(:name) do

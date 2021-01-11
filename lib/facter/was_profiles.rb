@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 ## Facts for IBM WebSphere Application Server
 ##

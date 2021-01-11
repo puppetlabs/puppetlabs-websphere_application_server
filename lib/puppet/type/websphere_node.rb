@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_node) do
@@ -43,7 +45,7 @@ Puppet::Type.newtype(:websphere_node) do
       Example: dmgrProfile01"
 
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid dmgr_profile #{value}")
       end
     end
@@ -74,7 +76,7 @@ Puppet::Type.newtype(:websphere_node) do
     EOT
 
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid node name: #{value}")
       end
     end
@@ -87,7 +89,7 @@ Puppet::Type.newtype(:websphere_node) do
     EOT
     defaultto 'linux'
     validate do |value|
-      unless value =~ %r{(linux|aix)}
+      unless %r{(linux|aix)}.match?(value)
         raise("OS #{value} not supported. Must be 'linux' or 'aix'")
       end
     end
@@ -121,7 +123,7 @@ Puppet::Type.newtype(:websphere_node) do
     defaultto 'root'
     desc "The user to run 'wsadmin' with"
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid user #{value}")
       end
     end

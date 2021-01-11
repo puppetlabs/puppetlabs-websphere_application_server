@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_namespace_binding) do
@@ -189,10 +191,10 @@ Puppet::Type.newtype(:websphere_namespace_binding) do
 
   validate do
     [:dmgr_profile, :name, :user, :node, :cell].each do |value|
-      raise ArgumentError, "Invalid #{value} #{self[value]}" unless value =~ %r{^[-0-9A-Za-z._]+$}
+      raise ArgumentError, "Invalid #{value} #{self[value]}" unless %r{^[-0-9A-Za-z._]+$}.match?(value)
     end
 
-    raise ArgumentError, "Invalid scope #{self[:scope]}: Must be cell, cluster, node, or server" unless self[:scope] =~ %r{^(cell|cluster|node|server)$}
+    raise ArgumentError, "Invalid scope #{self[:scope]}: Must be cell, cluster, node, or server" unless %r{^(cell|cluster|node|server)$}.match?(self[:scope])
 
     raise ArgumentError, 'server is required when scope is server' if self[:server].nil? && self[:scope] == 'server'
     raise ArgumentError, 'cell is a required attribute' if self[:cell].nil?
@@ -206,7 +208,7 @@ Puppet::Type.newtype(:websphere_namespace_binding) do
     end
 
     # general namespace_binding validatione
-    raise ArgumentError, 'binding_type is invalid. Specify string, ejb, corba, or indirect' unless self[:binding_type] =~ %r{^(string|ejb|corba|indirect)$}
+    raise ArgumentError, 'binding_type is invalid. Specify string, ejb, corba, or indirect' unless %r{^(string|ejb|corba|indirect)$}.match?(self[:binding_type])
     raise ArgumentError, 'name_in_name_space is required' if self[:name_in_name_space].nil?
 
     # string binding_type validation

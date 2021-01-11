@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_jdbc_datasource_jaas_auth_data) do
@@ -69,7 +71,7 @@ Puppet::Type.newtype(:websphere_jdbc_datasource_jaas_auth_data) do
 
   validate do
     [:dmgr_profile, :name, :user, :node, :cell].each do |value|
-      raise ArgumentError, "Invalid #{value} #{self[value]}" unless value =~ %r{^[-0-9A-Za-z._]+$}
+      raise ArgumentError, "Invalid #{value} #{self[value]}" unless %r{^[-0-9A-Za-z._]+$}.match?(value)
     end
 
     raise ArgumentError, 'cell is a required attribute' if self[:cell].nil?

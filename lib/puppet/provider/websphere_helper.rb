@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'rexml/document'
 require 'tempfile'
 
 # Common functionality for our websphere cluster providers.
 # The methods here are generic enough to be used in multiple providers.
-class Puppet::Provider::Websphere_Helper < Puppet::Provider # rubocop:disable Style/ClassAndModuleCamelCase
+class Puppet::Provider::Websphere_Helper < Puppet::Provider # rubocop:disable Naming/ClassAndModuleCamelCase
   ## Build the base 'wsadmin' command that we'll use to make changes.  This
   ## command is derived from whatever the 'profile_base' is (since wsadmin is
   ## profile-specific), the name of the profile, and credentials, if provided.
@@ -146,7 +148,7 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider # rubocop:disable St
     debug "Sync status #{resource[:node_name]}: #{status}"
 
     return if status.include?("'true'")
-    if status =~ %r{Error found in String ""; cannot create ObjectName}
+    if %r{Error found in String ""; cannot create ObjectName}.match?(status)
       msg = <<-EOT
       Attempt to synchronize node failed because the node service likely
       isn't running or reachable.  A message about "cannot create ObjectName

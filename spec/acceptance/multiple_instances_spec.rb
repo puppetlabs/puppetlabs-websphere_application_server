@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 describe 'install multiple instances', :integration do

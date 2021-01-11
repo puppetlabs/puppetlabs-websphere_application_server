@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 shared_examples 'an idempotent resource' do
   it 'runs without errors' do
     expect(@result.exit_code).to eq 2

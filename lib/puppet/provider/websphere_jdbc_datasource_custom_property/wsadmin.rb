@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../websphere_helper'
 #
 Puppet::Type.type(:websphere_jdbc_datasource_custom_property).provide(:wsadmin, parent: Puppet::Provider::Websphere_Helper) do
@@ -13,9 +15,9 @@ Puppet::Type.type(:websphere_jdbc_datasource_custom_property).provide(:wsadmin, 
       query = '/Cell:' + "#{resource[:cell]}/" + 'Node:' + "#{resource[:node_name]}/JDBCProvider:#{resource[:jdbc_provider]}/DataSource:#{resource[:jdbc_datasource]}/"
       file += "/config/cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/resources.xml"
     when 'server'
-      # rubocop:disable Metrics/LineLength
+      # rubocop:disable Layout/LineLength
       query = '/Cell:' + "#{resource[:cell]}/" + 'Node:' + "#{resource[:node_name]}/" + 'Server:' + "#{resource[:server]}/JDBCProvider:#{resource[:jdbc_provider]}/DataSource:#{resource[:jdbc_datasource]}/"
-      # rubocop:enable Metrics/LineLength
+      # rubocop:enable Layout/LineLength
       file += "/config/cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/#{resource[:server]}/resources.xml"
     when 'cluster'
       query = '/Cell:' + "#{resource[:cell]}/" + 'ServerCluster:' + "#{resource[:cluster]}/JDBCProvider:#{resource[:jdbc_provider]}/DataSource:#{resource[:jdbc_datasource]}/"

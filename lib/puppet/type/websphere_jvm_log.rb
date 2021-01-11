@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pathname'
 
 Puppet::Type.newtype(:websphere_jvm_log) do
@@ -85,7 +87,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
   newproperty(:out_rollover_size) do
     desc 'Filesize in MB for log rotation'
     validate do |value|
-      unless value.to_s =~ %r{^\d+}
+      unless %r{^\d+}.match?(value.to_s)
         raise ArgumentError, "Invalid out_rollover_size: #{value}. Must be integer."
       end
     end
@@ -94,7 +96,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
   newproperty(:err_rollover_size) do
     desc 'Filesize in MB for log rotation'
     validate do |value|
-      unless value.to_s =~ %r{^\d+}
+      unless %r{^\d+}.match?(value.to_s)
         raise ArgumentError, "Invalid err_rollover_size: #{value}. Must be integer."
       end
     end
@@ -159,7 +161,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
 
     desc 'The server in the scope for this variable.'
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise ArgumentError, "Invalid server #{value}"
       end
     end
@@ -170,7 +172,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
 
     desc 'Required. The cell that the node or server belongs to.'
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise ArgumentError, "Invalid cell: #{value}"
       end
     end
@@ -181,7 +183,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
 
     desc 'Required.  The node to manage properties on.'
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise ArgumentError, "Invalid node_name: #{value}"
       end
     end
@@ -195,7 +197,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
     Examples: dmgrProfile01, PROFILE_APP_001
     EOT
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise ArgumentError, "Invalid profile #{value}"
       end
     end
@@ -210,7 +212,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
     EOT
     defaultto { @resource[:profile] }
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise ArgumentError, "Invalid dmgr_profile #{value}"
       end
     end
@@ -231,7 +233,7 @@ Puppet::Type.newtype(:websphere_jvm_log) do
     defaultto 'root'
     desc "The user to run 'wsadmin' with"
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise ArgumentError, "Invalid user #{value}"
       end
     end

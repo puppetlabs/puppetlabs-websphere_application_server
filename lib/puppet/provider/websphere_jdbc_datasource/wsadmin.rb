@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../websphere_helper'
 
 Puppet::Type.type(:websphere_jdbc_datasource).provide(:wsadmin, parent: Puppet::Provider::Websphere_Helper) do
@@ -25,11 +27,11 @@ Puppet::Type.type(:websphere_jdbc_datasource).provide(:wsadmin, parent: Puppet::
 
     case what
     when 'mod'
-      return mod_path
+      mod_path
     when 'get'
-      return get
+      get
     when 'path'
-      return path
+      path
     end
   end
 

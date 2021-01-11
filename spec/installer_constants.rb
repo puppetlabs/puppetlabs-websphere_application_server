@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 module HelperConstants
   @unsupported_platforms    = ['Suse', 'windows', 'AIX', 'Solaris']
@@ -39,7 +40,7 @@ module WebSphereConstants
   @cluster_title          = 'MyCluster01'
   @cluster_member         = 'AppServer01'
 
-  @dmgr_status            = @profile_base + '/' + @dmgr_title + '/bin/serverStatus.sh'
+  @dmgr_status = @profile_base + '/' + @dmgr_title + '/bin/serverStatus.sh'
   @ws_admin = @profile_base + '/' + @dmgr_title + '/bin/wsadmin.sh'
 
   class << self
@@ -82,7 +83,7 @@ module JDBCProviderConstants
 
   class << self
     attr_reader :jdbc_provider, :dmgr_profile, :profile_base, :user, :scope, :cell, :node_name, :server, :dbtype,
-                :providertype, :implementation, :description, :jdbc_driver, :classpath, :oracle_driver_target, :jdbc_driver
+                :providertype, :implementation, :description, :jdbc_driver, :classpath, :oracle_driver_target
   end
 end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../websphere_helper'
 
 Puppet::Type.type(:websphere_sdk).provide(:managesdk, parent: Puppet::Provider::Websphere_Helper) do
@@ -13,7 +15,7 @@ Puppet::Type.type(:websphere_sdk).provide(:managesdk, parent: Puppet::Provider::
       result = Puppet::Util::Execution.execute(command, uid: resource[:user], combine: true)
     end
 
-    unless result =~ %r{Successfully performed the requested managesdk task}
+    unless %r{Successfully performed the requested managesdk task}.match?(result)
       raise Puppet::Error, "Websphere_sdk: Failure in command: #{command}. Output: #{result}"
     end
 
@@ -79,9 +81,9 @@ Puppet::Type.type(:websphere_sdk).provide(:managesdk, parent: Puppet::Provider::
                 end
 
       ## If any of the returned versions don't match, return one of the non-compliant versions.
-      next unless line =~ %r{#{pattern}}
+      next unless %r{#{pattern}}.match?(line)
       ## Even when modifying "all", nodeagent doesn't seem to update
-      next if line =~ %r{nodeagent SDK name:}
+      next if %r{nodeagent SDK name:}.match?(line)
       version = line[%r{#{pattern}(.*)(\s+)?$}, 2].strip
       debug "sdk Version #{version} found"
       unless version == resource[:sdkname]

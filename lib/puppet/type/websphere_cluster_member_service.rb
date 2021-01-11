@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Puppet::Type.newtype(:websphere_cluster_member_service) do
   @doc = <<-DOC
     @summary Manages the a WebSphere cluster member's service.
@@ -53,7 +55,7 @@ Puppet::Type.newtype(:websphere_cluster_member_service) do
   newparam(:cell) do
     desc 'The name of the cell the cluster member belongs to'
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid cell #{value}")
       end
     end
@@ -62,7 +64,7 @@ Puppet::Type.newtype(:websphere_cluster_member_service) do
   newparam(:cluster) do
     desc 'Required. The cluster that the cluster member belongs to.'
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid cluster #{value}")
       end
     end
@@ -71,7 +73,7 @@ Puppet::Type.newtype(:websphere_cluster_member_service) do
   newparam(:dmgr_profile) do
     desc 'The name of the DMGR profile to manage. E.g. PROFILE_DMGR_01'
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid dmgr_profile #{value}")
       end
     end
@@ -88,7 +90,7 @@ Puppet::Type.newtype(:websphere_cluster_member_service) do
     desc 'The name of the cluster member that this service belongs to.'
     isnamevar
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid name #{value}")
       end
     end
@@ -100,7 +102,7 @@ Puppet::Type.newtype(:websphere_cluster_member_service) do
       the `websphere_node` type for managing the creation of nodes.
     EOT
     validate do |value|
-      unless value =~ %r{^[-0-9A-Za-z._]+$}
+      unless %r{^[-0-9A-Za-z._]+$}.match?(value)
         raise("Invalid node_name #{value}")
       end
     end
