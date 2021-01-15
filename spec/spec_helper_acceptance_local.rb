@@ -28,11 +28,11 @@ class LitmusAgentRunner
   include MasterManipulator::Site
   include PuppetLitmus
 
-  def create_site_pp_host(master_host, opts = {})
+  def create_site_pp_host(server_host, opts = {})
     opts[:manifest] ||= ''
     opts[:node_def_name] ||= 'default'
-    ENV['TARGET_HOST'] = master_host
-    master_certname = Helper.instance.run_shell('puppet config print certname').stdout.rstrip
+    ENV['TARGET_HOST'] = server_host
+    server_certname = Helper.instance.run_shell('puppet config print certname').stdout.rstrip
 
     default_def = <<-MANIFEST
 node default {
@@ -51,7 +51,7 @@ MANIFEST
 
     site_pp = <<-MANIFEST
 filebucket { 'main':
-server => '#{master_certname}',
+server => '#{server_certname}',
 path   => false,
 }
 
@@ -64,13 +64,13 @@ MANIFEST
   end
 
   def generate_site_pp(agents_hash)
-    master = WebSphereHelper.host_by_role('master')
-    ENV['TARGET_HOST'] = master.first
+    server = WebSphereHelper.host_by_role('server')
+    ENV['TARGET_HOST'] = server.first
     # Initialize a blank site.pp
-    site_pp = create_site_pp_host(master.first, manifest: '')
+    site_pp = create_site_pp_host(server.first, manifest: '')
     agents_hash.each do |agent, manifest|
       # pull out the node specific block for the site.pp
-      node_block = create_site_pp_host(master.first, manifest: manifest, node_def_name: agent)
+      node_block = create_site_pp_host(server.first, manifest: manifest, node_def_name: agent)
       node_block = node_block.split("node #{agent}")[-1]
       node_block = "node '#{agent}'#{node_block}"
       site_pp << node_block
@@ -79,8 +79,8 @@ MANIFEST
   end
 
   def copy_site_pp(site_pp, _opts = {})
-    master = WebSphereHelper.host_by_role('master')
-    ENV['TARGET_HOST'] = master.first
+    server = WebSphereHelper.host_by_role('server')
+    ENV['TARGET_HOST'] = server.first
     environment_base_path = run_shell('puppet config print environmentpath').stdout.rstrip
     prod_env_site_pp_path = File.join(environment_base_path, 'production', 'manifests', 'site.pp')
     site_pp_dir = File.dirname(prod_env_site_pp_path)
@@ -372,7 +372,7 @@ Dir['./spec/support/**/*.rb'].sort.each { |f| require f }
 RSpec.configure do |c|
   c.formatter = :documentation
   if c.filter.rules.key? :integration
-    warn('>>> A valid inventory.yaml was not found. <<<') if Helper.instance.target_roles('master').empty?
+    warn('>>> A valid inventory.yaml was not found. <<<') if Helper.instance.target_roles('server').empty?
   else
     c.filter_run_excluding :integration
   end

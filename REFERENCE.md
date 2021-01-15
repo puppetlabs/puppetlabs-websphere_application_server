@@ -4200,7 +4200,7 @@ Data type: `String`
 
 
 
-##### `ibm_credential_store_master_password`
+##### `ibm_credential_store_main_password`
 
 Data type: `String`
 
@@ -4238,7 +4238,7 @@ Data type: `Optional[String[1]]`
 
 Default value: `'/home/credential.store'`
 
-##### `master_password_file`
+##### `main_password_file`
 
 Data type: `Optional[String[1]]`
 
@@ -4278,7 +4278,7 @@ Data type: `Optional[Boolean]`
 
 Default value: ``true``
 
-##### `stage_create_master_password_file`
+##### `stage_create_main_password_file`
 
 Data type: `Optional[Boolean]`
 
@@ -4318,7 +4318,7 @@ Data type: `Optional[Boolean]`
 
 Default value: ``true``
 
-##### `stage_remove_master_password_file`
+##### `stage_remove_main_password_file`
 
 Data type: `Optional[Boolean]`
 
@@ -4474,7 +4474,7 @@ The websphere_application_server::provision_machines class.
 
 The following parameters are available in the `websphere_application_server::provision_machines` plan.
 
-##### `pe_master`
+##### `pe_server`
 
 Data type: `Optional[String]`
 

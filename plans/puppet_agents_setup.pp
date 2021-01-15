@@ -1,10 +1,10 @@
 plan websphere_application_server::puppet_agents_setup(
 ) {
   # get pe_server ?
-  $server = get_targets('*').filter |$n| { $n.vars['role'] == 'master' }
+  $server = get_targets('*').filter |$n| { $n.vars['role'] == 'server' }
 
   # get agents ?
-  $agents = get_targets('*').filter |$n| { $n.vars['role'] != 'master' }
+  $agents = get_targets('*').filter |$n| { $n.vars['role'] != 'server' }
 
   # install agents
   run_task('puppet_agent::install', $agents)
