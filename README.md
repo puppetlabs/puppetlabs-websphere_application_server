@@ -530,7 +530,7 @@ websphere_profiles => PROFILE_DMGR_01
 
 ### More Information
 
-See [REFERENCE.md](https://github.com/puppetlabs/puppetlabs-websphere_application_server/blob/master/REFERENCE.md) for all other reference documentation.
+See [REFERENCE.md](https://github.com/puppetlabs/puppetlabs-websphere_application_server/blob/main/REFERENCE.md) for all other reference documentation.
 
 ## Limitations
 
@@ -538,7 +538,7 @@ Tested and developed with **IBM WebSphere Application Server Network Deployment*
 
 Tested and developed with IBM WebSphere **8.5.0.x** and **8.5.5.x**.
 
-For an extensive list of supported operating systems, see [metadata.json](https://github.com/puppetlabs/puppetlabs-websphere_application_server/blob/master/metadata.json)
+For an extensive list of supported operating systems, see [metadata.json](https://github.com/puppetlabs/puppetlabs-websphere_application_server/blob/main/metadata.json)
 
 ## Development
 

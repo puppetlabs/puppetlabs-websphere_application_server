@@ -42,7 +42,7 @@
 ###      'package_utility_zipfile':              - The IBM Packaging Utility zipfile
 ###      'ibm_id_user':                          - The username for your IBM ID*
 ###      'ibm_id_password':                      - The password for your IBM ID*
-###      'ibm_credential_store_master_password': - A master password used to encrypt credentials on the remote host
+###      'ibm_credential_store_main_password': - A main password used to encrypt credentials on the remote host
 ###
 ###       *Note: An IBM ID is required even to access the IBM WAS trial repositories.
 ###
@@ -74,7 +74,7 @@ plan websphere_application_server::create_repo (
   String     $package_utility_zipfile,
   String     $ibm_id_user,
   String     $ibm_id_password,
-  String     $ibm_credential_store_master_password,
+  String     $ibm_credential_store_main_password,
 
   ##########
   ## Optional Overrides, 
@@ -82,7 +82,7 @@ plan websphere_application_server::create_repo (
   Optional[String[1]] $package_id            = 'com.ibm.websphere.NDTRIAL.v85_8.5.5016.20190801_0951',
   Optional[String[1]] $repo_directory        = '/var/ibm/ibm_packages',
   Optional[String[1]] $credential_file       = '/home/credential.store',
-  Optional[String[1]] $master_password_file  = '~/master_password_file.txt',
+  Optional[String[1]] $main_password_file  = '~/master_password_file.txt',
   # This variable enables long listing format when listing packages and fixpacks
   Optional[Boolean]   $long_listing_format             = false,
 
@@ -92,13 +92,13 @@ plan websphere_application_server::create_repo (
   Optional[Boolean] $stage_upload_ibm_pu               = true,
   Optional[Boolean] $stage_unzip_ibm_pu                = true,
   Optional[Boolean] $stage_install_ibm_pu              = true,
-  # Note: The master_password_file stage is required for many following stages and should always be left on.
-  Optional[Boolean] $stage_create_master_password_file = true,
+  # Note: The main_password_file stage is required for many following stages and should always be left on.
+  Optional[Boolean] $stage_create_main_password_file = true,
   Optional[Boolean] $stage_store_credentials           = true,
   Optional[Boolean] $stage_list_packages               = true,
   Optional[Boolean] $stage_list_fixes                  = true,
   Optional[Boolean] $stage_copy_repo                   = true,
-  Optional[Boolean] $stage_remove_master_password_file = true,
+  Optional[Boolean] $stage_remove_main_password_file = true,
 
   ##########
   # Binary locations, likely only need to override if not found in path
@@ -198,14 +198,14 @@ plan websphere_application_server::create_repo (
   }
 
   ##############################################################################################################
-  ## Create a master password file for encrypting the IBM credentials store
-  ## Note: This cleartext file is removed later unless 'remove_master_password_file' is set to false.
+  ## Create a main password file for encrypting the IBM credentials store
+  ## Note: This cleartext file is removed later unless 'remove_main_password_file' is set to false.
   ##       It may also be accidentally left on the remote system if this plan fails for any reason.
   ##########
-  if $stage_create_master_password_file {
-    run_command("${shell_remote} -c \"${touch_remote} ${master_password_file}; 
-    ${chmod_remote} 700 ${master_password_file};
-    ${echo_remote} \\\"${ibm_credential_store_master_password}\\\" > ${master_password_file}; \"",
+  if $stage_create_main_password_file {
+    run_command("${shell_remote} -c \"${touch_remote} ${main_password_file}; 
+    ${chmod_remote} 700 ${main_password_file};
+    ${echo_remote} \\\"${ibm_credential_store_main_password}\\\" > ${main_password_file}; \"",
     $targets, 'Create master password file for the IBM credentials store', '_run_as' => 'root')
   }
 
@@ -219,7 +219,7 @@ plan websphere_application_server::create_repo (
         -userName ${ibm_id_user} \
         -userPassword ${ibm_id_password} \
         -secureStorageFile ${credential_file} \
-        -masterPasswordFile ${master_password_file}; \"",
+        -masterPasswordFile ${main_password_file}; \"",
       $targets, "Securely save IBM ID Credentials to ${credential_file}", '_run_as' => 'root')
   }
 
@@ -234,7 +234,7 @@ plan websphere_application_server::create_repo (
       $packages_result=run_command("${shell_remote} -c \"${pucl} listAvailablePackages \
           -repositories ${was_repo} \
           -secureStorageFile ${credential_file} \
-          -masterPasswordFile ${master_password_file} \
+          -masterPasswordFile ${main_password_file} \
           -long; \"",
       $targets, "List Repository Available Packages from ${was_repo}", '_run_as' => 'root')
     }
@@ -242,7 +242,7 @@ plan websphere_application_server::create_repo (
       $packages_result=run_command("${shell_remote} -c \"${pucl} listAvailablePackages \
           -repositories ${was_repo} \
           -secureStorageFile ${credential_file} \
-          -masterPasswordFile ${master_password_file}; \"",
+          -masterPasswordFile ${main_password_file}; \"",
       $targets, "List Repository Available Packages from ${was_repo}", '_run_as' => 'root')
     }
 
@@ -258,7 +258,7 @@ plan websphere_application_server::create_repo (
       $fixes_result=run_command("${shell_remote} -c \"${pucl} listAvailableFixes ${package_id} \
           -repositories ${was_repo} \
           -secureStorageFile ${credential_file} \
-          -masterPasswordFile ${master_password_file} \
+          -masterPasswordFile ${main_password_file} \
           -long; \"",
       $targets, "List Repository Available Fixes for ${package_id} from ${was_repo}", '_run_as' => 'root')
     }
@@ -266,7 +266,7 @@ plan websphere_application_server::create_repo (
       $fixes_result=run_command("${shell_remote} -c \"${pucl} listAvailableFixes ${package_id} \
           -repositories ${was_repo} \
           -secureStorageFile ${credential_file} \
-          -masterPasswordFile ${master_password_file}; \"",
+          -masterPasswordFile ${main_password_file}; \"",
       $targets, "List Repository Available FixPacks for ${package_id} from ${was_repo}", '_run_as' => 'root')
     }
 
@@ -284,16 +284,16 @@ plan websphere_application_server::create_repo (
         -repositories ${was_repo} \
         -target ${repo_directory} \
         -secureStorageFile ${credential_file} \
-        -masterPasswordFile ${master_password_file} \
+        -masterPasswordFile ${main_password_file} \
         -acceptLicense; \"",
     $targets, "Copy repository files to ${repo_directory} from ${was_repo}", '_run_as' => 'root')
   }
 
   ##############################################################################################################
-  ## Remove master password file used to encrypt the local credentials store
+  ## Remove main password file used to encrypt the local credentials store
   ##########
-  if $stage_remove_master_password_file {
-    run_command("${shell_remote} -c \"rm -f ${master_password_file}; \"",
-    $targets, 'Remove master password for IBM credentials store', '_run_as' => 'root')
+  if $stage_remove_main_password_file {
+    run_command("${shell_remote} -c \"rm -f ${main_password_file}; \"",
+    $targets, 'Remove main password for IBM credentials store', '_run_as' => 'root')
   }
 }
