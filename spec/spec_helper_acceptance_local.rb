@@ -73,7 +73,7 @@ MANIFEST
       node_block = create_site_pp_host(server.first, manifest: manifest, node_def_name: agent)
       node_block = node_block.split("node #{agent}")[-1]
       node_block = "node '#{agent}'#{node_block}"
-      site_pp << node_block
+      site_pp += node_block
     end
     site_pp
   end
@@ -90,8 +90,8 @@ MANIFEST
     bolt_upload_file('site.pp', prod_env_site_pp_path)
     run_shell("chmod 0744 #{site_pp_dir}")
     run_shell("chmod 0744 #{prod_env_site_pp_path}")
-    run_shell("chown -R pe-puppet:pe-puppet #{site_pp_dir}")
-    run_shell("chown -R pe-puppet:pe-puppet #{prod_env_site_pp_path}")
+    # run_shell("chown -R pe-puppet:pe-puppet #{site_pp_dir}")
+    # run_shell("chown -R pe-puppet:pe-puppet #{prod_env_site_pp_path}")
     print "site.pp:\n#{site_pp}"
   end
 
@@ -275,7 +275,11 @@ class WebSphereHelper
 
   def self.remote_dir_exists(host, directory)
     ENV['TARGET_HOST'] = host
-    Helper.instance.run_shell("test -d #{directory}")
+    begin
+      Helper.instance.run_shell("test -d #{directory}")
+    rescue
+      false
+    end
   end
 
   def self.remote_file_exists(host, filepath)

@@ -4,7 +4,9 @@ module HelperConstants
   @unsupported_platforms    = ['Suse', 'windows', 'AIX', 'Solaris']
   @websphere_source_dir     = '/opt/sources/ibm_websphere'
   @qa_resources             = '/opt/QA_resources'
-  @qa_resource_source       = 'modules-nfs-prod-1.delivery.puppetlabs.net:/srv/modules_ci'
+  # For internal testing
+  # @qa_resource_source       = 'modules-nfs-prod-1.delivery.puppetlabs.net:/srv/modules_ci'
+  @qa_resource_source       = '/sharedfiles:/srv/modules_ci'
   class << self
     attr_reader :unsupported_platforms, :websphere_source_dir, :qa_resources, :qa_resource_source
   end
