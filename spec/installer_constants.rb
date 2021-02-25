@@ -6,7 +6,7 @@ module HelperConstants
   @qa_resources             = '/opt/QA_resources'
   # For internal testing
   # @qa_resource_source       = 'modules-nfs-prod-1.delivery.puppetlabs.net:/srv/modules_ci'
-  @qa_resource_source       = '/sharedfiles:/srv/modules_ci'
+  @qa_resource_source       = '/sharedfiles/srv/modules_ci'
   class << self
     attr_reader :unsupported_platforms, :websphere_source_dir, :qa_resources, :qa_resource_source
   end

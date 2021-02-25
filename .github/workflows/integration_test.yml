@@ -117,7 +117,7 @@ jobs:
           echo STEP_START=$(date +%s) >> $GITHUB_ENV
       - name: Provision test environment
         run: |
-          buildevents cmd $TRACE_ID $STEP_ID 'rake websphere_application_server::provision_gcp' -- bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::provision_gcp gcp_image=${{ matrix.platform }}
+          buildevents cmd $TRACE_ID $STEP_ID 'rake websphere_application_server::provision_gcp' -- bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::provision_gcp gcp_image='${{ matrix.platform }}'
           echo ::group::=== REQUEST ===
           cat request.json || true
           echo
@@ -129,8 +129,12 @@ jobs:
         run: |
           buildevents cmd $TRACE_ID $STEP_ID 'rake websphere_application_server::server_setup' -- bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::server_setup -i ./inventory.yaml
       - name: Install agent
-        run: |
-          buildevents cmd $TRACE_ID $STEP_ID 'rake websphere_application_server::agents_setup' -- bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::agents_setup collection='${{ matrix.collection }}' -i ./inventory.yaml
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 30
+          max_attempts: 5
+          retry_wait_seconds: 60
+          command: buildevents cmd $TRACE_ID $STEP_ID 'rake websphere_application_server::agents_setup' -- bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::agents_setup collection='${{ matrix.collection }}' -i ./inventory.yaml
       - name: Install module
         run: |
           buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:install_module' -- bundle exec rake 'litmus:install_module'
