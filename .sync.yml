@@ -9,22 +9,9 @@
 ".rubocop.yml":
   default_configs:
     inherit_from: ".rubocop_todo.yml"
-".travis.yml":
-  deploy_to_forge:
-    enabled: false
-  docker_sets: []
-  docker_defaults:
-    bundler_args: ''
-  secure: ''
-  branches:
-  - release
-  simplecov: true
-  notifications:
-    slack:
-      secure: >-
-        lYh2GOYnTmMlMNE3opirGHd2+D6+CCVGVn1SxLMublkK3qh5SAK7lhdWd/74qdxvDuY7t5Y4CadDYYiNieMKuKkHuJ9rqk8BprVLmVqVvHMd1ZgTMkaXR923x2bO+fRQDn9O6UWD6NVKV9Wzu3dGgN+rIG2UPVlLWONMTuhGHkLNx5b5fYau57E33RA2I3wVEhnn3a/RDCQdElGgxBYwKfxqvSAQXiOq/D7Xz/Jw89jjsWqEUzCIeiRQA9ewKuLtkpJGsz1v+NFKSvcSLr27jKFwLuZwxHSMngSq9jTb2vcmUz+6bmZJQKj63ya0Q37UkEOLP17a4h+aDICM03bLOC2dgdoPpyGM5zggZwUNSDsszWfhwm54oVjXjBjDOI1QMpl5nD6trA3PKNcM0eycdgQ2O7+ZbUg2X2DsdIBwz2ntQp+rmAMq+6ZHLi+kpsJogd+CpmGCr9tcV65PpHLdXb6VEBCeM81tHQxfMdggMClR9AEajVL7TaS5UjZ51eJ8LVQsI6y9YVUrykzjjwkrZY+sZxNS4nHBZzgzQzW2CK9wZWbxXS1oR5WFLWHskTZsfg+mu5NvAufw5WoGjtaqwLN73M6Wf3+m6n+lDLH7bntImV08H5Sjr7d9r8CyHEinZwjSdqbT+yU8eF2T/GqhEtezCw3xWzei8ABll3gUicU=
 appveyor.yml:
   delete: true
+
 Gemfile:
   optional:
     ":development":
@@ -49,3 +36,10 @@ spec/spec_helper.rb:
   unmanaged: false
 .github/workflows/auto_release.yml:
   unmanaged: false
+.github/workflows/spec.yml:
+  checks: 'syntax lint metadata_lint check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop'
+  unmanaged: false
+.github/workflows/release.yml:
+  unmanaged: false
+.travis.yml:
+  delete: true
