@@ -1,65 +1,47 @@
-name: "release"
+name: "Publish module"
 
-on: 
-  push:
-    branches:
-      - 'release'
-
-jobs:  
-  Spec:
-    runs-on: self-hosted
-    strategy:
-      matrix:
-        check: [parallel_spec, 'syntax lint metadata_lint check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop']
-        ruby_version: [2.5.x]
-        puppet_gem_version: [~> 5.0, ~> 6.0]
-        exclude:
-        - puppet_gem_version: ~> 5.0
-          check: 'syntax lint metadata_lint check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop'
-        - ruby_version: 2.5.x
-          puppet_gem_version: ~> 5.0
-    steps:
-    - uses: actions/checkout@v1
-    - name: Spec Tests
-      uses: puppetlabs/action-litmus_spec@master
-      with:
-        puppet_gem_version: ${{ matrix.puppet_gem_version }}
-        check: ${{ matrix.check }}
+on:
+  workflow_dispatch:
   
-  ModuleIntegration:
-    runs-on: self-hosted
-    strategy:
-      matrix:
-        puppet_gem_version: [~> 5.0, ~> 6.0]
-        provision_params: ['pe_server="centos-7-x86_64" app_agent="centos-6-x86_64" dmgr_agent="redhat-6-x86_64" ihs_agent="redhat-7-x86_64"',
-                           'pe_server="centos-7-x86_64" app_agent="oracle-7-x86_64" dmgr_agent="ubuntu-1404-x86_64" ihs_agent="oracle-6-x86_64"',
-                           'pe_server="centos-7-x86_64" app_agent="ubuntu-1604-x86_64" dmgr_agent="ubuntu-1804-x86_64" ihs_agent="centos-7-x86_64"',
-                           'pe_server="centos-7-x86_64" app_agent="ubuntu-2004-x86_64" dmgr_agent="ubuntu-1804-x86_64" ihs_agent="centos-7-x86_64"'
-                          ]
+jobs:
+  create-github-release:
+    name: Deploy GitHub Release
+    runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v1
-    - name: Build
-      run: |
-        gem install bundler
-        bundle install --path .bundle/gems --jobs 4 --retry 3
-        bundle exec rake spec_prep
-    - name: Provision and setup
-      run: |
-        export LANG=en_US.UTF-8
-        export LANGUAGE=en_US:en
-        bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::provision_machines ${{ matrix.provision_params }}
-        bundle exec bolt --modulepath spec/fixtures/modules -i ./inventory.yaml plan run websphere_application_server::pe_server_setup
-        bundle exec bolt --modulepath spec/fixtures/modules -i ./inventory.yaml plan run websphere_application_server::puppet_agents_setup
-        bundle exec rake litmus:install_agent
-        bundle exec rake litmus:install_module
-    - name: Inventory
-      run: |
-        cat ./inventory.yaml
-    - name: Run tests
-      run: |
-        env
-        bundle exec rake websphere_application_server:integration
-    - name: Tidy up
-      if: always()
-      run: |
-        bundle exec rake litmus:tear_down
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+          clean: true
+          fetch-depth: 0
+      - name: Get Version
+        id: gv
+        run: |
+          echo "::set-output name=ver::$(jq --raw-output .version metadata.json)"
+      - name: Create Release
+        uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "v${{ steps.gv.outputs.ver }}"
+          draft: false
+          prerelease: false
+
+  deploy-forge:
+    name: Deploy to Forge
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+          clean: true
+      - name: "PDK Build"
+        uses: docker://puppet/pdk:nightly
+        with:
+          args: 'build'
+      - name: "Push to Forge"
+        uses: docker://puppet/pdk:nightly
+        with:
+          args: 'release publish --forge-token ${{ secrets.FORGE_API_KEY }} --force'
