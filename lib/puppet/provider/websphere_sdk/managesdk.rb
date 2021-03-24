@@ -120,11 +120,11 @@ Puppet::Type.type(:websphere_sdk).provide(:managesdk, parent: Puppet::Provider::
     command = "#{resource[:instance_base]}/bin/managesdk.sh "
 
     if resource[:username] && resource[:password]
-      command << "-user '#{resource[:username]}' -password '#{resource[:password]}' "
+      command += "-user '#{resource[:username]}' -password '#{resource[:password]}' "
     end
 
     options.each do |key, value|
-      command << "-#{key} #{value} "
+      command += "-#{key} #{value} "
     end
 
     command.strip

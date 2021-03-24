@@ -1,12 +1,9 @@
 plan websphere_application_server::provision_machines(
-  Optional[String] $pe_server = 'centos-7-x86_64',
-  Optional[String] $app_agent = 'centos-7-x86_64',
-  Optional[String] $dmgr_agent = 'centos-7-x86_64',
-  Optional[String] $ihs_agent = 'centos-7-x86_64',
+  Optional[String] $using = 'abs',
+  Optional[String] $image = 'centos-7-x86_64'
 ) {
-  # provision server machine, set role 
-  run_task('provision::vmpooler', 'localhost', action => 'provision', platform => $pe_server, inventory => './', vars => 'role: server')
-  run_task('provision::vmpooler', 'localhost', action => 'provision', platform => $app_agent, inventory => './', vars => 'role: appserver')
-  run_task('provision::vmpooler', 'localhost', action => 'provision', platform => $dmgr_agent, inventory => './', vars => 'role: dmgr')
-  run_task('provision::vmpooler', 'localhost', action => 'provision', platform => $ihs_agent, inventory => './', vars => 'role: ihs')
+  # provision machines, set roles
+  ['server', 'appserver', 'dmgr', 'ihs'].each |$role| {
+    run_task("provision::${using}", 'localhost', action => 'provision', platform => $image, vars => "role: ${role}")
+  }
 }

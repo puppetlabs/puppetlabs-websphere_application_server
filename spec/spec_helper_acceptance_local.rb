@@ -2,8 +2,27 @@
 
 require 'puppet_litmus'
 require 'installer_constants'
-require 'master_manipulator'
 require 'singleton'
+require 'tempfile'
+
+def log_stdout(text)
+  puts "#{'#' * 10} LOG START #{'#' * 10}\n"
+  puts "#{text}\n"
+  puts "#{'#' * 10} LOG END #{'#' * 10}\n\n"
+end
+
+def create_remote_file(name, full_name, file_content)
+  include PuppetLitmus
+  Tempfile.open name do |tempfile|
+    File.open(tempfile.path, 'w') { |file| file.puts file_content }
+    bolt_upload_file(tempfile.path, full_name)
+  end
+end
+
+def fetch_agent_version(host)
+  ENV['TARGET_HOST'] = host
+  @puppet_agent_version ||= Helper.instance.run_shell('puppet --version').stdout.to_i
+end
 
 class Helper
   include PuppetLitmus
@@ -11,6 +30,15 @@ class Helper
   include Singleton
   def inventory_hash
     @inventory_hash ||= inventory_hash_from_inventory_file
+  end
+
+  def os
+    platform = WebSphereHelper.platform_by_host(ENV['TARGET_HOST'])
+    if platform.start_with?('win')
+      { family: 'windows' }
+    else
+      { family: platform }
+    end
   end
 
   def target_roles(roles)
@@ -25,7 +53,6 @@ class Helper
 end
 
 class LitmusAgentRunner
-  include MasterManipulator::Site
   include PuppetLitmus
 
   def create_site_pp_host(server_host, opts = {})
@@ -65,15 +92,16 @@ MANIFEST
 
   def generate_site_pp(agents_hash)
     server = WebSphereHelper.host_by_role('server')
-    ENV['TARGET_HOST'] = server.first
     # Initialize a blank site.pp
     site_pp = create_site_pp_host(server.first, manifest: '')
     agents_hash.each do |agent, manifest|
       # pull out the node specific block for the site.pp
-      node_block = create_site_pp_host(server.first, manifest: manifest, node_def_name: agent)
-      node_block = node_block.split("node #{agent}")[-1]
-      node_block = "node '#{agent}'#{node_block}"
-      site_pp << node_block
+      ENV['TARGET_HOST'] = agent
+      agent_fqdn = Helper.instance.run_shell('facter fqdn').stdout.delete("\n")
+      node_block = create_site_pp_host(server.first, manifest: manifest, node_def_name: agent_fqdn)
+      node_block = node_block.split("node #{agent_fqdn}")[-1]
+      node_block = "node '#{agent_fqdn}'#{node_block}"
+      site_pp += node_block
     end
     site_pp
   end
@@ -90,8 +118,8 @@ MANIFEST
     bolt_upload_file('site.pp', prod_env_site_pp_path)
     run_shell("chmod 0744 #{site_pp_dir}")
     run_shell("chmod 0744 #{prod_env_site_pp_path}")
-    run_shell("chown -R pe-puppet:pe-puppet #{site_pp_dir}")
-    run_shell("chown -R pe-puppet:pe-puppet #{prod_env_site_pp_path}")
+    run_shell("chown -R puppet:puppet #{site_pp_dir}")
+    run_shell("chown -R puppet:puppet #{prod_env_site_pp_path}")
     print "site.pp:\n#{site_pp}"
   end
 
@@ -101,9 +129,9 @@ MANIFEST
       copy_site_pp(site_pp, opts)
     end
     cmd =  'agent --test --environment production'
-    cmd << ' --debug' if opts[:debug]
-    cmd << ' --noop' if opts[:noop]
-    cmd << ' --trace' if opts[:trace]
+    cmd += ' --debug' if opts[:debug]
+    cmd += ' --noop' if opts[:noop]
+    cmd += ' --trace' if opts[:trace]
     # acceptable_exit_codes are passed because we want detailed-exit-codes but want to
     # make our own assertions about the responses
     ENV['TARGET_HOST'] = host
@@ -129,7 +157,9 @@ class WebSphereInstance
 
   def self.install(agent, instance = WebSphereConstants.instance_name)
     runner = LitmusAgentRunner.new
-    runner.execute_agent_on(agent, manifest(instance: instance))
+    stdout = runner.execute_agent_on(agent, manifest(instance: instance))
+    log_stdout(stdout.stdout) unless [0, 2].include?(stdout.exit_code)
+    stdout
   end
 end
 
@@ -140,7 +170,8 @@ class WebSphereDmgr
                     user: WebSphereConstants.user,
                     group: WebSphereConstants.group)
     raise 'agent param must be set to the dmgr agent' unless target_agent
-    agent_hostname = target_agent
+    ENV['TARGET_HOST'] = target_agent
+    agent_hostname = Helper.instance.run_shell('facter fqdn').stdout.delete("\n")
     instance_name = instance
     instance_base = base_dir + '/' + instance_name + '/AppServer'
     profile_base  = instance_base + '/profiles'
@@ -152,7 +183,9 @@ class WebSphereDmgr
 
   def self.install(agent)
     runner = LitmusAgentRunner.new
-    runner.execute_agent_on(agent, manifest(target_agent: agent))
+    stdout = runner.execute_agent_on(agent, manifest(target_agent: agent))
+    log_stdout(stdout.stdout) unless [0, 2].include?(stdout.exit_code)
+    stdout
   end
 end
 
@@ -173,7 +206,9 @@ class WebSphereIhs
 
   def self.install(agent)
     runner = LitmusAgentRunner.new
-    runner.execute_agent_on(agent, manifest(target_agent: agent))
+    stdout = runner.execute_agent_on(agent, manifest(target_agent: agent))
+    log_stdout(stdout.stdout) unless [0, 2].include?(stdout.exit_code)
+    stdout
   end
 end
 
@@ -181,8 +216,10 @@ class WebSphereAppServer
   include PuppetLitmus
   def self.manifest(agent, dmgr_agent)
     raise 'agent param must be set to the dmgr agent' unless agent
-    agent_hostname = agent
-    dmgr_hostname = dmgr_agent
+    ENV['TARGET_HOST'] = agent
+    agent_hostname = Helper.instance.run_shell('facter fqdn').stdout.delete("\n")
+    ENV['TARGET_HOST'] = dmgr_agent
+    dmgr_hostname = Helper.instance.run_shell('facter fqdn').stdout.delete("\n")
 
     local_files_root_path = ENV['FILES'] || File.expand_path(File.join(File.dirname(__FILE__), 'acceptance/fixtures'))
     manifest_template     = File.join(local_files_root_path, 'websphere_appserver.erb')
@@ -191,7 +228,9 @@ class WebSphereAppServer
 
   def self.install(agent)
     runner = LitmusAgentRunner.new
-    runner.execute_agent_on(agent, WebSphereDmgr.manifest(agent))
+    stdout = runner.execute_agent_on(agent, WebSphereDmgr.manifest(agent))
+    log_stdout(stdout.stdout) unless [0, 2].include?(stdout.exit_code)
+    stdout
   end
 end
 
@@ -283,16 +322,16 @@ class WebSphereHelper
     Helper.instance.run_shell("test -f #{filepath}")
   end
 
-  def self.load_oracle_jdbc_driver(host, source = HelperConstants.oracle_driver_source, target = HelperConstants.oracle_driver_target)
-    Beaker::DSL::Helpers::HostHelpers.scp_to(host, source, target)
-    raise("Failed to transfer the file [#{source}] to the remote") unless remote_file_exists(host, target)
-  end
-
   def self.install_ibm_manager(host: install_host,
                                user: WebSphereConstants.user,
                                group: WebSphereConstants.group,
                                imode: WebSphereConstants.installation_mode,
                                user_home: WebSphereConstants.user_home)
+    source = if ENV['CLOUD_CI']
+               "#{HelperConstants.qa_resources}/ibm_websphere/agent.installer.linux.gtk.x86_64_1.8.7000.20170706_2137.zip"
+             else
+               "#{HelperConstants.qa_resources}/ibm_installation_manager/1.8.7/agent.installer.linux.gtk.x86_64_1.8.7000.20170706_2137.zip"
+             end
     ibm_install_pp = if imode == 'nonadministrator'
                        <<-MANIFEST
                          group { '#{group}':
@@ -307,7 +346,7 @@ class WebSphereHelper
 
                          class { 'ibm_installation_manager':
                            deploy_source     => true,
-                           source            => '/opt/QA_resources/ibm_installation_manager/1.8.7/agent.installer.linux.gtk.x86_64_1.8.7000.20170706_2137.zip',
+                           source            => '#{source}',
                            installation_mode => '#{imode}',
                            user              => '#{user}',
                            group             => '#{group}',
@@ -318,13 +357,15 @@ class WebSphereHelper
                        <<-MANIFEST
                          class { 'ibm_installation_manager':
                            deploy_source     => true,
-                           source            => '/opt/QA_resources/ibm_installation_manager/1.8.7/agent.installer.linux.gtk.x86_64_1.8.7000.20170706_2137.zip',
+                           source            => '#{source}',
                            installation_mode => 'administrator',
                          }
                        MANIFEST
                      end
     runner = LitmusAgentRunner.new
-    runner.execute_agent_on(host, ibm_install_pp)
+    stdout = runner.execute_agent_on(host, ibm_install_pp)
+    log_stdout(stdout.stdout) unless [0, 2].include?(stdout.exit_code)
+    stdout
   end
 
   def self.mount_qa_resources(host)
@@ -336,15 +377,14 @@ class WebSphereHelper
       }
 
       if $::osfamily == 'Debian' {
-        $pkg = "nfs-common"
+        $pkg = 'nfs-common'
       } else {
         # work_around for rhel bug https://bugzilla.redhat.com/show_bug.cgi?id=1325394
+        $pkg = 'nfs-utils'
         package {'lvm2':
           ensure => latest,
           before => Package[$pkg],
         }
-
-        $pkg = "nfs-utils"
       }
 
       package { $pkg: }
@@ -377,27 +417,68 @@ RSpec.configure do |c|
     c.filter_run_excluding :integration
   end
 
-  hosts = WebSphereHelper.all_hosts
-  hosts.each do |host|
-    ENV['TARGET_HOST'] = host
-    WebSphereHelper.mount_qa_resources(host)
-    Helper.instance.run_shell('puppet module install puppet-archive')
-    Helper.instance.run_shell('puppet module install puppetlabs-concat')
-    Helper.instance.run_shell('puppet module install puppetlabs-ibm_installation_manager --ignore-dependencies')
-    pp = <<-PP
-    package { 'lsof': ensure => present, }
-    PP
-    Helper.instance.apply_manifest(pp)
-    osfamily = WebSphereHelper.platform_by_host(host)
-    if %r{^redhat|^oracle|^scientific|^centos}.match?(osfamily)
-      Helper.instance.run_shell('yum install -y lsof')
-    elsif %r{^ubuntu|^debian}.match?(osfamily)
-      Helper.instance.run_shell('apt-get install -y lsof')
-    else
-      raise('Acceptance tests cannot run as OS package [lsof] cannot be installed')
+  # set on the server
+  ENV['TARGET_HOST'] = WebSphereHelper.host_by_role('server').first
+  Helper.instance.run_shell('puppet module install puppet-archive')
+  Helper.instance.run_shell('puppet module install puppetlabs-concat')
+  Helper.instance.run_shell('puppet module install puppetlabs-ibm_installation_manager --ignore-dependencies')
+
+  # workaround to avoid string_frozen_literal on ibm_installation_manager
+  ibm_installation_manager_path = '/etc/puppetlabs/code/environments/production/modules/ibm_installation_manager'
+  ibm_installation_manager_metadata = JSON.parse(Helper.instance.run_shell("cat #{ibm_installation_manager_path}/metadata.json").stdout)
+  if ibm_installation_manager_metadata['version'] == '3.0.0'
+    Helper.instance.run_shell("sed -i 's/cmd_options <</cmd_options +=/g' #{ibm_installation_manager_path}/lib/puppet/provider/ibm_pkg/imcl.rb")
+  end
+
+  # install puppetdb
+  Helper.instance.run_shell('puppet module install puppetlabs-inifile')
+  Helper.instance.run_shell('puppet module install puppetlabs-postgresql')
+  Helper.instance.run_shell('puppet module install puppetlabs-firewall')
+  Helper.instance.run_shell('puppet module install puppetlabs-puppetdb --ignore-dependencies')
+  install_puppetdb_pp = <<-PP
+    class { 'puppetdb': }
+    class { 'puppetdb::master::config': }
+  PP
+  Helper.instance.apply_manifest(install_puppetdb_pp)
+  Helper.instance.run_shell('iptables -F')
+  Helper.instance.run_shell('systemctl restart puppetserver')
+  Helper.instance.run_shell('puppet config set storeconfigs true')
+  puppetdb_conf = <<-EOS
+[main]
+server_urls = https://#{Helper.instance.run_shell('facter fqdn').stdout.delete("\n")}:8081/
+soft_write_failure = false
+EOS
+  routes_yaml = <<-YAML
+---
+apply:
+  catalog:
+    terminus: compiler
+    cache: puppetdb
+  resource:
+    terminus: ral
+    cache: puppetdb
+  facts:
+    terminus: facter
+    cache: puppetdb_apply
+YAML
+
+  ['appserver', 'dmgr', 'ihs'].each do |machine|
+    ENV['TARGET_HOST'] = WebSphereHelper.host_by_role(machine).first
+    Helper.instance.run_shell('puppet resource package puppetdb-termini ensure=latest')
+    if Helper.instance.run_shell('puppet --version').stdout.to_i == 7
+      # Helper.instance.run_shell('puppet config set storeconfigs true')
+      create_remote_file('puppetdb_conf', '/etc/puppetlabs/puppet/puppetdb.conf', puppetdb_conf)
+      create_remote_file('routes_yaml', '/etc/puppetlabs/puppet/routes.yaml', routes_yaml)
+      Helper.instance.run_shell('chmod +r /etc/puppetlabs/puppet/puppetdb.conf')
+      Helper.instance.run_shell('chmod +r /etc/puppetlabs/puppet/routes.yaml')
     end
-    WebSphereHelper.install_ibm_manager(host: host)
-    WebSphereHelper.install_ibm_manager(host: host,
+    WebSphereHelper.mount_qa_resources(WebSphereHelper.host_by_role(machine).first) unless ENV['CLOUD_CI']
+    lsof_pp = <<-PP
+      package { 'lsof': ensure => present, }
+    PP
+    Helper.instance.apply_manifest(lsof_pp)
+    WebSphereHelper.install_ibm_manager(host: WebSphereHelper.host_by_role(machine).first)
+    WebSphereHelper.install_ibm_manager(host: WebSphereHelper.host_by_role(machine).first,
                                         imode: 'nonadministrator',
                                         user_home: '/home/webadmin')
   end

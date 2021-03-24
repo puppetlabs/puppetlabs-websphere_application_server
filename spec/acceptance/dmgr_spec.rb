@@ -28,6 +28,7 @@ describe 'Install the websphere dmgr', :integration do
       MANIFEST
       runner = LitmusAgentRunner.new
       @result = runner.execute_agent_on(@agent, @manifest)
+      log_stdout(@result.stdout) unless [0, 2].include?(@result.exit_code)
     end
 
     it 'runs without errors' do

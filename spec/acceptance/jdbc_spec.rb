@@ -10,7 +10,8 @@ describe 'jdbc layer is setup and working', :integration do
     @dmgr_manifest = WebSphereDmgr.manifest(target_agent: @agent,
                                             user: 'webadmin',
                                             group: 'webadmins')
-    @hostname = @agent
+    ENV['TARGET_HOST'] = @agent
+    @hostname = Helper.instance.run_shell('facter fqdn').stdout.delete("\n")
 
     @manifest = <<-MANIFEST
     websphere_jdbc_provider { '#{JDBCProviderConstants.jdbc_provider}':
@@ -48,9 +49,12 @@ describe 'jdbc layer is setup and working', :integration do
 
     MANIFEST
     runner = LitmusAgentRunner.new
-    runner.execute_agent_on(@agent, @was_manifest)
-    runner.execute_agent_on(@agent, @dmgr_manifest)
+    stdout = runner.execute_agent_on(@agent, @was_manifest)
+    log_stdout(stdout.stdout) unless [0, 2].include?(stdout.exit_code)
+    stdout = runner.execute_agent_on(@agent, @dmgr_manifest)
+    log_stdout(stdout.stdout) unless [0, 2].include?(stdout.exit_code)
     @result = runner.execute_agent_on(@agent, @manifest)
+    log_stdout(@result.stdout) unless [0, 2].include?(@result.exit_code)
     ENV['TARGET_HOST'] = @agent
   end
 

@@ -16,9 +16,12 @@ describe 'IHS instance', :integration do
                                           target_agent: @agent,
                                           listen_port: @listen_port)
     runner = LitmusAgentRunner.new
-    runner.execute_agent_on(@agent, @ws_manifest)
-    runner.execute_agent_on(@agent, @dmgr_manifest)
+    stdout = runner.execute_agent_on(@agent, @ws_manifest)
+    log_stdout(stdout.stdout) unless [0, 2].include?(stdout.exit_code)
+    stdout = runner.execute_agent_on(@agent, @dmgr_manifest)
+    log_stdout(stdout.stdout) unless [0, 2].include?(stdout.exit_code)
     @result = runner.execute_agent_on(@agent, @ihs_manifest)
+    log_stdout(@result.stdout) unless [0, 2].include?(@result.exit_code)
     ENV['TARGET_HOST'] = @agent
   end
 
@@ -48,7 +51,8 @@ describe 'IHS instance', :integration do
   end
 
   it 'shall respond to http queries' do
-    Helper.instance.run_shell("curl -s -w '%{http_code}' http://#{@agent}:#{@listen_port} | egrep \"<title>|200\"") do |response|
+    agent_fqdn = Helper.instance.run_shell('facter fqdn').stdout.delete("\n")
+    Helper.instance.run_shell("curl -s -w '%{http_code}' http://#{agent_fqdn}:#{@listen_port} | egrep \"<title>|200\"") do |response|
       response_lines = response.stdout.split(%r{\r?\n})
       expected = [0, 2]
       expect(expected).to include(response_lines.length)
@@ -70,6 +74,7 @@ describe 'IHS instance', :integration do
                                             status: 'stopped')
       runner = LitmusAgentRunner.new
       @result = runner.execute_agent_on(@agent, @ihs_manifest)
+      log_stdout(@result.stdout) unless [0, 2].include?(@result.exit_code)
       ENV['TARGET_HOST'] = @agent
     end
 
@@ -86,6 +91,7 @@ describe 'IHS instance', :integration do
     it 'runs a second time without changes' do
       runner = LitmusAgentRunner.new
       second_result = runner.execute_agent_on(@agent, @ihs_manifest)
+      log_stdout(second_result.stdout) unless [0, 2].include?(second_result.exit_code)
       expect(second_result.exit_code).to eq 2
     end
   end
