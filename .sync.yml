@@ -15,7 +15,10 @@ appveyor.yml:
 Gemfile:
   optional:
     ":development":
-    - gem: github_changelog_generator
+      - gem: github_changelog_generator
+      - gem: master_manipulator
+    ":system_tests":
+      - gem: master_manipulator
 Rakefile:
   extras:
     - |
