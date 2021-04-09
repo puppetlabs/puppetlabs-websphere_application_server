@@ -6,6 +6,9 @@
     - /plans/provision_machines.pp
     - /plans/pe_server_setup.pp
     - /plans/puppet_agents_setup.pp
+.gitignore:
+  paths:
+    - /site.pp
 ".rubocop.yml":
   default_configs:
     inherit_from: ".rubocop_todo.yml"
@@ -16,6 +19,7 @@ Gemfile:
   optional:
     ":development":
     - gem: github_changelog_generator
+
 Rakefile:
   extras:
     - |

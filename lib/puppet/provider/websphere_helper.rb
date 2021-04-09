@@ -30,11 +30,11 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider # rubocop:disable Na
     wsadmin_cmd = "#{wsadmin_file} -lang jython"
 
     if resource[:wsadmin_user] && resource[:wsadmin_pass]
-      wsadmin_cmd << " -username '#{resource[:wsadmin_user]}'"
-      wsadmin_cmd << " -password '#{resource[:wsadmin_pass]}'"
+      wsadmin_cmd += " -username '#{resource[:wsadmin_user]}'"
+      wsadmin_cmd += " -password '#{resource[:wsadmin_pass]}'"
     end
 
-    wsadmin_cmd << if file
+    wsadmin_cmd += if file
                      " -f #{file} "
                    else
                      ' -c '
@@ -137,8 +137,8 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider # rubocop:disable Na
   ## This synchronizes the app node(s) with the dmgr
   def sync_node
     sync_status = "\"the_id = AdminControl.completeObjectName('type=NodeSync,"
-    sync_status << "node=#{resource[:node_name]},*');"
-    sync_status << "AdminControl.invoke(the_id, 'isNodeSynchronized')\""
+    sync_status += "node=#{resource[:node_name]},*');"
+    sync_status += "AdminControl.invoke(the_id, 'isNodeSynchronized')\""
 
     status = wsadmin(
       command: sync_status,
@@ -160,8 +160,8 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider # rubocop:disable Na
       debug msg
     else
       sync = "\"the_id = AdminControl.completeObjectName('type=NodeSync,"
-      sync << "node=#{resource[:node_name]},*');"
-      sync << "AdminControl.invoke(the_id, 'sync')\""
+      sync += "node=#{resource[:node_name]},*');"
+      sync += "AdminControl.invoke(the_id, 'sync')\""
 
       result = wsadmin(
         command: sync,
@@ -187,7 +187,7 @@ class Puppet::Provider::Websphere_Helper < Puppet::Provider # rubocop:disable Na
 
     return unless resource[:node_name]
     cmd = "\"na = AdminControl.queryNames('type=NodeAgent,node=#{resource[:node_name]},*');"
-    cmd << "AdminControl.invoke(na,'restart','true true')\""
+    cmd += "AdminControl.invoke(na,'restart','true true')\""
 
     debug "Restarting node: #{resource[:node_name]} with #{cmd}"
     result = wsadmin(command: cmd, user: resource[:user], failonfail: false)

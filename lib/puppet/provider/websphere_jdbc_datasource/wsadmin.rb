@@ -57,13 +57,13 @@ Puppet::Type.type(:websphere_jdbc_datasource).provide(:wsadmin, parent: Puppet::
 
   def params_string
     params_list =  "-name \"#{resource[:name]}\" "
-    params_list << "-jndiName \"#{resource[:jndi_name]}\" "
-    params_list << "-dataStoreHelperClassName #{resource[:data_store_helper_class]} "
-    params_list << "-configureResourceProperties #{config_props} "
+    params_list += "-jndiName \"#{resource[:jndi_name]}\" "
+    params_list += "-dataStoreHelperClassName #{resource[:data_store_helper_class]} "
+    params_list += "-configureResourceProperties #{config_props} "
     # append optional parameters
-    params_list << "-containerManagedPersistence #{resource[:container_managed_persistence]} " if resource[:container_managed_persistence]
-    params_list << "-componentManagedAuthenticationAlias \"#{resource[:component_managed_auth_alias]}\" " if resource[:component_managed_auth_alias]
-    params_list << "-description \"#{resource[:description]}\" " if resource[:description]
+    params_list += "-containerManagedPersistence #{resource[:container_managed_persistence]} " if resource[:container_managed_persistence]
+    params_list += "-componentManagedAuthenticationAlias \"#{resource[:component_managed_auth_alias]}\" " if resource[:component_managed_auth_alias]
+    params_list += "-description \"#{resource[:description]}\" " if resource[:description]
 
     params_list
   end

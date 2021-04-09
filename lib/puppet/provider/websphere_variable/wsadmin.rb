@@ -16,7 +16,7 @@ Puppet::Type.type(:websphere_variable).provide(:wsadmin, parent: Puppet::Provide
     when 'cell'
       query = "/Cell:#{resource[:cell]}"
       mod   = "cells/#{resource[:cell]}"
-      file << "/config/cells/#{resource[:cell]}/variables.xml"
+      file += "/config/cells/#{resource[:cell]}/variables.xml"
     when 'cluster'
       query = "/Cell:#{resource[:cell]}/ServerCluster:#{resource[:cluster]}"
       mod   = "cells/#{resource[:cell]}/clusters/#{resource[:cluster]}"

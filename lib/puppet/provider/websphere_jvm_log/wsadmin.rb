@@ -16,11 +16,11 @@ Puppet::Type.type(:websphere_jvm_log).provide(:wsadmin, parent: Puppet::Provider
     when :node
       query = "/Cell:#{resource[:cell]}/Node:#{resource[:node_name]}/Server:nodeagent"
       mod = "cells/#{resource[:cell]}/nodes/#{resource[:node_name]}"
-      file << "/config/cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/nodeagent/server.xml"
+      file += "/config/cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/nodeagent/server.xml"
     when :server
       query = "/Cell:#{resource[:cell]}/Node:#{resource[:node_name]}/Server:#{resource[:server]}"
       mod = "cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/#{resource[:server]}"
-      file << "/config/cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/#{resource[:server]}/server.xml"
+      file += "/config/cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/#{resource[:server]}/server.xml"
     else
       raise Puppet::Error, "Unknown scope: #{resource[:scope]}"
     end
