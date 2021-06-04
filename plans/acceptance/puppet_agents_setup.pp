@@ -1,4 +1,4 @@
-plan websphere_application_server::puppet_agents_setup(
+plan websphere_application_server::acceptance::puppet_agents_setup(
 ) {
   # get pe_server ?
   $server = get_targets('*').filter |$n| { $n.vars['role'] == 'server' }

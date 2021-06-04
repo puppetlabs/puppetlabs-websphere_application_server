@@ -1,4 +1,4 @@
-plan websphere_application_server::get_files() {
+plan websphere_application_server::acceptance::get_files() {
   $all_agents = get_targets('*').filter |$node| { $node.vars['role'] != 'server' }
 
   run_command('mkdir -p /tmp/mountqa/ibm_websphere', $all_agents)

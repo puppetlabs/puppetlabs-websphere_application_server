@@ -1,4 +1,4 @@
-plan websphere_application_server::pe_server_setup(
+plan websphere_application_server::acceptance::pe_server_setup(
 ) {
   $pe_server =  get_targets('*').filter |$n| { $n.vars['role'] == 'server' }
   # install pe server
