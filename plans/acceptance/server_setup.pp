@@ -1,4 +1,4 @@
-plan websphere_application_server::server_setup(
+plan websphere_application_server::acceptance::server_setup(
   Optional[String] $collection = 'puppet7'
 ) {
   # get server
