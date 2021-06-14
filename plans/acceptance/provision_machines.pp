@@ -1,4 +1,4 @@
-plan websphere_application_server::provision_machines(
+plan websphere_application_server::acceptance::provision_machines(
   Optional[String] $using = 'abs',
   Optional[String] $image = 'centos-7-x86_64'
 ) {

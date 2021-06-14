@@ -117,7 +117,7 @@ jobs:
           echo STEP_START=$(date +%s) >> $GITHUB_ENV
       - name: Provision test environment
         run: |
-          buildevents cmd $TRACE_ID $STEP_ID 'rake websphere_application_server::provision_machines' -- bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::provision_machines using='provision_service' image='${{ matrix.platform }}'
+          buildevents cmd $TRACE_ID $STEP_ID 'rake websphere_application_server::provision_machines' -- bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::acceptance::provision_machines using='provision_service' image='${{ matrix.platform }}'
           echo ::group::=== REQUEST ===
           cat request.json || true
           echo
@@ -133,7 +133,7 @@ jobs:
           echo INVENTORY_PATH=$FILE >> $GITHUB_ENV
       - name: Install server
         run: |
-          buildevents cmd $TRACE_ID $STEP_ID 'rake websphere_application_server::server_setup' -- bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::server_setup collection='${{ matrix.collection }}' -i ./$INVENTORY_PATH
+          buildevents cmd $TRACE_ID $STEP_ID 'rake websphere_application_server::server_setup' -- bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::acceptance::server_setup collection='${{ matrix.collection }}' -i ./$INVENTORY_PATH
       - name: Install agent
         run: |
           bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::agents_setup collection='${{ matrix.collection }}' -i ./$INVENTORY_PATH
@@ -141,7 +141,7 @@ jobs:
           if test $rc -ne 0; then
             attempt_number=0
             while test $attempt_number -lt 0; do
-              bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::agents_setup collection='${{ matrix.collection }}' -i ./$INVENTORY_PATH
+              bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::acceptance::agents_setup collection='${{ matrix.collection }}' -i ./$INVENTORY_PATH
               rc=$?
               if test $rc -eq 0; then
                 break
@@ -155,7 +155,7 @@ jobs:
           buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:install_module' -- bundle exec rake 'litmus:install_module'
       - name: Extract files
         run: |
-          buildevents cmd $TRACE_ID $STEP_ID 'rake websphere_application_server::get_files' -- bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::get_files -i ./$INVENTORY_PATH
+          buildevents cmd $TRACE_ID $STEP_ID 'rake websphere_application_server::get_files' -- bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::acceptance::get_files -i ./$INVENTORY_PATH
       - name: "Honeycomb: Record deployment times"
         if: ${{ always() }}
         run: |

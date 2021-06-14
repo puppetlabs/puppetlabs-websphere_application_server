@@ -1,4 +1,4 @@
-plan websphere_application_server::agents_setup(
+plan websphere_application_server::acceptance::agents_setup(
   Optional[String] $collection = 'puppet7'
 ) {
   # get pe_server ?
