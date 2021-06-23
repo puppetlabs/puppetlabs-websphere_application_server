@@ -109,12 +109,14 @@ jobs:
           echo ::group::Create the fixtures directory
           buildevents cmd $TRACE_ID $STEP_ID 'bundle exec rake spec_prep' -- bundle exec rake spec_prep
           echo ::endgroup::
+
       - name: "Honeycomb: Record Setup Environment time"
         if: ${{ always() }}
         run: |
           buildevents step $TRACE_ID $STEP_ID $STEP_START 'Setup Environment'
           echo STEP_ID=${{ matrix.platform }}-${{ matrix.collection }}-2 >> $GITHUB_ENV
           echo STEP_START=$(date +%s) >> $GITHUB_ENV
+
       - name: Provision test environment
         run: |
           buildevents cmd $TRACE_ID $STEP_ID 'rake websphere_application_server::provision_machines' -- bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::provision_machines using='provision_service' image='${{ matrix.platform }}'
@@ -131,9 +133,15 @@ jobs:
           sed -e 's/password: .*/password: "[redacted]"/' < $FILE || true
           echo ::endgroup::
           echo INVENTORY_PATH=$FILE >> $GITHUB_ENV
+
       - name: Install server
-        run: |
-          buildevents cmd $TRACE_ID $STEP_ID 'rake websphere_application_server::server_setup' -- bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::server_setup collection='${{ matrix.collection }}' -i ./$INVENTORY_PATH
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 30
+          max_attempts: 5
+          retry_wait_seconds: 60
+          command: buildevents cmd $TRACE_ID $STEP_ID 'rake websphere_application_server::server_setup' -- bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::server_setup collection='${{ matrix.collection }}' -i ./$INVENTORY_PATH
+
       - name: Install agent
         run: |
           bundle exec bolt --modulepath spec/fixtures/modules plan run websphere_application_server::agents_setup collection='${{ matrix.collection }}' -i ./$INVENTORY_PATH
@@ -164,15 +172,15 @@ jobs:
           echo STEP_ID=${{ matrix.platform }}-${{ matrix.collection }}-3 >> $GITHUB_ENV
           echo STEP_START=$(date +%s) >> $GITHUB_ENV
           echo ::endgroup::
-      - name: Run integration tests
-        run: |
-          buildevents cmd $TRACE_ID $STEP_ID 'rake websphere_application_server:integration' -- bundle exec rake websphere_application_server:integration
-      - name: "Honeycomb: Record integration testing times"
-        if: ${{ always() }}
-        run: |
-          buildevents step $TRACE_ID $STEP_ID $STEP_START 'Run integration tests'
-          echo STEP_ID=${{ matrix.platform }}-${{ matrix.collection }}-4 >> $GITHUB_ENV
-          echo STEP_START=$(date +%s) >> $GITHUB_ENV
+      # - name: Run integration tests
+      #   run: |
+      #     buildevents cmd $TRACE_ID $STEP_ID 'rake websphere_application_server:integration' -- bundle exec rake websphere_application_server:integration
+      # - name: "Honeycomb: Record integration testing times"
+      #   if: ${{ always() }}
+      #   run: |
+      #     buildevents step $TRACE_ID $STEP_ID $STEP_START 'Run integration tests'
+      #     echo STEP_ID=${{ matrix.platform }}-${{ matrix.collection }}-4 >> $GITHUB_ENV
+      #     echo STEP_START=$(date +%s) >> $GITHUB_ENV
       - name: Remove test environment
         if: ${{ always() }}
         continue-on-error: true
