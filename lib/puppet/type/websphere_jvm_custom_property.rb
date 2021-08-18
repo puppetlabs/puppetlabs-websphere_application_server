@@ -105,7 +105,7 @@ Puppet::Type.newtype(:websphere_jvm_custom_property) do
   end
 
   validate do
-    [:dmgr_profile, :name, :user, :node, :cell].each do |value|
+    [:dmgr_profile, :name, :user, :node_name, :cell].each do |value|
       raise ArgumentError, "Invalid #{value} #{self[value]}" unless %r{^[-0-9A-Za-z._]+$}.match?(value)
     end
 
@@ -148,7 +148,7 @@ Puppet::Type.newtype(:websphere_jvm_custom_property) do
     EOT
   end
 
-  newparam(:node) do
+  newparam(:node_name) do
     isnamevar
     desc 'The name of the node to create this application server on'
   end
