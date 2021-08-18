@@ -41,6 +41,8 @@
 #   Specifies whether to collect exported `websphere_web_server` resources. This is useful for instances where IHS servers export `websphere_web_server` resources to dynamically add themselves to a cell. Refer to the details for the `websphere_web_server` resource type for more information
 # @param collect_jvm_logs
 #   Specifies whether to collect exported `websphere_jvm_log` resources. This is useful for instances where application servers export `websphere_jvm_log` resources to manage their JVM logging properties. Refer to the details for the `websphere_jvm_log` resource type for more information.
+# @param admin_sec
+#   Optional. Specified whether to deploy the DMGR profile with admin security enabled. Disabled by default.
 # @param wsadmin_user
 #   Optional. The username for `wsadmin` authentication if security is enabled.
 # @param wsadmin_pass
@@ -63,15 +65,17 @@ define websphere_application_server::profile::dmgr (
   $collect_nodes           = true,
   $collect_web_servers     = true,
   $collect_jvm_logs        = true,
+  $admin_sec               = false,
   $wsadmin_user            = undef,
   $wsadmin_pass            = undef,
 ) {
   validate_absolute_path($instance_base)
   validate_string($cell, $node_name, $profile_name, $user, $group, $dmgr_host)
+  validate_bool($admin_sec)
 
   ## Template path. Figure out a sane default if not explicitly specified.
   if ! $template_path {
-    $_template_path = "${instance_base}/profileTemplates/dmgr"
+    $_template_path = "${instance_base}/profileTemplates/management"
   } else {
     $_template_path = $template_path
   }
@@ -88,10 +92,18 @@ define websphere_application_server::profile::dmgr (
     fail('sdk_name is required when manage_sdk is true. E.g. 1.71_64')
   }
 
-  if ! $options {
-    $_options = "-create -profileName ${profile_name} -profilePath ${_profile_base}/${profile_name} -templatePath ${_template_path} -nodeName ${node_name} -hostName ${dmgr_host} -cellName ${cell}"
-  } else {
+
+  if $options != undef and $admin_sec {
+    fail ( 'Cannot specify both options and admin_sec at the same time. Please include your admin security details in your options string')
+  } elsif $options != undef {
     $_options = $options
+  } else {
+    $base_options = "-create -profileName ${profile_name} -profilePath ${_profile_base}/${profile_name} -templatePath ${_template_path} -serverType DEPLOYMENT_MANAGER -nodeName ${node_name} -hostName ${dmgr_host} -cellName ${cell}"
+    if $admin_sec {
+      $_options = "${base_options} -enableAdminSecurity true -adminUserName ${wsadmin_user} -adminPassword ${wsadmin_pass}"
+    } else {
+      $_options = $base_options
+    }
   }
   validate_string($_options)
 
