@@ -112,7 +112,7 @@ Puppet::Type.newtype(:websphere_variable) do
       self[:profile] = self[:dmgr_profile]
     end
 
-    [:variable, :server, :cell, :node, :cluster, :profile, :user].each do |value|
+    [:variable, :server, :cell, :node_name, :cluster, :profile, :user].each do |value|
       raise ArgumentError, "Invalid #{value} #{self[:value]}" unless %r{^[-0-9A-Za-z._]+$}.match?(value)
     end
   end
@@ -151,7 +151,7 @@ Puppet::Type.newtype(:websphere_variable) do
     desc 'The cell that this variable should be set in'
   end
 
-  newparam(:node) do
+  newparam(:node_name) do
     isnamevar
     desc 'The node that this variable should be set under'
   end
