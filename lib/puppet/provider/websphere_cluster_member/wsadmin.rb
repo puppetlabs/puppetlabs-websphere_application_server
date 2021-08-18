@@ -67,7 +67,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::P
     cmd = "\"AdminTask.setJVMProperties('[-nodeName " + resource[:node_name]
     cmd += ' -serverName ' + resource[:name] + ' -'
     cmd += name + ' '
-    cmd += value
+    cmd += "\'" + value + "\'"
     cmd += "]')\""
     wsadmin(command: cmd, user: resource[:user])
   end
