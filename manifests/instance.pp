@@ -176,8 +176,8 @@ define websphere_application_server::instance (
 
   file { $_profile_base:
     ensure  => 'directory',
-    owner   => $user,
-    group   => $group,
+    owner   => $::websphere_application_server::user,
+    group   => $::websphere_application_server::group,
     require => Ibm_pkg[$title],
   }
 
