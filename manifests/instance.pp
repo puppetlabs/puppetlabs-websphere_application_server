@@ -174,6 +174,9 @@ define websphere_application_server::instance (
     user                => $user,
   }
 
+  # Here we reference the actual user we want to own this as we likely need to install this
+  # as root - the user passed to this defined type. If we don't do this, there are further unnecessary 
+  # chowns run to tidy this up.
   file { $_profile_base:
     ensure  => 'directory',
     owner   => $::websphere_application_server::user,
