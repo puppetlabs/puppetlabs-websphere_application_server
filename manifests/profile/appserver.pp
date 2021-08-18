@@ -147,8 +147,8 @@ define websphere_application_server::profile::appserver (
       username     => $wsadmin_user,
       password     => $wsadmin_pass,
       before       => $manage_service ? {
-                         true  => Websphere_application_server::Profile::Service[$title],
-                         false => undef,
+                        true  => Websphere_application_server::Profile::Service[$title],
+                        false => undef,
                       },
     }
 
@@ -168,9 +168,9 @@ define websphere_application_server::profile::appserver (
         password            => $wsadmin_pass,
         require             => Websphere_federate["${title}_${dmgr_host}_${cell}"],
         notify              => $manage_service ? {
-                                  true  => Websphere_application_server::Profile::Service[$title],
-                                  false => undef,
-                                },
+                                 true  => Websphere_application_server::Profile::Service[$title],
+                                 false => undef,
+                               },
       }
     }
   }
