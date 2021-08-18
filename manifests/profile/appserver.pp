@@ -146,7 +146,10 @@ define websphere_application_server::profile::appserver (
       user         => $user,
       username     => $wsadmin_user,
       password     => $wsadmin_pass,
-      before       => Websphere_application_server::Profile::Service[$title],
+      before       => $manage_service ? {
+                         true  => Websphere_application_server::Profile::Service[$title],
+                         false => undef,
+                      },
     }
 
     ## Modifying SDK requires federation
@@ -164,7 +167,10 @@ define websphere_application_server::profile::appserver (
         username            => $wsadmin_user,
         password            => $wsadmin_pass,
         require             => Websphere_federate["${title}_${dmgr_host}_${cell}"],
-        notify              => Websphere_application_server::Profile::Service[$title],
+        notify              => $manage_service ? {
+                                  true  => Websphere_application_server::Profile::Service[$title],
+                                  false => undef,
+                                },
       }
     }
   }
