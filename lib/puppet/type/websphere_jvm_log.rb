@@ -20,36 +20,35 @@ Puppet::Type.newtype(:websphere_jvm_log) do
   end
 
   def self.title_patterns
-    identity = ->(x) { x }
     [
       [
         %r{^(.*):(.*):(.*):(.*)$},
         [
-          [:cell, identity],
-          [:node_name, identity],
-          [:scope, identity],
-          [:server, identity],
+          [:cell],
+          [:node_name],
+          [:scope],
+          [:server],
         ],
       ],
       [
         %r{^(.*):(.*):(.*)$},
         [
-          [:cell, identity],
-          [:node_name, identity],
-          [:scope, identity],
+          [:cell],
+          [:node_name],
+          [:scope],
         ],
       ],
       [
         %r{^(.*):(.*)$},
         [
-          [:cell, identity],
-          [:node_name, identity],
+          [:cell],
+          [:node_name],
         ],
       ],
       [
         %r{^(.*)$},
         [
-          [:cell, identity],
+          [:cell],
         ],
       ],
     ]
