@@ -198,7 +198,7 @@ Puppet::Type.newtype(:websphere_namespace_binding) do
 
     raise ArgumentError, 'server is required when scope is server' if self[:server].nil? && self[:scope] == 'server'
     raise ArgumentError, 'cell is a required attribute' if self[:cell].nil?
-    raise ArgumentError, 'node is required when scope is server, cell, or node' if self[:node_name].nil? && self[:scope] =~ %r{^(server|node)$}
+    raise ArgumentError, 'node_name is required when scope is server or node' if self[:node_name].nil? && self[:scope] =~ %r{^(server|node)$}
     raise ArgumentError, 'cluster is required when scope is cluster' if self[:cluster].nil? && self[:scope] =~ %r{^cluster$}
     raise("Invalid profile_base #{self[:profile_base]}") unless Pathname.new(self[:profile_base]).absolute?
 
