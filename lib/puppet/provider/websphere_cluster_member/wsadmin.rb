@@ -58,7 +58,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::P
     AdminTask.deleteClusterMember(['-clusterName', '#{resource[:cluster]}', '-memberNode', '#{resource[:node_name]}', '-memberName', '#{resource[:name]}'])
     AdminConfig.save()
     END
-    wsadmin(command: cmd, user: resource[:user])
+    wsadmin(file: cmd, user: resource[:user])
   end
 
   ## Helper method for modifying JVM properties
@@ -67,7 +67,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::P
     AdminTask.setJVMProperties(['-nodeName', '#{resource[:node_name]}', '-serverName', '#{resource[:name]}', '-#{name}', '#{value}'])
     AdminConfig.save()
     END
-    wsadmin(command: cmd, user: resource[:user])
+    wsadmin(file: cmd, user: resource[:user])
   end
 
   def runas_user
@@ -80,7 +80,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::P
     AdminConfig.modify(the_id, [['runAsUser', #{resource[:runas_user]}]])
     AdminConfig.save()
     END
-    wsadmin(command: cmd, user: resource[:user])
+    wsadmin(file: cmd, user: resource[:user])
   end
 
   def runas_group
@@ -93,7 +93,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::P
     AdminConfig.modify(the_id, [['runAsGroup', #{resource[:runas_group]}]])
     AdminConfig.save()
     END
-    wsadmin(command: cmd, user: resource[:user])
+    wsadmin(file: cmd, user: resource[:user])
   end
 
   def umask
@@ -109,7 +109,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::P
     AdminConfig.modify(the_id, [['umask', #{resource[:umask]}]])
     AdminConfig.save()
     END
-    wsadmin(command: cmd, user: resource[:user])
+    wsadmin(file: cmd, user: resource[:user])
   end
 
   def jvm_maximum_heap_size
@@ -230,7 +230,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::P
     AdminConfig.modify(the_id, [['totalTranLifetimeTimeout', #{resource[:total_transaction_timeout]}]])
     AdminConfig.save()
     END
-    wsadmin(command: cmd, user: resource[:user])
+    wsadmin(file: cmd, user: resource[:user])
   end
 
   def client_inactivity_timeout
@@ -247,7 +247,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::P
     AdminConfig.modify(the_id, [['clientInactivityTimeout', #{resource[:client_inactivity_timeout]}]])
     AdminConfig.save()
     END
-    wsadmin(command: cmd, user: resource[:user])
+    wsadmin(file: cmd, user: resource[:user])
   end
 
   def threadpool_webcontainer_min_size
