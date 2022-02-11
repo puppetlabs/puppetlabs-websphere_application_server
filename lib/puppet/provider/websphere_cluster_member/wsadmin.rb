@@ -62,11 +62,15 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::P
   end
 
   ## Helper method for modifying JVM properties
+  ## This breaks horribly if we are using a Jython List instead of a Jython String. This is because if the arguments contain dashes
+  ## they are interpreted as options to Jython, not values to the previous option - so you can't set JVM arguments which contain -Dxxxx
   def jvm_property(name, value)
     cmd = <<-END.unindent
-    AdminTask.setJVMProperties(['-nodeName', '#{resource[:node_name]}', '-serverName', '#{resource[:name]}', '-#{name}', '#{value}'])
+    AdminTask.setJVMProperties('[-nodeName "#{resource[:node_name]}" -serverName "#{resource[:name]}" -#{name} "#{value}"]')
     AdminConfig.save()
     END
+
+    debug "Running command: #{cmd}"
     wsadmin(file: cmd, user: resource[:user])
   end
 
