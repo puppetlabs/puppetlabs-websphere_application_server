@@ -38,7 +38,7 @@ Puppet::Type.newtype(:websphere_security_custom_property) do
       ],
       # /opt/IBM/WebSphere/AppServer/profiles:PROFILE_DMGR_01:PuppetTest
       [
-        %r{^(.*):(.*):(.*):(.*)$},
+        %r{^(.*):(.*):(.*)$},
         [
           [:profile_base],
           [:dmgr_profile],
