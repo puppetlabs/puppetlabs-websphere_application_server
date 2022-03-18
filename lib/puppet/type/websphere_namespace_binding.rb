@@ -157,7 +157,7 @@ Puppet::Type.newtype(:websphere_namespace_binding) do
       ],
       # /opt/IBM/WebSphere/AppServer/profiles:PROFILE_DMGR_01:server:CELL_01:AppNode01:AppServer01:corbaPuppetTest
       [
-        %r{^([^:]+):([^:]+):(server):([^:]+):([^:]+):([^:]+)$},
+        %r{^([^:]+):([^:]+):(server):([^:]+):([^:]+):([^:]+):([^:]+)$},
         [
           [:profile_base],
           [:dmgr_profile],
@@ -346,7 +346,7 @@ Puppet::Type.newtype(:websphere_namespace_binding) do
     The dmgr profile that this variable should be set under.  Basically, where
     are we finding `wsadmin`
 
-    This is synonomous with the 'profile' parameter.
+    This is synonymous with the 'profile' parameter.
 
     Example: dmgrProfile01
     EOT
