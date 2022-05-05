@@ -42,6 +42,13 @@ def changelog_future_release
 end
 
 PuppetLint.configuration.send('disable_relative')
+PuppetLint.configuration.send('disable_parameter_types')
+PuppetLint.configuration.send('disable_parameter_documentation')
+PuppetLint.configuration.send('disable_legacy_facts')
+PuppetLint.configuration.send('disable_top_scope_facts')
+PuppetLint.configuration.send('disable_topscope_variable')
+PuppetLint.configuration.send('disable_file_ensure')
+PuppetLint.configuration.send('disable_manifest_whitespace_opening_bracket_before')
 
 
 if Bundler.rubygems.find_name('github_changelog_generator').any?
@@ -84,14 +91,6 @@ Gemfile:
         version: '~> 1.15'
         condition: "Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.3.0')"
 EOM
-  end
-end
-
-require 'rspec/core/rake_task'
-namespace :websphere_application_server do
-  RSpec::Core::RakeTask.new(:integration) do |t|
-    t.pattern = 'spec/acceptance/**{,/*/**}/*_spec.rb'
-    t.rspec_opts = "--tag integration"
   end
 end
 
