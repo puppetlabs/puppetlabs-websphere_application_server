@@ -115,7 +115,7 @@ import re
 scope = '#{jdbc_scope}'
 provider_name = '#{resource[:provider_name]}'
 db_type = '#{resource[:dbtype]}'
-provider_type = '#{resource[:provider_type]}'
+provider_type = '#{resource[:providertype]}'
 impl_type = '#{resource[:implementation]}'
 extra_attrs = #{extra_attrs_str}
 

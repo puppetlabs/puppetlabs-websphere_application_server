@@ -119,9 +119,9 @@ Puppet::Type.newtype(:websphere_jdbc_provider) do
       raise ArgumentError, "Invalid #{value} #{self[:value]}" unless %r{^[-0-9A-Za-z._]+$}.match?(value)
     end
 
-    #if self[:isolated_class_loader] && !self[:nativepath].empty?
-    #  raise ArgumentError, "Invalid parameter combination: cannot enable class loader isolation (#{self[:isolated_class_loader]}) when native path libraries are set: #{self[:nativepath].to_s}"
-    #end
+    if self[:isolated_class_loader] && !self[:nativepath].empty?
+      raise ArgumentError, "Invalid parameter combination: cannot enable class loader isolation (#{self[:isolated_class_loader]}) when native path libraries are set: #{self[:nativepath].to_s}"
+    end
   end
 
   newparam(:provider_name) do
