@@ -175,21 +175,27 @@ Puppet::Type.newtype(:websphere_jdbc_provider) do
     defaultto ''
   end
 
-  newproperty(:classpath) do
+  newproperty(:classpath, array_matching: :all) do
     desc <<-EOT
     The classpath for this provider.
     This corresponds to the wsadmin argument "-classpath"
 
     Examples:
-      "${ORACLE_JDBC_DRIVER_PATH}/ojdbc6.jar"
-      "${DB2_JCC_DRIVER_PATH}/db2jcc4.jar ${UNIVERSAL_JDBC_DRIVER_PATH}/db2jcc_license_cu.jar"
+      [
+       "${ORACLE_JDBC_DRIVER_PATH}/ojdbc6.jar",
+       "${DB2_JCC_DRIVER_PATH}/db2jcc4.jar,
+       "${UNIVERSAL_JDBC_DRIVER_PATH}/db2jcc_license_cu.jar"
+      ]
 
     Consult IBM's documentation for valid classpaths.
     EOT
     defaultto []
+    def insync?(is)
+      is.sort == should.sort
+    end
   end
 
-  newproperty(:nativepath) do
+  newproperty(:nativepath, array_matching: :all) do
     desc <<-EOT
     The nativepath for this provider.
     This corresponds to the wsadmin argument "-nativePath"
@@ -197,11 +203,14 @@ Puppet::Type.newtype(:websphere_jdbc_provider) do
     This can be blank.
 
     Examples:
-      "${DB2UNIVERSAL_JDBC_DRIVER_NATIVEPATH}"
+      [ "${DB2UNIVERSAL_JDBC_DRIVER_NATIVEPATH}" ]
 
     Consult IBM's documentation for valid native paths.
     EOT
     defaultto []
+    def insync?(is)
+      is.sort == should.sort
+    end
   end
 
   newproperty(:implementation_classname) do
