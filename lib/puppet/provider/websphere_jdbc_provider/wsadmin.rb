@@ -96,8 +96,8 @@ Puppet::Type.type(:websphere_jdbc_provider).provide(:wsadmin, parent: Puppet::Pr
 
     # This is a bit stupid - but you can't pass an empty array as an argument to Jython
     # so we have to d this.
-    classpath = resource[:classpath].empty? '' : resource[:classpath].to_s
-    nativepath = resource[:nativepath].empty? '' : resource[:nativepath].to_s
+    classpath = resource[:classpath].empty? ? '' : resource[:classpath].to_s
+    nativepath = resource[:nativepath].empty? ? '' : resource[:nativepath].to_s
 
     # Put the rest of the resource attributes together 
     extra_attrs = []
