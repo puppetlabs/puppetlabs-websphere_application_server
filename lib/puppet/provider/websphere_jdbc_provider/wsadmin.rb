@@ -447,6 +447,13 @@ END
   end
 
   def flush
+    # If we haven't got anything to modify, we've got nothing to flush. Otherwise
+    # parse the list of things to do. We basically re-apply the whole settings again
+    # to the resource. It is a lot easier to do it this way, than try to apply things
+    # in a differential manner (fix just the differences): less prone to error, and
+    # less fragile. 
+    return if @property_flush.empty?
+
     # Set the scope for this JDBC Provider - Thanks for another way of specifying the containment path!
     jdbc_scope = scope('query')
 
