@@ -60,17 +60,17 @@ Puppet::Type.type(:websphere_jdbc_provider).provide(:wsadmin, parent: Puppet::Pr
     when 'cluster'
       query = "/Cell:#{resource[:cell]}/ServerCluster:#{resource[:cluster]}"
       mod   = "cells/#{resource[:cell]}/clusters/#{resource[:cluster]}"
-      type  = "Cell=#{resource[:cell]}, Cluster=#{resource[:cluster]}"
+      type  = "Cluster=#{resource[:cluster]}"
       file += "/config/cells/#{resource[:cell]}/clusters/#{resource[:cluster]}/resources.xml"
     when 'node'
       query = "/Cell:#{resource[:cell]}/Node:#{resource[:node_name]}"
       mod   = "cells/#{resource[:cell]}/nodes/#{resource[:node_name]}"
-      type  = "Cell=#{resource[:cell]}, Node=#{resource[:node_name]}"
+      type  = "Node=#{resource[:node_name]}"
       file += "/config/cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/resources.xml"
     when 'server'
       query = "/Cell:#{resource[:cell]}/Node:#{resource[:node_name]}/Server:#{resource[:server]}"
       mod   = "cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/#{resource[:server]}"
-      type  = "Cell=#{resource[:cell]}, Node=#{resource[:node_name]}, Server=#{resource[:server]}"
+      type  = "Cell=#{resource[:cell]},Server=#{resource[:server]}"
       file += "/config/cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/#{resource[:server]}/resources.xml"
     else
       raise Puppet::Error, "Unknown scope: #{resource[:scope]}"
