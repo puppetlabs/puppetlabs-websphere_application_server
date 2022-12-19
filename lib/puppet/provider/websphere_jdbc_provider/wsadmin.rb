@@ -280,11 +280,11 @@ END
     # Extract the classpath and nativepath text from all the XML entries for that category. We'll
     # get an empty array if we find nothing - and that is just fine!
     @old_provider_data[:classpath] = (XPath.match(provider_entry, "classpath")).map{ |classpath_entry|
-      debug "# classpath entry => #{classpath_entry.text}"
+      debug "classpath entry => #{classpath_entry.text}"
       classpath_entry.text
     } unless provider_entry.nil?
     @old_provider_data[:nativepath] = (XPath.match(provider_entry, "nativepath")).map{ |nativepath_entry|
-      debug "# nativepath entry => #{nativepath_entry.text}"
+      debug "nativepath entry => #{nativepath_entry.text}"
       nativepath_entry.text
     } unless provider_entry.nil?
 
