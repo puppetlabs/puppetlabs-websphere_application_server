@@ -260,14 +260,12 @@ END
   end
 
   def exists?
-    unless File.exist?(scope('file'))
+    xml_file = scope('file')
+    unless File.exist?(xml_file)
       return false
     end
 
-    doc = REXML::Document.new(File.open(scope('file')))
-
-    debug "Retrieving value of #{resource[:provider_name]} from #{scope('file')}"
-
+    debug "Retrieving value of #{resource[:provider_name]} from #{xml_file}"
     doc = REXML::Document.new(File.open(xml_file))
     provider_entry = XPath.first(doc, "/xmi:XMI[@xmlns:resources.jdbc]/resources.jdbc:JDBCProvider[@name='#{resource[:provider_name]}']")
 
