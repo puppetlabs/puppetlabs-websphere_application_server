@@ -302,7 +302,7 @@ END
     @property_flush[:description] = val
   end
 
-    # Get the resource classpath list
+  # Get the resource classpath list
   def classpath
     @old_provider_data[:classpath]
   end
@@ -426,6 +426,26 @@ def deleteJDBCProviderAtScope( scope, providerName, failonerror=AdminUtilities._
 deleteJDBCProviderAtScope(scope, provider_name)
 
 END
+    # rubocop:enable Layout/IndentHeredoc
+
+    debug "Running command: #{cmd} as user: #{resource[:user]}"
+    result = wsadmin(file: cmd, user: resource[:user], failonfail: true)
+    if %r{Invalid parameter value "" for parameter "parent config id" on command "destroy"}.match?(result)
+      ## I'd rather handle this in the Jython, but I'm not sure how.
+      ## This usually indicates that the server isn't ready on the DMGR yet -
+      ## the DMGR needs to do another Puppet run, probably.
+      err = <<-EOT
+      Could not destroy JDBC Provider: #{resource[:provider_name]}
+      This appears to be due to the remote resource not being available.
+      Ensure that all the necessary services have been created and are running
+      on this host and the DMGR. If this is the first run, the cluster member
+      may need to be created on the DMGR.
+      EOT
+
+      raise Puppet::Error, err
+
+    end
+    debug "Result:\n#{result}"
   end
 
   def flush
@@ -557,7 +577,7 @@ END
 
     debug "Running command: #{cmd} as user: #{resource[:user]}"
     result = wsadmin(file: cmd, user: resource[:user], failonfail: true)
-    if %r{Invalid parameter value "" for parameter "parent config id" on command "create"}.match?(result)
+    if %r{Invalid parameter value "" for parameter "parent config id" on command "flush"}.match?(result)
       ## I'd rather handle this in the Jython, but I'm not sure how.
       ## This usually indicates that the server isn't ready on the DMGR yet -
       ## the DMGR needs to do another Puppet run, probably.
@@ -573,4 +593,5 @@ END
 
     end
     debug "Result:\n#{result}"
+  end
 end
