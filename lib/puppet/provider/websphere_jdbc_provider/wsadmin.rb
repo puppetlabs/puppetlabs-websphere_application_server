@@ -462,6 +462,7 @@ END
     extra_attrs += [['classpath',  "#{resource[:classpath].join(';')}"]]
     extra_attrs += [['nativepath',  "#{resource[:nativepath].join(';')}"]]
     extra_attrs += [['description',  "#{resource[:description]}"]]
+    extra_attrs += [['isolatedClassLoader', "#{resource[:isolated_class_loader].to_s}"]]
     extra_attrs += [['implementationClassname',  "#{resource[:implementation_classname]}"]] unless resource[:implementation_classname].nil?
     extra_attrs_str = extra_attrs.to_s.tr("\"", "'")
 
