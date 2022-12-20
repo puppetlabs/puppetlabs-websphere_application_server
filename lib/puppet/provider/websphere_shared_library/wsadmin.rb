@@ -171,6 +171,11 @@ EOS
     return if @property_hash.empty?
     cmd = <<-EOS
 id = AdminConfig.getid(\"#{scope('query')}Library:#{resource[:name]}\")
+
+# The modify command appends the specified unique classPath or nativePath values to the existing values.
+# To completely replace the values, we must first remove the path attributes using the unsetAttributes command.
+AdminConfig.unsetAttributes(id, '["classPath" "nativePath"]')
+
 AdminConfig.modify(id, #{modified_attributes_list_list})
 AdminConfig.save()
 EOS
