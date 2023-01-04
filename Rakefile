@@ -7,6 +7,7 @@ require 'puppet-syntax/tasks/puppet-syntax'
 require 'puppet_blacksmith/rake_tasks' if Bundler.rubygems.find_name('puppet-blacksmith').any?
 require 'github_changelog_generator/task' if Bundler.rubygems.find_name('github_changelog_generator').any?
 require 'puppet-strings/tasks' if Bundler.rubygems.find_name('puppet-strings').any?
+require 'rspec/core/rake_task'
 
 def changelog_user
   return unless Rake.application.top_level_tasks.include? "changelog"
@@ -91,6 +92,13 @@ Gemfile:
         version: '~> 1.15'
         condition: "Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.3.0')"
 EOM
+  end
+end
+
+namespace :websphere_application_server do
+  RSpec::Core::RakeTask.new(:integration) do |t|
+    t.pattern = 'spec/acceptance/**{,/*/**}/*_spec.rb'
+    t.rspec_opts = "--tag integration"
   end
 end
 
