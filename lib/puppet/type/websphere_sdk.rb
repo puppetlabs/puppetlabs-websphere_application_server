@@ -12,19 +12,18 @@ Puppet::Type.newtype(:websphere_sdk) do
   end
 
   def self.title_patterns
-    identity = ->(x) { x }
     [
       [
         %r{^(.*)_(.*)$},
         [
-          [:profile, identity],
-          [:sdkname, identity],
+          [:profile],
+          [:sdkname],
         ],
       ],
       [
         %r{^(.*)$},
         [
-          [:sdkname, identity],
+          [:sdkname],
         ],
       ],
     ]
