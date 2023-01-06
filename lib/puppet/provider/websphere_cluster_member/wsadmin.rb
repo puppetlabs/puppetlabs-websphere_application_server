@@ -42,7 +42,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::P
       msg = "Websphere_cluster_member[#{resource[:name]}]: Failed to "\
                + 'add cluster member. Make sure the node service is running '\
                + "on the remote server. Output: #{result}"
-      raise Puppet::Error, "Failed to add cluster member. Run with --debug for details. #{msg}"
+      raise Puppet::Error, "Failed to add cluster member. Run with --debug --trace for details. #{msg}"
     end
     resource.class.validproperties.each do |property|
       value = resource.should(property)
@@ -54,22 +54,25 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::P
   end
 
   def destroy
-    cmd = "\"AdminTask.deleteClusterMember('[-clusterName "
-    cmd += resource[:cluster] + ' -memberNode ' + resource[:node_name]
-    cmd += ' -memberName ' + resource[:name]
-    cmd += "]')\""
-
-    wsadmin(command: cmd, user: resource[:user])
+    cmd = <<-END.unindent
+    AdminTask.deleteClusterMember(['-clusterName', '#{resource[:cluster]}', '-memberNode', '#{resource[:node_name]}', '-memberName', '#{resource[:name]}'])
+    AdminConfig.save()
+    END
+    debug "Running #{cmd}"
+    wsadmin(file: cmd, user: resource[:user])
   end
 
   ## Helper method for modifying JVM properties
+  ## This breaks horribly if we are using a Jython List instead of a Jython String. This is because if the arguments contain dashes
+  ## they are interpreted as options to Jython, not values to the previous option - so you can't set JVM arguments which contain -Dxxxx
   def jvm_property(name, value)
-    cmd = "\"AdminTask.setJVMProperties('[-nodeName " + resource[:node_name]
-    cmd += ' -serverName ' + resource[:name] + ' -'
-    cmd += name + ' '
-    cmd += value
-    cmd += "]')\""
-    wsadmin(command: cmd, user: resource[:user])
+    cmd = <<-END.unindent
+    AdminTask.setJVMProperties('[-nodeName "#{resource[:node_name]}" -serverName "#{resource[:name]}" -#{name} "#{value}"]')
+    AdminConfig.save()
+    END
+
+    debug "Running command: #{cmd}"
+    wsadmin(file: cmd, user: resource[:user])
   end
 
   def runas_user
@@ -77,14 +80,13 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::P
   end
 
   def runas_user=(_value)
-    cmd = "\"the_id = AdminConfig.list('ProcessExecution','(cells/"
-    cmd += resource[:cell]
-    cmd += '/nodes/' + resource[:node_name] + '/servers/'
-    cmd += resource[:name] + "|server.xml)');"
-    cmd += "AdminConfig.modify(the_id, [['runAsUser', '" + resource[:runas_user]
-    cmd += "']])\""
-
-    wsadmin(command: cmd, user: resource[:user])
+    cmd = <<-END.unindent
+    the_id = AdminConfig.list('ProcessExecution', '(cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/#{resource[:name]}|server.xml)')
+    AdminConfig.modify(the_id, [['runAsUser', '#{resource[:runas_user]}']])
+    AdminConfig.save()
+    END
+    debug "Running #{cmd}"
+    wsadmin(file: cmd, user: resource[:user])
   end
 
   def runas_group
@@ -92,14 +94,13 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::P
   end
 
   def runas_group=(_value)
-    cmd = "\"the_id = AdminConfig.list('ProcessExecution','(cells/"
-    cmd += resource[:cell]
-    cmd += '/nodes/' + resource[:node_name] + '/servers/'
-    cmd += resource[:name] + "|server.xml)');"
-    cmd += "AdminConfig.modify(the_id, [['runAsGroup', '" + resource[:runas_group]
-    cmd += "']])\""
-
-    wsadmin(command: cmd, user: resource[:user])
+    cmd = <<-END.unindent
+    the_id = AdminConfig.list('ProcessExecution', '(cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/#{resource[:name]}|server.xml)')
+    AdminConfig.modify(the_id, [['runAsGroup', '#{resource[:runas_group]}']])
+    AdminConfig.save()
+    END
+    debug "Running #{cmd}"
+    wsadmin(file: cmd, user: resource[:user])
   end
 
   def umask
@@ -110,14 +111,13 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::P
   end
 
   def umask=(_value)
-    cmd = "\"the_id = AdminConfig.list('ProcessExecution','(cells/"
-    cmd += resource[:cell]
-    cmd += '/nodes/' + resource[:node_name] + '/servers/'
-    cmd += resource[:name] + "|server.xml)');"
-    cmd += "AdminConfig.modify(the_id, [['umask', '" + resource[:umask]
-    cmd += "']])\""
-
-    wsadmin(command: cmd, user: resource[:user])
+    cmd = <<-END.unindent
+    the_id = AdminConfig.list('ProcessExecution', '(cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/#{resource[:name]}|server.xml)')
+    AdminConfig.modify(the_id, [['umask', '#{resource[:umask]}']])
+    AdminConfig.save()
+    END
+    debug "Running #{cmd}"
+    wsadmin(file: cmd, user: resource[:user])
   end
 
   def jvm_maximum_heap_size
@@ -233,15 +233,13 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::P
   end
 
   def total_transaction_timeout=(_value)
-    cmd = "\"the_id = AdminConfig.list('TransactionService','(cells/"
-    cmd += resource[:cell]
-    cmd += '/nodes/' + resource[:node_name] + '/servers/'
-    cmd += resource[:name] + "|server.xml)');"
-    cmd += 'AdminConfig.modify(the_id, \'[[totalTranLifetimeTimeout "'
-    cmd += resource[:total_transaction_timeout]
-    cmd += '"]]\')"'
-
-    wsadmin(command: cmd, user: resource[:user])
+    cmd = <<-END.unindent
+    the_id = AdminConfig.list('TransactionService', '(cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/#{resource[:name]}|server.xml)')
+    AdminConfig.modify(the_id, [['totalTranLifetimeTimeout', #{resource[:total_transaction_timeout]}]])
+    AdminConfig.save()
+    END
+    debug "Running #{cmd}"
+    wsadmin(file: cmd, user: resource[:user])
   end
 
   def client_inactivity_timeout
@@ -253,15 +251,13 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::P
   end
 
   def client_inactivity_timeout=(_value)
-    cmd = "\"the_id = AdminConfig.list('TransactionService','(cells/"
-    cmd += resource[:cell]
-    cmd += '/nodes/' + resource[:node_name] + '/servers/'
-    cmd += resource[:name] + "|server.xml)');"
-    cmd += 'AdminConfig.modify(the_id, \'[[clientInactivityTimeout "'
-    cmd += resource[:client_inactivity_timeout]
-    cmd += '"]]\')"'
-
-    wsadmin(command: cmd, user: resource[:user])
+    cmd = <<-END.unindent
+    the_id = AdminConfig.list('TransactionService', '(cells/#{resource[:cell]}/nodes/#{resource[:node_name]}/servers/#{resource[:name]}|server.xml)')
+    AdminConfig.modify(the_id, [['clientInactivityTimeout', #{resource[:client_inactivity_timeout]}]])
+    AdminConfig.save()
+    END
+    debug "Running #{cmd}"
+    wsadmin(file: cmd, user: resource[:user])
   end
 
   def threadpool_webcontainer_min_size
@@ -284,6 +280,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::P
       AdminConfig.modify(tpWebContainer, [['minimumSize', #{resource[:threadpool_webcontainer_min_size]}]])
       AdminConfig.save()
     END
+    debug "Running #{cmd}"
     wsadmin(file: cmd, user: resource[:user])
   end
 
@@ -307,6 +304,7 @@ Puppet::Type.type(:websphere_cluster_member).provide(:wsadmin, parent: Puppet::P
       AdminConfig.modify(tpWebContainer, [['maximumSize', #{resource[:threadpool_webcontainer_max_size]}]])
       AdminConfig.save()
     END
+    debug "Running #{cmd}"
     wsadmin(file: cmd, user: resource[:user])
     refresh
   end
