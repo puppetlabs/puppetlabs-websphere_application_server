@@ -43,6 +43,8 @@
 #   Specifies whether SDK versions should be managed by this defined type instance or not. Essentially, when managed here, it sets the default SDK for servers created under this profile. This is only relevant if `manage_federation` is `true`.
 # @param sdk_name
 #   The SDK name to set if `manage_sdk` is `true`. This parameter is required if `manage_sdk` is `true`. Example: 1.71_64. Refer to the details for the `websphere_sdk` resource type for more information. This is only relevant if `manage_federation` and `manage_sdk` are `true`.
+# @param admin_sec
+#   Optional. Specified whether to deploy the APPSERVER profile with admin security enabled. Disabled by default.
 # @param wsadmin_user
 #   Optional. The username for `wsadmin` authentication if security is enabled.
 # @param wsadmin_pass
@@ -64,6 +66,7 @@ define websphere_application_server::profile::appserver (
   $manage_service    = true,
   $manage_sdk        = false,
   $sdk_name          = undef,
+  $admin_sec         = false,
   $wsadmin_user      = undef,
   $wsadmin_pass      = undef,
 ) {
@@ -79,6 +82,7 @@ define websphere_application_server::profile::appserver (
   validate_bool($manage_federation)
   validate_bool($manage_service)
   validate_bool($manage_sdk)
+  validate_bool($admin_sec)
 
   ## Template path. Figure out a sane default if not explicitly specified.
   if ! $template_path {
@@ -98,11 +102,20 @@ define websphere_application_server::profile::appserver (
 
   ## Build our installation options if none are profided. These are mostly
   ## similar, but we do add extra to the 'app' profile type. Hackish.
-  if ! $options {
-    $_options = "-create -profileName ${profile_name} -profilePath ${profile_base}/${profile_name} -templatePath ${_template_path} -nodeName ${node_name} -hostName ${::fqdn} -federateLater true -cellName standalone"
-  } else {
+
+  if $options != undef and $admin_sec {
+    fail ( 'Cannot specify both options and admin_sec at the same time. Please include your admin security details in your options string')
+  } elsif $options != undef {
     $_options = $options
+  } else {
+    $base_options = "-create -profileName ${profile_name} -profilePath ${profile_base}/${profile_name} -templatePath ${_template_path} -nodeName ${node_name} -hostName ${::fqdn} -federateLater true -cellName standalone"
+    if $admin_sec {
+      $_options = "${base_options} -enableAdminSecurity true -adminUserName ${wsadmin_user} -adminPassword ${wsadmin_pass}"
+    } else {
+      $_options = $base_options
+    }
   }
+
   validate_string($_options)
 
   ## Create the profile
