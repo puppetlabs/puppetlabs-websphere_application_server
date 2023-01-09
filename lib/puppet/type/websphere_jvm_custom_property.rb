@@ -90,7 +90,7 @@ Puppet::Type.newtype(:websphere_jvm_custom_property) do
     desc <<-EOT
     Valid values: `present`, `absent`
 
-    Defaults to `true`.  Specifies whether this custom property should exist or not.
+    Defaults to `present`.  Specifies whether this custom property should exist or not.
     EOT
 
     defaultto(:present)
@@ -138,33 +138,33 @@ Puppet::Type.newtype(:websphere_jvm_custom_property) do
 
   newproperty(:description) do
     desc <<-EOT
-    The description of the datasource custom property.
+    The description of the JVM custom property.
     EOT
   end
 
   newproperty(:property_value) do
     desc <<-EOT
-    The value of the datasource custom property.
+    The value of the JVM custom property.
     EOT
   end
 
   newparam(:node_name) do
     isnamevar
-    desc 'The name of the node to create this application server on'
+    desc 'The name of the node to create this JVM custom property on'
   end
 
   newparam(:cluster) do
-    desc 'The name of the cluster to create this application server on'
+    desc 'The name of the cluster to create this JVM custom property on'
   end
 
   newparam(:server) do
     isnamevar
-    desc 'The name of the server to create this application server on'
+    desc 'The name of the server to create this JVM custom property on'
   end
 
   newparam(:cell) do
     isnamevar
-    desc 'The name of the cell to create this application server on'
+    desc 'The name of the cell to create this JVM custom property on'
   end
 
   newparam(:profile) do
