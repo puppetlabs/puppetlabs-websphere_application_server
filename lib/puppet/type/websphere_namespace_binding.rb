@@ -105,7 +105,7 @@ Puppet::Type.newtype(:websphere_namespace_binding) do
       ],
       # /opt/IBM/WebSphere/AppServer/profiles:corbaPuppetTest
       [
-        %r{^(.*):(.*)$},
+        %r{^([^:]+):([^:]+)$},
         [
           [:profile_base],
           [:name],
@@ -113,7 +113,7 @@ Puppet::Type.newtype(:websphere_namespace_binding) do
       ],
       # /opt/IBM/WebSphere/AppServer/profiles:PROFILE_DMGR_01:corbaPuppetTest
       [
-        %r{^(.*):(.*):(.*)$},
+        %r{^([^:]+):([^:]+):([^:]+)$},
         [
           [:profile_base],
           [:dmgr_profile],
@@ -122,7 +122,7 @@ Puppet::Type.newtype(:websphere_namespace_binding) do
       ],
       # /opt/IBM/WebSphere/AppServer/profiles:PROFILE_DMGR_01:cell:CELL_01:corbaPuppetTest
       [
-        %r{^(.*):(.*):(cell):(.*):(.*)$},
+        %r{^([^:]+):([^:]+):(cell):([^:]+):([^:]+)$},
         [
           [:profile_base],
           [:dmgr_profile],
@@ -133,7 +133,7 @@ Puppet::Type.newtype(:websphere_namespace_binding) do
       ],
       # /opt/IBM/WebSphere/AppServer/profiles:PROFILE_DMGR_01:cluster:CELL_01:TEST_CLUSTER_01:corbaPuppetTest
       [
-        %r{^(.*):(.*):(cluster):(.*):(.*):(.*)$},
+        %r{^([^:]+):([^:]+):(cluster):([^:]+):([^:]+):([^:]+)$},
         [
           [:profile_base],
           [:dmgr_profile],
@@ -145,7 +145,7 @@ Puppet::Type.newtype(:websphere_namespace_binding) do
       ],
       # /opt/IBM/WebSphere/AppServer/profiles:PROFILE_DMGR_01:node:CELL_01:AppNode01:corbaPuppetTest
       [
-        %r{^(.*):(.*):(node):(.*):(.*):(.*)$},
+        %r{^([^:]+):([^:]+):(node):([^:]+):([^:]+):([^:]+)$},
         [
           [:profile_base],
           [:dmgr_profile],
@@ -157,7 +157,7 @@ Puppet::Type.newtype(:websphere_namespace_binding) do
       ],
       # /opt/IBM/WebSphere/AppServer/profiles:PROFILE_DMGR_01:server:CELL_01:AppNode01:AppServer01:corbaPuppetTest
       [
-        %r{^(.*):(.*):(server):(.*):(.*):(.*)$},
+        %r{^([^:]+):([^:]+):(server):([^:]+):([^:]+):([^:]+):([^:]+)$},
         [
           [:profile_base],
           [:dmgr_profile],
@@ -190,7 +190,7 @@ Puppet::Type.newtype(:websphere_namespace_binding) do
   end
 
   validate do
-    [:dmgr_profile, :name, :user, :node, :cell].each do |value|
+    [:dmgr_profile, :name, :user, :node_name, :cell].each do |value|
       raise ArgumentError, "Invalid #{value} #{self[value]}" unless %r{^[-0-9A-Za-z._]+$}.match?(value)
     end
 
@@ -198,7 +198,7 @@ Puppet::Type.newtype(:websphere_namespace_binding) do
 
     raise ArgumentError, 'server is required when scope is server' if self[:server].nil? && self[:scope] == 'server'
     raise ArgumentError, 'cell is a required attribute' if self[:cell].nil?
-    raise ArgumentError, 'node is required when scope is server, cell, or node' if self[:node_name].nil? && self[:scope] =~ %r{(server|cell|node)}
+    raise ArgumentError, 'node_name is required when scope is server or node' if self[:node_name].nil? && self[:scope] =~ %r{^(server|node)$}
     raise ArgumentError, 'cluster is required when scope is cluster' if self[:cluster].nil? && self[:scope] =~ %r{^cluster$}
     raise("Invalid profile_base #{self[:profile_base]}") unless Pathname.new(self[:profile_base]).absolute?
 
@@ -315,7 +315,7 @@ Puppet::Type.newtype(:websphere_namespace_binding) do
     EOT
   end
 
-  newparam(:node) do
+  newparam(:node_name) do
     isnamevar
     desc 'The name of the node to create this application server on'
   end
@@ -346,7 +346,7 @@ Puppet::Type.newtype(:websphere_namespace_binding) do
     The dmgr profile that this variable should be set under.  Basically, where
     are we finding `wsadmin`
 
-    This is synonomous with the 'profile' parameter.
+    This is synonymous with the 'profile' parameter.
 
     Example: dmgrProfile01
     EOT
