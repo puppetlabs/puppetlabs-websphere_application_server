@@ -105,6 +105,8 @@ EOS
     result = wsadmin(file: cmd, user: resource[:user])
     debug result
 
-    sync_node
+    # Because this deals with global settings - we don't always have a node name to sync to
+    # Do this, only when we have a node name passed as a param.
+    sync_node unless resource[:node].nil?
   end
 end
